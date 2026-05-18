@@ -4,7 +4,7 @@
 
 Food-Mood - Dein Mood, dein Biss
 
-## Kurzbeschreibung
+## Kurzbeschreibung@@
 
 Was ist Food Mood?
 Du bist wählerisch, wenn es um Restaurants geht, und suchst das perfekte Essen für den perfekten Moment? Das Problem: Zu viel Auswahl und zu wenig ehrliche Empfehlungen.
