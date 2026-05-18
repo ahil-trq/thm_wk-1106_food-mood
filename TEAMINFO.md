@@ -2,14 +2,14 @@
 
 ## Projekttitel
 
-<Food-Mood - Dein Mood, dein Biss>
+Food-Mood - Dein Mood, dein Biss
 
 ## Kurzbeschreibung
 
-<Was ist Food Mood?
+Was ist Food Mood?
 Du bist wählerisch, wenn es um Restaurants geht, und suchst das perfekte Essen für den perfekten Moment? Das Problem: Zu viel Auswahl und zu wenig ehrliche Empfehlungen.
 Food Mood richtet sich nach deinem Vibe und findet anhand echter und ehrlicher Bewertungen die Restaurants, die wirklich zu deiner Stimmung passen.
-Das ist Food Mood.>
+Das ist Food Mood.
 
 ## Team
 
@@ -32,8 +32,8 @@ Das ist Food Mood.>
 
 ## Repository
 
-- **URL:** <https://github.com/…  bzw.  https://git.thm.de/…>
-- **Sichtbarkeit:** öffentlich · privat (Betreuer als Member: `carstenlucke` / `clucke`)
+- **URL:** [<https://github.com/…  bzw.  https://git.thm.de/…>](https://github.com/ahil-trq/thm_wk-1106_food-mood.git)
+- **Sichtbarkeit:** privat (Betreuer als Member: `carstenlucke` / `clucke`)
 
 ## Eingesetzte KI-Werkzeuge (vorläufige Planung)
 
