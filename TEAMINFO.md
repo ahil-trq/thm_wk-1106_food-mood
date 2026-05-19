@@ -33,7 +33,7 @@ Das ist Food Mood.
 ## Repository
 
 - **URL:** [<https://github.com/…  bzw.  https://git.thm.de/…>](https://github.com/ahil-trq/thm_wk-1106_food-mood.git)
-- **Sichtbarkeit:** privat (Betreuer als Member: `carstenlucke` / `clucke`)
+- **Sichtbarkeit:** Öffentlich
 
 ## Eingesetzte KI-Werkzeuge (vorläufige Planung)
 
