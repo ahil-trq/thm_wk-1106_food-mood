@@ -63,7 +63,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 
 **Zweck:** Der Nutzer wählt seine Stimmung oder seinen Anlass aus, welche später in die Filterung der Empfehlungen einfließt.
 
-**Sichtbare Informationen:** Auswahlmöglichkeiten für Stimmung (gemütlich, romantisch, schnell, gesellig. (eventuelle andere Stimmungen erfolgen)). Anlass (Date, Familie, Freunde, Mittagspause. (eventuelle andere Anlässe erfolgen)).
+**Sichtbare Informationen:** Auswahlmöglichkeiten für Stimmung (gemütlich, romantisch, schnell, gesellig, neu, günstig). Anlass (Date, Familie, Freunde, Mittagspause, Uni).
 
 **Eingabefelder:** Reine Auswahl per Klick (Eine Stimmung und einen Anlass).
 
@@ -90,4 +90,38 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 |                                |
 |          [ Weiter ]            |
 ----------------------------------
+```
+
+## 4. Filterauswahl
+
+**Zweck:** Nutzer grenzt die Restaurantsuche durch Filterkriterien ein, bevor die Empfehlungen berechnet werden.
+
+**Sichtbare Informationen:** Filterkategorien: Preis (€ / €€ / €€€), Entfernung (z.B. bis 1 km / 3 km / 5 km / 10 km), Küche (Mehrfachauswahl, z.B. Italienisch, Asiatisch, Deutsch, …), Ernährung (Mehrfachauswahl, z.B. vegetarisch, vegan, glutenfrei), Mindestbewertung (z.B. ab 3 Sternen), Schalter "nur aktuell geöffnete Restaurants".
+
+**Eingabefelder:** Auswahlfeld/Slider für Entfernung, Mehrfachauswahl-Chips für Küche und Ernährung, Sterne-Auswahl für Mindestbewertung, Ein/Aus-Schalter für "nur geöffnet". Alle Filter sind optional (Standardwert: keine Einschränkung).
+
+**Schaltflächen/Aktionen:** "Filter zurücksetzen" (alle Filter auf Standard), "Empfehlungen anzeigen" (bestätigt Auswahl und startet Berechnung).
+
+**Navigation:** Empfehlungsliste
+
+**Ladezustand:** keine Ladevorgänge auf dieser Seite selbst. Der Ladezustand tritt erst nach Klick auf "Empfehlungen anzeigen" ein, sichtbar auf der nächsten Ansicht.
+
+**Fehlerzustand:** nicht zutreffend, da alle Filter optional sind.
+
+**Leere Ergebnisse:** nicht zutreffend.
+
+```text
+------------------------------------
+|            Filter                |
+|                                  |
+| Preis:      ( € )( €€ )( €€€ )   |
+| Entfernung: [ bis 5 km v ]       |
+| Küche:      ( Italienisch )      |
+|             ( Asiatisch )        |
+| Ernährung:  ( vegetarisch )      |
+| Bewertung:  [ ab ★★★ v ]        |
+| [ ] nur geöffnete Restaurants    |
+|                                  |
+| [ Zurücksetzen ]   [ Anzeigen ]  |
+------------------------------------
 ```
