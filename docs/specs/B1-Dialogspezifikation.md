@@ -98,17 +98,17 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 
 **Sichtbare Informationen:** Filterkategorien: Preis (€ / €€ / €€€), Entfernung (z.B. bis 1 km / 3 km / 5 km / 10 km), Küche (Mehrfachauswahl, z.B. Italienisch, Asiatisch, Deutsch, …), Ernährung (Mehrfachauswahl, z.B. vegetarisch, vegan, glutenfrei), Mindestbewertung (z.B. ab 3 Sternen), Schalter "nur aktuell geöffnete Restaurants".
 
-**Eingabefelder:** Auswahlfeld/Slider für Entfernung, Mehrfachauswahl-Chips für Küche und Ernährung, Sterne-Auswahl für Mindestbewertung, Ein/Aus-Schalter für "nur geöffnet". Alle Filter sind optional (Standardwert: keine Einschränkung).
+**Eingabefelder:** Auswahlfeld/Slider für Entfernung, Mehrfachauswahl Chips für Küche und Ernährung, Sterne-Auswahl für Mindestbewertung, Ein/Aus-Schalter für "nur geöffnet". Alle Filter sind optional (Standardwert: keine Einschränkung).
 
 **Schaltflächen/Aktionen:** "Filter zurücksetzen" (alle Filter auf Standard), "Empfehlungen anzeigen" (bestätigt Auswahl und startet Berechnung).
 
 **Navigation:** Empfehlungsliste
 
-**Ladezustand:** keine Ladevorgänge auf dieser Seite selbst. Der Ladezustand tritt erst nach Klick auf "Empfehlungen anzeigen" ein, sichtbar auf der nächsten Ansicht.
+**Ladezustand:** Keine Ladevorgänge auf dieser Seite selbst. Der Ladezustand tritt erst nach Klick auf "Empfehlungen anzeigen" ein, sichtbar auf der nächsten Ansicht.
 
-**Fehlerzustand:** nicht zutreffend, da alle Filter optional sind.
+**Fehlerzustand:** Nicht zutreffend, da alle Filter optional sind.
 
-**Leere Ergebnisse:** nicht zutreffend.
+**Leere Ergebnisse:** Nicht zutreffend.
 
 ```text
 ------------------------------------
@@ -132,17 +132,17 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 
 **Sichtbare Informationen:** Liste von Restaurants, je Eintrag: Name, Küche, Entfernung, Preisklasse, Bewertung (Sterne), Öffnungsstatus (geöffnet/geschlossen), Favoriten-Symbol falls zutreffend ein kleines "Schon besucht" Badge.
 
-**Eingabefelder:** keine. Optional eine Sortier Auswahl (z.B. nach Entfernung, Bewertung oder Empfehlungsgrad).
+**Eingabefelder:** Keine. Optional eine Sortier Auswahl (z.B. nach Entfernung, Bewertung oder Empfehlungsgrad).
 
 **Schaltflächen/Aktionen:** Restaurant antippen (öffnet Details), Favoriten Symbol direkt in der Liste antippen (Favorit setzen/entfernen, ohne Detailseite zu öffnen), "Filter anpassen" (zurück zur Filterauswahl).
 
-**Navigation:** Restaurantdetails (bei Auswahl eines Eintrags); ← zurück zur Filterauswahl möglich.
+**Navigation:** Restaurantdetails (bei Auswahl eines Eintrags); <- zurück zur Filterauswahl möglich.
 
 **Ladezustand:** Ladeanzeige "Empfehlungen werden berechnet …", während die Restaurantdaten von der externen API geholt und nach Stimmung/Filtern bewertet werden.
 
-**Fehlerzustand:** externe API nicht erreichbar oder Zeitüberschreitung → Hinweistext "Empfehlungen konnten nicht geladen werden" mit Button "Erneut versuchen".
+**Fehlerzustand:** Externe API nicht erreichbar oder Zeitüberschreitung -> Hinweistext "Empfehlungen konnten nicht geladen werden" mit Button "Erneut versuchen".
 
-**Leere Ergebnisse:** keine passenden Restaurants gefunden (z.B. Filter zu eng) → Hinweistext "Keine passenden Restaurants gefunden. Passe deine Filter an." mit Button "Filter anpassen".
+**Leere Ergebnisse:** keine passenden Restaurants gefunden (z.B. Filter zu eng) -> Hinweistext "Keine passenden Restaurants gefunden. Passe deine Filter an." mit Button "Filter anpassen".
 
 ```text
 --------------------------------------
@@ -160,4 +160,40 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 |                                    |
 |         [ Filter anpassen ]        |
 --------------------------------------
+```
+
+## 6. Restaurantsdetails
+
+**Zweck:**  Zeigt alle Details zu einem ausgewählten Restaurant und ermöglicht es, es zu favorisieren oder als besucht zu markieren und zu bewerten.
+
+**Sichtbare Informationen:** Name, Adresse, Küche, Preisklasse, Entfernung, Öffnungszeiten/status, Durchschnittsbewertung (Sterne), Standort auf einer kleinen Karte, Hinweise zu Ernährungsoptionen (z.B. vegetarisch verfügbar).
+
+**Eingabefelder:** Sterne Bewertung (1–5), die erst sichtbar/aktiv wird, nachdem "Als besucht markieren" angetippt wurde, optionales kurzes Kommentarfeld zur Bewertung (kann übersprungen werden).
+
+**Schaltflächen/Aktionen:** "Favorit hinzufügen/entfernen" (Herz-Symbol), "Als besucht markieren" (öffnet die Bewertungs-Eingabe), "Bewertung speichern", "Zurück zur Liste".
+
+**Navigation:** <- zurück zur Empfehlungsliste bzw. Favoritenliste, je nachdem von wo aus die Ansicht geöffnet wurde.
+
+**Ladezustand:** kurzer Ladehinweis, falls zusätzliche Detaildaten (z.B. genaue Öffnungszeiten) separat nachgeladen werden müssen.
+
+**Fehlerzustand:** Detaildaten konnten nicht geladen werden -> Hinweistext mit "Erneut versuchen, Bewertung konnte nicht gespeichert werden (z.B. kein Netz) -> Hinweistext "Bewertung konnte nicht gespeichert werden, bitte erneut versuchen".
+
+**Leere Ergebnisse:** Nicht zutreffend
+
+```text
+---------------------------------------
+|  Beispiel Restaurant                |
+|  Italienisch  €€  800m              |
+|  ★★★★  (124 Bewertungen)          |
+|  Babastraße 12, Frankfurt           |
+|  geöffnet bis 22:00                 |
+|  [ kleine Karte / Standort-Pin ]    |
+|                                     |
+|  [ Als besucht markieren ]          |
+|   -> Bewertung: ★ ★ ★ ★ ★        |
+|      Kommentar (optional): [....] m |
+|      [ Bewertung speichern ]        |
+|                                     |
+|          [ Zurück zur Liste ]       |
+---------------------------------------
 ```
