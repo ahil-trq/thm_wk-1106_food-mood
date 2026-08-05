@@ -197,3 +197,34 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 |          [ Zurück zur Liste ]       |
 ---------------------------------------
 ```
+
+## 7. Favoriten
+
+**Zweck:** Übersicht aller vom Nutzer favorisierten Restaurants. Ermöglicht schnellen Zugriff auf gemerkte Orte sowie deren Verwaltung (entfernen, als besucht markieren/bewerten).
+
+**Sichtbare Informationen:** Liste favorisierter Restaurants mit Name, Küche, Entfernung, Preisklasse, Bewertung, Öffnungsstatus. Falls bereits besucht, zusätzlich ein "Schon besucht" Badge mit der eigenen abgegebenen Bewertung.
+
+**Eingabefelder:** Keine.
+
+**Schaltflächen/Aktionen:** Eintrag antippen (öffnet Restaurantdetails), Favoriten Symbol antippen (entfernt direkt aus der Liste, ohne Detailseite zu öffnen), "Als besucht markieren" als Kurzweg direkt aus der Liste.
+
+**Navigation:** -> Restaurantdetails (bei Auswahl eines Eintrags). Die Favoritenliste ist über ein permanentes Element (z.B. Symbol/Tab) von mehreren Ansichten aus erreichbar, nicht nur Teil des linearen Hauptablaufs.
+
+**Ladezustand:** Kurzer Ladehinweis beim Öffnen.
+
+**Fehlerzustand:** Favoriten konnten nicht geladen werden (z.B. lokaler Speicherfehler) -> Hinweistext "Favoriten konnten nicht geladen werden".
+
+**Leere Ergebnisse:** Keine Favoriten vorhanden -> Hinweistext "Du hast noch keine Favoriten gespeichert." mit Link/Button "Zur Empfehlungssuche".
+
+```text
+----------------------------------------
+|  Deine Favoriten                     |
+|                                      |
+|  Beispiel Restaurant      ★★★★     |
+|  Italienisch · 800 m · besucht ★★★★|
+|  -----------------------------       |
+|  Beispiel Restaurant 2    ★★★★★   |
+|  Asiatisch · 1,2 km · noch nicht     |
+|     besucht                          |
+----------------------------------------
+```
