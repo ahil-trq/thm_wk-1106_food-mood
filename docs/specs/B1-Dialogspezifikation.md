@@ -125,3 +125,39 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 | [ Zurücksetzen ]   [ Anzeigen ]  |
 ------------------------------------
 ```
+
+## 5. Empfehlungsliste
+
+**Zweck:** Zeigt die anhand von Stimmung, Anlass und Filtern berechneten Restaurant Empfehlungen an. Ausgangspunkt, um ein Restaurant genauer anzusehen oder direkt zu favorisieren.
+
+**Sichtbare Informationen:** Liste von Restaurants, je Eintrag: Name, Küche, Entfernung, Preisklasse, Bewertung (Sterne), Öffnungsstatus (geöffnet/geschlossen), Favoriten-Symbol falls zutreffend ein kleines "Schon besucht" Badge.
+
+**Eingabefelder:** keine. Optional eine Sortier Auswahl (z.B. nach Entfernung, Bewertung oder Empfehlungsgrad).
+
+**Schaltflächen/Aktionen:** Restaurant antippen (öffnet Details), Favoriten Symbol direkt in der Liste antippen (Favorit setzen/entfernen, ohne Detailseite zu öffnen), "Filter anpassen" (zurück zur Filterauswahl).
+
+**Navigation:** Restaurantdetails (bei Auswahl eines Eintrags); ← zurück zur Filterauswahl möglich.
+
+**Ladezustand:** Ladeanzeige "Empfehlungen werden berechnet …", während die Restaurantdaten von der externen API geholt und nach Stimmung/Filtern bewertet werden.
+
+**Fehlerzustand:** externe API nicht erreichbar oder Zeitüberschreitung → Hinweistext "Empfehlungen konnten nicht geladen werden" mit Button "Erneut versuchen".
+
+**Leere Ergebnisse:** keine passenden Restaurants gefunden (z.B. Filter zu eng) → Hinweistext "Keine passenden Restaurants gefunden. Passe deine Filter an." mit Button "Filter anpassen".
+
+```text
+--------------------------------------
+|  Empfehlungen für dich             |
+|                                    |
+|  Trattoria Bella      ★★★★  ♥    |
+|  Italienisch · 800 m · €€          |
+|  geöffnet                          |
+|  -----------------------------     |
+|  Sushi Zen            ★★★★★ ♡   |
+|  Asiatisch · 1,2 km · €€€          |
+|  geöffnet                          |
+|  -----------------------------     |
+|  ...                               |
+|                                    |
+|         [ Filter anpassen ]        |
+--------------------------------------
+```
