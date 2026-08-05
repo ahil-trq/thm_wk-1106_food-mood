@@ -44,7 +44,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 
 **Fehlerzustand:** Standortfreigabe abgelehnt. Hinweistext ("Standort konnte nicht ermittelt werden"). Automatische Weiterleitung zur manuellen Eingabe.
 
-**Leere Ergebnisse:** nicht zutreffend
+**Leere Ergebnisse:** Nicht zutreffend
 
 ```text
 ----------------------------------
@@ -56,5 +56,38 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 |   [ z.B. Frankfurt, Zeil 1 ]   |
 |                                |
 |            [ Weiter ]          |
+----------------------------------
+```
+
+## 3. Stimmung und Anlass
+
+**Zweck:** Der Nutzer wählt seine Stimmung oder seinen Anlass aus, welche später in die Filterung der Empfehlungen einfließt.
+
+**Sichtbare Informationen:** Auswahlmöglichkeiten für Stimmung (gemütlich, romantisch, schnell, gesellig. (eventuelle andere Stimmungen erfolgen)). Anlass (Date, Familie, Freunde, Mittagspause. (eventuelle andere Anlässe erfolgen)).
+
+**Eingabefelder:** Reine Auswahl per Klick (Eine Stimmung und einen Anlass).
+
+**Schaltflächen/Aktionen:** Stimmungskacheln (auswählbar), Anlasskacheln (auswählbar). "Weiter" nur auswählbar, wenn beide Kacheln aktiv sind. 
+
+**Navigation:** Filterauswahl.
+
+**Ladezustand:** Kein Ladezustand, nur die Auswahl erfolgt.
+
+**Fehlerzustand:** Klick auf "Weiter" ohne vollständige Auswahl. Hinweistext (Bitte wähle Stimmung und Anlass aus).
+
+**Leere Ergebnisse:** Nicht zutreffend.
+
+```text
+----------------------------------
+|    Wie ist deine Stimmung?     |
+|                                |
+|  ( gemütlich ) ( romantisch )  |
+|  (  schnell  ) (  gesellig  )  |
+|                                |
+|   Für welchen Anlass?          |
+|  (   Date  ) (    Familie   )  |
+|  ( Freunde ) ( Mittagspause )  |
+|                                |
+|          [ Weiter ]            |
 ----------------------------------
 ```
