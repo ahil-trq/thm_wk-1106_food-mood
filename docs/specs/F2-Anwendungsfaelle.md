@@ -410,7 +410,7 @@ Favoriten werden angezeigt.
 Alle besuchten Restaurants anzeigen.
 
 ## Akteur
-Benutzer
+ Benutzer
 
 ## Auslöser
 Bereich „Besucht" öffnen.
