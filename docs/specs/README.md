@@ -72,7 +72,7 @@ Dieses Dokument ist der Orchestrator der Spezifikation für Food-Mood. Es folgt 
 
 | Baustein | Titel | Status | Datei |
 |---------|-------|--------|------|
-| S1 | Nachbarsysteme | 🛠 | — |
+| S1 | Nachbarsysteme | ✅ | [`S1-Nachbarsysteme-und-APIs.md`](S1-Nachbarsysteme-und-APIs.md) |
 | S2 | Datenmigration | ⛔ | — |
 | S3 | Inbetriebnahme / Rollout | ✅ | [`S3-Inbetriebnahme.md`](S3-Inbetriebnahme.md) |
 
@@ -108,4 +108,4 @@ Food-Mood ist ein Greenfield-Projekt ohne Vorgängersystem und ohne vorhandene A
 ---
 
 ## Anmerkungen
-- Ein eigener `S1`-Baustein wird derzeit noch nicht als separates Spezifikationsdokument geführt. Nachbarsysteme werden im Architekturüberblick und in den Fachdokumenten beschrieben.
+- `S1` ist jetzt als separates Spezifikationsdokument vorhanden und beschreibt die externen Dienste sowie deren fachliche Erwartungen. Nachbarsysteme sind damit konsistent dokumentiert.

@@ -21,7 +21,7 @@ Die Konfiguration erfolgt über Umgebungsvariablen in einer lokalen env-Datei, d
 - `DATABASE_URL` – Verbindungsangabe zur Datenbank (siehe Datenbankkonfiguration).
 - `PORT` – Port, unter dem die Anwendung lokal erreichbar ist (optional, mit Standardwert)
 
-Eine Beispieldatei env.example mit Platzhalterwerten liegt im Repository, damit neue Teammitglieder wissen, welche Variablen gesetzt werden müssen, ohne echte Werte einzusehen.
+Eine Beispieldatei `env.example` mit Platzhalterwerten sollte im Repository angelegt werden, damit neue Teammitglieder wissen, welche Variablen gesetzt werden müssen, ohne echte Werte einzusehen. Falls die Datei nicht bereitgestellt wird, sollte dieser Hinweis entfernt oder angepasst werden.
 
 ## Datenbankkonfiguration
 

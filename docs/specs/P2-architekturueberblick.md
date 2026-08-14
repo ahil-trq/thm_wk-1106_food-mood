@@ -120,8 +120,8 @@ Food-Mood übernimmt keine Garantie für Vollständigkeit oder Aktualität exter
 
 ## P2.9 Weiterführende Dokumente
 
-- [D1 – Fachliches Datenmodell](D1-Fachliches-Datenmodell.md)
-- [D2 – Datentypenverzeichnis](D2-Datentypenverzeichnis.md)
+- [D1 – Fachliches Datenmodell](D1-Datenmodell.md)
+- [D2 – Datentypenverzeichnis](D2-Datentypen.md)
 - [S1 – Nachbarsysteme und externe APIs](S1-Nachbarsysteme-und-APIs.md)
 - F1 – Geschäftsprozesse
 - F2 – Anwendungsfälle
