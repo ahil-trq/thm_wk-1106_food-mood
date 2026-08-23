@@ -88,8 +88,9 @@ flowchart LR
 
     UC12 --> UC08
     UC13 --> UC08
-
-    UC06 -. Fehler .-> UC14
+ 
+    
+    UC06 -.-> UC14
     ```
 
 # Ausführliche Use Cases
