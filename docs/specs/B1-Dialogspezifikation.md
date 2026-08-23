@@ -1,6 +1,18 @@
 
 # B1 - Dialogspezifikation
 Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtbare Informationen, Eingabefelder, Aktionen, Navigation sowie Lade- Fehler- und Leerzustände. Die Skizzen sind bewusst einfach gehalten.
+
+| ID | Maske | Zweck | Use Cases |
+|---|---|---|---|
+| M-00 | Einstieg | Nutzer erstellen oder laden | UC-00, UC-01 |
+| M-01 | Start | Einstieg in Restaurantempfehlung | UC-03 |
+| M-02 | Stimmung/Anlass | Präferenzen auswählen | UC-04 |
+| M-03 | Filter | Suche eingrenzen | UC-05 |
+| M-04 | Ergebnisse | Empfehlungen anzeigen | UC-06, UC-07 |
+| M-05 | Restaurantdetails | Restaurant betrachten | UC-08 |
+| M-06 | Favoriten | Favoriten anzeigen | UC-12 |
+| M-07 | Besucht | Besuche und Bewertungen | UC-10, UC-11 |
+
 ## 1. Startseite
 
 **Zweck:** Hier beginnt der Einstiegspunkt der App. Der Benutzer kann mit der Emfehlungssuche beginnen.
