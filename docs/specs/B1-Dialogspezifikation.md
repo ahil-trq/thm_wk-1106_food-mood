@@ -6,15 +6,34 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 
 | ID | Maske | Zweck | Use Cases |
 |---|---|---|---|
-| M-00 | Start | Einstieg in Restaurantempfehlung | UC-03 |
-| M-01 | Stimmung/Anlass | Präferenzen auswählen | UC-04 |
-| M-02 | Filter | Suche eingrenzen | UC-05 |
-| M-03 | Ergebnisse | Empfehlungen anzeigen | UC-06, UC-07 |
-| M-04 | Restaurantdetails | Restaurant betrachten | UC-08 |
-| M-05 | Favoriten | Favoriten anzeigen | UC-12 |
-| M-06 | Besucht | Besuche und Bewertungen | UC-10, UC-11 |
+| M-00 | Einstieg | Nutzer erstellen oder laden | UC-00, UC-01 |
+| M-01 | Start | Einstieg in Restaurantempfehlung | UC-03 |
+| M-02 | Stimmung/Anlass | Präferenzen auswählen | UC-04 |
+| M-03 | Filter | Suche eingrenzen | UC-05 |
+| M-04 | Ergebnisse | Empfehlungen anzeigen | UC-06, UC-07 |
+| M-05 | Restaurantdetails | Restaurant betrachten | UC-08 |
+| M-06 | Favoriten | Favoriten anzeigen | UC-12 |
+| M-07 | Besucht | Besuche und Bewertungen | UC-10, UC-11 |
 
-## M-00 Startseite
+## M-00 Einstieg
+
+**Zweck:** Ermöglicht dem Nutzer, ein neues Profil zu erstellen oder ein bestehendes Profil über seine UserID zu laden, damit Favoriten sowie besuchte/bewertete Restaurants geräteübergreifend wiedergefunden werden können.
+
+**Sichtbare Informationen:** Zwei Optionen zur Auswahl: "Neues Profil erstellen" oder "Vorhandenes Profil laden", jeweils mit passendem Eingabefeld.
+
+**Eingabefelder:** Freitextfeld "Name" (nur für ein neues Profil. Dient nur der Wiedererkennung, keine Verifizierung/kein Passwort). Freitextfeld "UserID eingeben" (für ein bestehendes Profil).
+
+**Schaltflächen/Aktionen:** "Neues Profil erstellen" (generiert automatisch eine neue, eindeutige UserID und speichert sie lokal auf dem Gerät), "Profil laden" (lädt ein bestehendes Profil anhand der eingegebenen UserID).
+
+**Navigation:** -> M-01 (Startseite), sobald ein Profil erstellt oder erfolgreich geladen wurde.
+
+**Ladezustand:** kurzer Ladehinweis, während das Profil erstellt bzw. geladen wird.
+
+**Fehlerzustand:** eingegebene UserID nicht gefunden oder ungültig -> Hinweistext "UserID nicht gefunden. Bitte prüfen oder neues Profil erstellen".
+
+**Leere Ergebnisse:** nicht zutreffend.
+
+## M-01 Startseite
 
 **Zweck:** Hier beginnt der Einstiegspunkt der App. Der Benutzer kann mit der Emfehlungssuche beginnen.
 
@@ -41,7 +60,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 -----------------------------------------------------
 ```
 
-## M-01 Standortfreigabe
+## M-02 Standortfreigabe
 
 **Zweck:** Standort des Nutzers wird ermittelt, um passende Restaurants in der Nähe zu finden.
 
@@ -72,7 +91,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 ----------------------------------
 ```
 
-## M-02 Stimmung und Anlass
+## M-03 Stimmung und Anlass
 
 **Zweck:** Der Nutzer wählt seine Stimmung oder seinen Anlass aus, welche später in die Filterung der Empfehlungen einfließt.
 
@@ -105,7 +124,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 ----------------------------------
 ```
 
-## M-03 Filterauswahl
+## M-04 Filterauswahl
 
 **Zweck:** Nutzer grenzt die Restaurantsuche durch Filterkriterien ein, bevor die Empfehlungen berechnet werden.
 
@@ -139,7 +158,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 ------------------------------------
 ```
 
-## M-04 Empfehlungsliste
+## M-05 Empfehlungsliste
 
 **Zweck:** Zeigt die anhand von Stimmung, Anlass und Filtern berechneten Restaurant Empfehlungen an. Ausgangspunkt, um ein Restaurant genauer anzusehen oder direkt zu favorisieren.
 
@@ -175,7 +194,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 --------------------------------------
 ```
 
-## M-05 Restaurantsdetails
+## M-06 Restaurantsdetails
 
 **Zweck:**  Zeigt alle Details zu einem ausgewählten Restaurant und ermöglicht es, es zu favorisieren oder als besucht zu markieren und zu bewerten.
 
@@ -211,7 +230,7 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 ---------------------------------------
 ```
 
-## M-06 Favoriten
+## M-07 Favoriten
 
 **Zweck:** Übersicht aller vom Nutzer favorisierten Restaurants. Ermöglicht schnellen Zugriff auf gemerkte Orte sowie deren Verwaltung (entfernen, als besucht markieren/bewerten).
 
