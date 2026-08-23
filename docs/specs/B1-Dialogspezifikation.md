@@ -55,6 +55,15 @@ flowchart TD
 - **Fehlerzustände:** UserID nicht gefunden/ungültig -> Hinweistext "UserID nicht gefunden. Bitte prüfen oder neues Profil erstellen". Name leer gelassen -> Hinweistext "Bitte einen Namen eingeben".
 - **Zugehörige Use Cases:** UC-00.
 
+### Mockup M-00 – Einstieg/UserID
+
+![Mockup M-00 Einstieg](mockups/M-00-einstieg.png)
+
+- **Was sieht der Nutzer?** Eine kurze Begrüßung, ein Eingabefeld für den Namen sowie zwei Optionen: "Neue UserID erstellen" und "Bestehende UserID eingeben".
+- **Was kann er tun?** Namen eingeben und eine neue UserID erzeugen lassen, oder eine vorhandene UserID eingeben, um sein bestehendes Profil zu laden.
+- **Welche Daten sind dynamisch?** Die generierte UserID (wird erst nach Klick erzeugt), Fehlermeldung bei ungültiger/unbekannter UserID.
+- **Welche Use Cases gehören dazu?** UC-00.
+
 ## M-01 Startseite
 
 - **ID:** M-01
@@ -69,14 +78,14 @@ flowchart TD
 - **Fehlerzustände:** keine.
 - **Zugehörige Use Cases:** reiner Einstieg, kein dedizierter Use Case.
 
-```Text
------------------------------------------------------
-|                    Food-Mood                      |
-|               Dein Mood, dein Biss                |
-|                                                   |
-|         [ Los geht's / Restaurant finden]         |
------------------------------------------------------
-```
+### Mockup M-01 – Start
+
+![Mockup M-01 Start](mockups/M-01-start.png)
+
+- **Was sieht der Nutzer?** App-Titel "Food-Mood", kurzer Slogan ("Dein Mood, dein Biss"), Begrüßung mit dem geladenen Namen, Button "Los geht's".
+- **Was kann er tun?** Auf "Los geht's" klicken, um mit der Standortfreigabe fortzufahren.
+- **Welche Daten sind dynamisch?** Der angezeigte Name des Nutzers (kommt aus M-00 Einstieg).
+- **Welche Use Cases gehören dazu?** reiner Einstiegspunkt in den Suchablauf, kein eigener Use Case.
 
 ## M-02 Standortfreigabe
 
@@ -92,18 +101,14 @@ flowchart TD
 - **Fehlerzustände:** Standortfreigabe abgelehnt oder Standortdienst nicht verfügbar -> Hinweistext, Weiterleitung zur manuellen Eingabe.
 - **Zugehörige Use Cases:** UC-01.
 
-```text
-----------------------------------
-|       Wo bist du gerade?       |
-|                                |
-|     [ Standort freigeben ]     |
-|                                |
-|   oder Ort manuell eingeben:   |
-|   [ z.B. Frankfurt, Zeil 1 ]   |
-|                                |
-|            [ Weiter ]          |
-----------------------------------
-```
+### Mockup M-02 – Standortfreigabe
+
+![Mockup M-02 Standortfreigabe](mockups/M-02-standortfreigabe.png)
+
+- **Was sieht der Nutzer?** Kurzen Hinweistext, warum der Standort benötigt wird, einen Button zur automatischen Freigabe sowie eine Alternative zur manuellen Eingabe.
+- **Was kann er tun?** Standort automatisch freigeben oder Ort/Adresse manuell eingeben und bestätigen.
+- **Welche Daten sind dynamisch?** Ladehinweis "Standort wird ermittelt …", Fehlermeldung bei abgelehnter Freigabe oder nicht verfügbarem Standortdienst, der eingegebene Ortstext.
+- **Welche Use Cases gehören dazu?** UC-01.
 
 ## M-03 Stimmung und Anlass
 
@@ -119,20 +124,14 @@ flowchart TD
 - **Fehlerzustände:** keine Auswahl getroffen und "Weiter" angetippt -> Hinweistext "Bitte wähle Stimmung und/oder Anlass aus".
 - **Zugehörige Use Cases:** UC-02, UC-03.
 
-```text
-----------------------------------
-|    Wie ist deine Stimmung?     |
-|                                |
-|  ( gemütlich ) ( romantisch )  |
-|  (  schnell  ) (  gesellig  )  |
-|                                |
-|   Für welchen Anlass?          |
-|  (   Date  ) (    Familie   )  |
-|  ( Freunde ) ( Mittagspause )  |
-|                                |
-|          [ Weiter ]            |
-----------------------------------
-```
+### Mockup M-03 – Stimmung und Anlass
+
+![Mockup M-03 Stimmung und Anlass](mockups/M-03-stimmung-anlass.png)
+
+- **Was sieht der Nutzer?** Anklickbare Kacheln für Stimmungen (gemütlich, romantisch, schnell, gesellig, neu, günstig) und für Anlässe (Date, Familie, Freunde, Mittagspause, Uni).
+- **Was kann er tun?** Eine oder mehrere Stimmungs-/Anlass-Kacheln auswählen und mit "Weiter" bestätigen.
+- **Welche Daten sind dynamisch?** Der optische Auswahlzustand der Kacheln (ausgewählt/nicht ausgewählt). Der "Weiter"-Button wird erst aktiv, sobald mindestens eine Auswahl getroffen wurde.
+- **Welche Use Cases gehören dazu?** UC-02, UC-03.
 
 ## M-04 Filterauswahl
 
@@ -148,21 +147,14 @@ flowchart TD
 - **Fehlerzustände:** nicht zutreffend.
 - **Zugehörige Use Cases:** UC-03.
 
-```text
-------------------------------------
-|            Filter                |
-|                                  |
-| Preis:      ( € )( €€ )( €€€ )   |
-| Entfernung: [ bis 5 km v ]       |
-| Küche:      ( Italienisch )      |
-|             ( Asiatisch )        |
-| Ernährung:  ( vegetarisch )      |
-| Bewertung:  [ ab ★★★ v ]        |
-| [ ] nur geöffnete Restaurants    |
-|                                  |
-| [ Zurücksetzen ]   [ Anzeigen ]  |
-------------------------------------
-```
+### Mockup M-04 – Filter
+
+![Mockup M-04 Filter](mockups/M-04-filter.png)
+
+- **Was sieht der Nutzer?** Filteroptionen für Preis, Entfernung, Küche, Ernährung, Mindestbewertung sowie einen Schalter "nur geöffnete Restaurants".
+- **Was kann er tun?** Filter setzen, zurücksetzen und die gefilterte Suche über "Anzeigen" starten.
+- **Welche Daten sind dynamisch?** Die aktuell gewählten Filterwerte, ob der "Anzeigen"-Button aktiv ist, hängt vom Auswahlstatus ab.
+- **Welche Use Cases gehören dazu?** UC-03.
 
 ## M-05 Empfehlungsliste
 
@@ -178,23 +170,14 @@ flowchart TD
 - **Fehlerzustände:** externe API nicht erreichbar -> Hinweis mit "Erneut versuchen". Keine passenden Restaurants gefunden -> Hinweis mit Verweis auf "Filter anpassen".
 - **Zugehörige Use Cases:** UC-04, UC-05, UC-08.
 
-```text
---------------------------------------
-|  Empfehlungen für dich             |
-|                                    |
-|  Trattoria Bella      ★★★★  ♥    |
-|  Italienisch · 800 m · €€          |
-|  geöffnet                          |
-|  -----------------------------     |
-|  Sushi Zen            ★★★★★ ♡   |
-|  Asiatisch · 1,2 km · €€€          |
-|  geöffnet                          |
-|  -----------------------------     |
-|  ...                               |
-|                                    |
-|         [ Filter anpassen ]        |
---------------------------------------
-```
+### Mockup M-05 – Ergebnisse (Empfehlungen)
+
+![Mockup M-05 Ergebnisse](mockups/M-05-empfehlungsliste.png)
+
+- **Was sieht der Nutzer?** Eine Liste berechneter Restaurant Empfehlungen mit Name, Küche, Entfernung, Preisklasse, Bewertung, Öffnungsstatus und Favoriten Symbol je Eintrag.
+- **Was kann er tun?** Einen Eintrag antippen (öffnet Restaurantdetails), direkt aus der Liste favorisieren, Filter erneut anpassen.
+- **Welche Daten sind dynamisch?** Die komplette Liste inkl. aller Restaurantdaten (kommt live von der API), Ladezustand während der Berechnung, Leerzustand bei keinen Treffern.
+- **Welche Use Cases gehören dazu?** UC-04, UC-05, UC-08.
 
 ## M-06 Restaurantsdetails
 
@@ -210,23 +193,23 @@ flowchart TD
 - **Fehlerzustände:** Detaildaten nicht ladbar -> Hinweis mit "Erneut versuchen". Bewertung nicht speicherbar (z.B. kein Netz) -> entsprechender Hinweis.
 - **Zugehörige Use Cases:** UC-06, UC-07, UC-09.
 
-```text
----------------------------------------
-|  Beispiel Restaurant                |
-|  Italienisch  €€  800m              |
-|  ★★★★  (124 Bewertungen)          |
-|  Babastraße 12, Frankfurt           |
-|  geöffnet bis 22:00                 |
-|  [ kleine Karte / Standort-Pin ]    |
-|                                     |
-|  [ Als besucht markieren ]          |
-|   -> Bewertung: ★ ★ ★ ★ ★        |
-|      Kommentar (optional): [....] m |
-|      [ Bewertung speichern ]        |
-|                                     |
-|          [ Zurück zur Liste ]       |
----------------------------------------
-```
+### Mockup M-06 – Restaurantdetails
+
+![Mockup M-06 Restaurantdetails](mockups/M-06-restaurantdetails.png)
+
+- **Was sieht der Nutzer?** Name, Adresse, Küche, Preisklasse, Entfernung, Öffnungsstatus, Durchschnittsbewertung und eine kleine Karte des Restaurants.
+- **Was kann er tun?** Favorit hinzufügen/entfernen, das Restaurant als besucht markieren, zurück zur Liste navigieren.
+- **Welche Daten sind dynamisch?** Alle Detaildaten des Restaurants (werden ggf. nachgeladen), aktueller Favoriten-Status, aktueller Öffnungsstatus.
+- **Welche Use Cases gehören dazu?** UC-06, UC-07.
+
+### Mockup Bewertung (Zustand innerhalb M-06)
+
+![Mockup Bewertung](mockups/M-06-bewertung.png)
+
+- **Was sieht der Nutzer?** Ein Bewertungsbereich mit Sterne-Auswahl (1–5) und optionalem Kommentarfeld, der erscheint, nachdem "Als besucht markieren" angeklickt wurde.
+- **Was kann er tun?** Eine Sternebewertung vergeben, optional einen Kommentar eingeben und die Bewertung speichern.
+- **Welche Daten sind dynamisch?** Die aktuell gewählte Sternezahl, der eingegebene Kommentar, Bestätigungs-/Fehlermeldung nach dem Speichern.
+- **Welche Use Cases gehören dazu?** UC-09.
 
 ## M-07 Favoriten
 
@@ -242,15 +225,11 @@ flowchart TD
 - **Fehlerzustände:** Favoriten nicht ladbar -> Hinweistext. Keine Favoriten vorhanden -> Hinweistext mit Link zur Empfehlungssuche.
 - **Zugehörige Use Cases:** UC-07, UC-09.
 
-```text
-----------------------------------------
-|  Deine Favoriten                     |
-|                                      |
-|  Beispiel Restaurant      ★★★★     |
-|  Italienisch · 800 m · besucht ★★★★|
-|  -----------------------------       |
-|  Beispiel Restaurant 2    ★★★★★   |
-|  Asiatisch · 1,2 km · noch nicht     |
-|     besucht                          |
-----------------------------------------
-```
+### Mockup M-07 – Favoriten/Besucht
+
+![Mockup M-07 Favoriten](mockups/M-07-favoriten.png)
+
+- **Was sieht der Nutzer?** Liste favorisierter Restaurants mit Name, Küche, Entfernung, Bewertung, Öffnungsstatus sowie einem "Schon besucht"-Badge, falls zutreffend.
+- **Was kann er tun?** Einen Eintrag öffnen (Restaurantdetails), einen Eintrag aus den Favoriten entfernen.
+- **Welche Daten sind dynamisch?** Die Favoritenliste selbst, der "Schon besucht"-Status je Eintrag, Leerzustand bei keinen Favoriten.
+- **Welche Use Cases gehören dazu?** UC-07, UC-09.
