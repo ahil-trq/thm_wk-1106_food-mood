@@ -15,6 +15,32 @@ Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtba
 | M-06 | Favoriten | Favoriten anzeigen | UC-12 |
 | M-07 | Besucht | Besuche und Bewertungen | UC-10, UC-11 |
 
+## Navigation
+
+```mermaid
+flowchart TD
+    EIN[Einstieg]
+    EIN -->|Name eingeben| NEU[neue UserID]
+    EIN -->|UserID eingeben| LAD[Nutzer laden]
+    NEU --> START[Start]
+    LAD --> START
+
+    START --> LOC[Standortfreigabe]
+    LOC --> MOOD["Stimmung / Anlass"]
+    MOOD --> FILT[Filter]
+    FILT --> LIST[Empfehlungen]
+    LIST --> DET[Restaurantdetails]
+
+    DET -->|Favorit| FAV[Favoriten]
+    DET -->|Besucht| BEW[Bewertung]
+    BEW --> DET
+    FAV --> DET
+    LIST -.Favorit direkt aus Liste.-> FAV
+
+    START -.jederzeit erreichbar.-> FAV
+    START -.jederzeit erreichbar.-> EIN
+```
+
 ## M-00 Einstieg
 
 **Zweck:** Ermöglicht dem Nutzer, ein neues Profil zu erstellen oder ein bestehendes Profil über seine UserID zu laden, damit Favoriten sowie besuchte/bewertete Restaurants geräteübergreifend wiedergefunden werden können.
