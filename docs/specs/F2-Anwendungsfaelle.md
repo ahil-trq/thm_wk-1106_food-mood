@@ -1,336 +1,358 @@
 # F2 – Anwendungsfälle
 
-## 1. Übersicht der Use Cases
+## Übersicht der Use Cases
 
 | ID | Use Case |
 |---|---|
-| [UC-00](#uc-00--nutzer-initialisieren) | Nutzer initialisieren |
-| [UC-01](#uc-01--bestehenden-nutzer-über-userid-laden) | Bestehenden Nutzer über UserID laden |
-| [UC-02](#uc-02--nutzer-wechseln) | Nutzer wechseln |
-| [UC-03](#uc-03--standort-bestimmen) | Standort bestimmen |
-| [UC-04](#uc-04--stimmung-undoder-anlass-auswählen) | Stimmung und/oder Anlass auswählen |
-| [UC-05](#uc-05--filter-setzen) | Filter setzen |
-| [UC-06](#uc-06--empfehlungen-erhalten) | Empfehlungen erhalten |
-| [UC-07](#uc-07--ergebnisse-anzeigen) | Ergebnisse anzeigen |
-| [UC-08](#uc-08--restaurantdetails-ansehen) | Restaurantdetails ansehen |
-| [UC-09](#uc-09--restaurant-favorisieren) | Restaurant favorisieren |
-| [UC-10](#uc-10--restaurant-als-besucht-markieren) | Restaurant als besucht markieren |
-| [UC-11](#uc-11--eigene-bewertung-abgeben) | Eigene Bewertung abgeben |
-| [UC-12](#uc-12--favoriten-anzeigen) | Favoriten anzeigen |
-| [UC-13](#uc-13--besuchte-restaurants-anzeigen) | Besuchte Restaurants anzeigen |
-| [UC-14](#uc-14--api-fehler-behandeln) | API-Fehler behandeln |
+| [UC-01](#uc-01) | Standort automatisch bestimmen |
+| [UC-02](#uc-02) | Standort manuell eingeben |
+| [UC-03](#uc-03) | Stimmung auswählen |
+| [UC-04](#uc-04) | Anlass auswählen |
+| [UC-05](#uc-05) | Filter setzen |
+| [UC-06](#uc-06) | Empfehlungen berechnen |
+| [UC-07](#uc-07) | Ergebnisse anzeigen |
+| [UC-08](#uc-08) | Restaurantdetails anzeigen |
+| [UC-09](#uc-09) | Restaurant favorisieren |
+| [UC-10](#uc-10) | Restaurant als besucht markieren |
+| [UC-11](#uc-11) | Eigene Bewertung abgeben |
+| [UC-12](#uc-12) | Favoriten anzeigen |
+| [UC-13](#uc-13) | Besuchte Restaurants anzeigen |
+| [UC-14](#uc-14) | API-Fehler behandeln |
 
 ---
 
-# 2. Ausführliche Use Cases
+## Use-Case-Diagramm – Gesamtübersicht
 
-## UC-00 – Nutzer initialisieren
+```mermaid
+flowchart LR
+    Nutzer[Nutzer]
+    UC01[UC-01 Standort automatisch bestimmen]
+    UC02[UC-02 Standort manuell eingeben]
+    UC03[UC-03 Stimmung auswählen]
+    UC04[UC-04 Anlass auswählen]
+    UC05[UC-05 Filter setzen]
+    UC06[UC-06 Empfehlungen berechnen]
+    UC07[UC-07 Ergebnisse anzeigen]
+    UC08[UC-08 Restaurantdetails anzeigen]
+    UC09[UC-09 Restaurant favorisieren]
+    UC10[UC-10 Restaurant als besucht markieren]
+    UC11[UC-11 Eigene Bewertung abgeben]
+    UC12[UC-12 Favoriten anzeigen]
+    UC13[UC-13 Besuchte Restaurants anzeigen]
+    UC14[UC-14 API-Fehler behandeln]
+    Nutzer --> UC01
+    Nutzer --> UC02
+    Nutzer --> UC03
+    Nutzer --> UC04
+    Nutzer --> UC05
+    Nutzer --> UC07
+    Nutzer --> UC08
+    Nutzer --> UC09
+    Nutzer --> UC10
+    Nutzer --> UC11
+    Nutzer --> UC12
+    Nutzer --> UC13
+    UC01 --> UC06
+    UC02 --> UC06
+    UC03 --> UC06
+    UC04 --> UC06
+    UC05 --> UC06
+    UC06 --> UC07
+    UC07 --> UC08
+    UC08 --> UC09
+    UC08 --> UC10
+    UC10 --> UC11
+    UC12 --> UC08
+    UC13 --> UC08
+    UC06 -.-> UC14
+```
+
+---
+
+# Ausführliche Use Cases (Einheitliches Template)
+
+## UC-01
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-00 |
-| **Name** | Nutzer initialisieren |
-| **Akteur** | Nutzer |
-| **Ziel** | Einen neuen Nutzer für die Nutzung von Food-Mood initialisieren. |
-| **Vorbedingungen** | Die Food-Mood-Anwendung ist gestartet. Es existiert noch kein aktiver Nutzer. |
-| **Auslöser** | Der Nutzer startet die Anwendung zum ersten Mal. |
-| **Hauptszenario** | 1. Der Nutzer gibt einen Namen ein.<br>2. Food-Mood erstellt einen Nutzer.<br>3. Food-Mood erzeugt eine eindeutige UserID.<br>4. Die UserID wird dem Nutzer angezeigt.<br>5. Food-Mood startet eine Sitzung für den Nutzer. |
-| **Alternativen** | Der Nutzer kann die Initialisierung abbrechen und die Anwendung verlassen. |
-| **Fehlerfälle** | Der Nutzer gibt keinen gültigen Namen ein. Die Initialisierung wird abgebrochen und eine Fehlermeldung angezeigt. |
-| **Ergebnis** | Ein Nutzer wurde erstellt und besitzt eine eindeutige UserID. |
-| **Akzeptanzkriterien** | Eine UserID wird eindeutig erzeugt und dem Nutzer angezeigt. Eine Sitzung wird gestartet. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-01 |
+| Name | Standort automatisch bestimmen |
+| Akteur | Nutzer |
+| Ziel | Den aktuellen Standort des Benutzers automatisch ermitteln, um ihn für die Restaurantsuche zu verwenden. |
+| Vorbedingungen | Die Anwendung ist geöffnet. Das Gerät unterstützt die Standortbestimmung. Der Benutzer erteilt die erforderliche Standortfreigabe. |
+| Auslöser | Der Benutzer startet eine Restaurantsuche und erlaubt die Standortbestimmung. |
+| Hauptszenario | 1. Der Benutzer startet die Restaurantsuche.<br>2. Food-Mood fragt nach der Standortfreigabe.<br>3. Der Benutzer erteilt die Freigabe.<br>4. Food-Mood ermittelt den aktuellen Standort.<br>5. Der Standort wird für die weitere Restaurantsuche verwendet. |
+| Alternativen | Der Benutzer verweigert die Standortfreigabe → Food-Mood bietet die manuelle Eingabe eines Standorts an (siehe UC-02). |
+| Fehlerfälle | Der Standort kann technisch nicht ermittelt werden. Die Standortdaten sind nicht verfügbar. |
+| Ergebnis | Ein gültiger Standort steht für die Restaurantsuche zur Verfügung. |
+| Akzeptanzkriterien | Der Benutzer kann die Standortfreigabe erteilen. Bei erfolgreicher Freigabe wird der aktuelle Standort ermittelt. Bei fehlender Standortfreigabe kann ein Standort manuell eingegeben werden. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-01 – Bestehenden Nutzer über UserID laden
+## UC-02
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-01 |
-| **Name** | Bestehenden Nutzer über UserID laden |
-| **Akteur** | Nutzer |
-| **Ziel** | Einen bereits vorhandenen Nutzer anhand seiner UserID laden. |
-| **Vorbedingungen** | Der Nutzer besitzt eine gültige UserID. |
-| **Auslöser** | Der Nutzer gibt seine UserID ein. |
-| **Hauptszenario** | 1. Der Nutzer gibt die UserID ein.<br>2. Food-Mood sucht den Nutzer.<br>3. Der vorhandene Nutzer wird geladen.<br>4. Vorhandene Favoriten, Besuche und Bewertungen werden geladen. |
-| **Alternativen** | Der Nutzer kann zur Nutzerinitialisierung zurückkehren. |
-| **Fehlerfälle** | Die UserID existiert nicht oder ist ungültig. Food-Mood zeigt eine verständliche Fehlermeldung an. |
-| **Ergebnis** | Der vorhandene Nutzer und seine gespeicherten Daten sind geladen. |
-| **Akzeptanzkriterien** | Eine gültige UserID lädt den zugehörigen Nutzer. Favoriten, Besuche und Bewertungen werden geladen. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-02 |
+| Name | Standort manuell eingeben |
+| Akteur | Nutzer |
+| Ziel | Einen Standort manuell festlegen, wenn keine automatische Standortbestimmung verwendet werden kann. |
+| Vorbedingungen | Die Anwendung ist geöffnet. Die manuelle Standorteingabe ist verfügbar. |
+| Auslöser | Der Benutzer entscheidet sich für die manuelle Standortangabe. |
+| Hauptszenario | 1. Der Benutzer öffnet die manuelle Standorteingabe.<br>2. Der Benutzer gibt einen Ort oder eine Adresse ein.<br>3. Food-Mood prüft die Eingabe.<br>4. Der Standort wird übernommen.<br>5. Der Standort wird für die Restaurantsuche verwendet. |
+| Alternativen | Der Benutzer ändert seine Eingabe und gibt einen anderen Standort ein. |
+| Fehlerfälle | Der eingegebene Standort kann nicht erkannt werden. Die Eingabe ist leer oder ungültig. |
+| Ergebnis | Ein gültiger manueller Standort steht für die Restaurantsuche zur Verfügung. |
+| Akzeptanzkriterien | Ein Standort kann manuell eingegeben werden. Ungültige Eingaben werden erkannt. Ein gültiger Standort kann für die Suche verwendet werden. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-02 – Nutzer wechseln
+## UC-03
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-02 |
-| **Name** | Nutzer wechseln |
-| **Akteur** | Nutzer |
-| **Ziel** | Den aktuell aktiven Nutzer wechseln. |
-| **Vorbedingungen** | Food-Mood läuft und ein Nutzer ist aktiv. |
-| **Auslöser** | Der Nutzer wählt die Funktion zum Wechseln des Nutzers. |
-| **Hauptszenario** | 1. Der Nutzer wählt „Nutzer wechseln“.<br>2. Die aktuelle Sitzung wird beendet.<br>3. Der Nutzer gibt eine UserID ein oder initialisiert einen neuen Nutzer.<br>4. Food-Mood lädt oder erstellt den entsprechenden Nutzer.<br>5. Eine neue Sitzung wird gestartet. |
-| **Alternativen** | Der Nutzer kann den Vorgang abbrechen und mit dem aktuellen Nutzer fortfahren. |
-| **Fehlerfälle** | Die eingegebene UserID ist ungültig oder nicht vorhanden. |
-| **Ergebnis** | Der gewünschte Nutzer ist aktiv. |
-| **Akzeptanzkriterien** | Der Nutzer kann die aktive Sitzung wechseln. Die Daten des vorherigen Nutzers werden nicht mit den Daten des neuen Nutzers vermischt. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-03 |
+| Name | Stimmung auswählen |
+| Akteur | Nutzer |
+| Ziel | Die gewünschte Stimmung für die Restaurantempfehlung festlegen. |
+| Vorbedingungen | Die Restaurantsuche wurde gestartet. Die Stimmungsauswahl ist verfügbar. |
+| Auslöser | Der Benutzer möchte seine gewünschte Stimmung angeben. |
+| Hauptszenario | 1. Food-Mood zeigt verfügbare Stimmungen an.<br>2. Der Benutzer wählt eine Stimmung aus.<br>3. Food-Mood übernimmt die Auswahl.<br>4. Die ausgewählte Stimmung wird für die Empfehlung berücksichtigt. |
+| Alternativen | Der Benutzer ändert die ausgewählte Stimmung. |
+| Fehlerfälle | Es kann keine gültige Stimmung ausgewählt werden. |
+| Ergebnis | Eine Stimmung wurde für die Restaurantsuche festgelegt. |
+| Akzeptanzkriterien | Verfügbare Stimmungen werden angezeigt. Der Benutzer kann eine Stimmung auswählen. Die Auswahl wird für die Empfehlung berücksichtigt. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-03 – Standort bestimmen
+## UC-04
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-03 |
-| **Name** | Standort bestimmen |
-| **Akteur** | Nutzer |
-| **Ziel** | Einen Standort für die Restaurantempfehlung festlegen. |
-| **Vorbedingungen** | Die Anwendung ist gestartet. |
-| **Auslöser** | Der Nutzer startet eine Restaurantsuche. |
-| **Hauptszenario** | 1. Food-Mood fragt nach der Standortfreigabe.<br>2. Der Nutzer erteilt die Freigabe.<br>3. Food-Mood bestimmt den aktuellen Standort.<br>4. Der Standort wird für die Suche verwendet. |
-| **Alternativen** | Der Nutzer verweigert die Standortfreigabe und gibt einen Standort manuell ein. |
-| **Fehlerfälle** | Der Standort kann nicht bestimmt werden. Food-Mood fordert eine manuelle Eingabe an. |
-| **Ergebnis** | Ein gültiger Standort steht für die Restaurantsuche zur Verfügung. |
-| **Akzeptanzkriterien** | Die Suche funktioniert mit automatisch bestimmtem Standort. Die Suche funktioniert auch ohne Standortfreigabe über eine manuelle Eingabe. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-04 |
+| Name | Anlass auswählen |
+| Akteur | Nutzer |
+| Ziel | Den Anlass für den Restaurantbesuch festlegen. |
+| Vorbedingungen | Die Restaurantsuche wurde gestartet. Die Anlassauswahl ist verfügbar. |
+| Auslöser | Der Benutzer möchte einen Anlass angeben. |
+| Hauptszenario | 1. Food-Mood zeigt verfügbare Anlässe an.<br>2. Der Benutzer wählt einen Anlass aus.<br>3. Food-Mood übernimmt die Auswahl.<br>4. Der Anlass wird für die Empfehlung berücksichtigt. |
+| Alternativen | Der Benutzer ändert den ausgewählten Anlass. Der Benutzer verwendet keinen bestimmten Anlass. |
+| Fehlerfälle | Es kann kein gültiger Anlass ausgewählt werden. |
+| Ergebnis | Der gewünschte Anlass steht für die Empfehlungsermittlung zur Verfügung. |
+| Akzeptanzkriterien | Verfügbare Anlässe werden angezeigt. Ein Anlass kann ausgewählt werden. Die Auswahl wird für die Empfehlung berücksichtigt. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-04 – Stimmung und/oder Anlass auswählen
+## UC-05
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-04 |
-| **Name** | Stimmung und/oder Anlass auswählen |
-| **Akteur** | Nutzer |
-| **Ziel** | Die persönlichen Wünsche für die Restaurantempfehlung festlegen. |
-| **Vorbedingungen** | Ein Standort wurde bestimmt. |
-| **Auslöser** | Der Nutzer öffnet die Auswahl für Stimmung und Anlass. |
-| **Hauptszenario** | 1. Der Nutzer wählt eine Stimmung aus.<br>2. Der Nutzer wählt optional einen Anlass aus.<br>3. Food-Mood übernimmt die Auswahl für die Empfehlung. |
-| **Alternativen** | Der Nutzer wählt nur eine Stimmung oder nur einen Anlass aus. |
-| **Fehlerfälle** | Es wurde keine gültige Auswahl getroffen. Food-Mood fordert eine gültige Auswahl an. |
-| **Ergebnis** | Stimmung und/oder Anlass stehen für die Empfehlung zur Verfügung. |
-| **Akzeptanzkriterien** | Eine gültige Stimmung kann ausgewählt werden. Ein Anlass kann ausgewählt werden. Die Auswahl wird für die Empfehlung verwendet. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-05 |
+| Name | Filter setzen |
+| Akteur | Nutzer |
+| Ziel | Die Restaurantsuche durch zusätzliche Kriterien einschränken. |
+| Vorbedingungen | Ein gültiger Standort ist vorhanden. Die Filterschnittstelle ist verfügbar. |
+| Auslöser | Der Benutzer möchte die Suchergebnisse einschränken. |
+| Hauptszenario | 1. Food-Mood zeigt verfügbare Filter an.<br>2. Der Benutzer wählt gewünschte Filter aus.<br>3. Food-Mood übernimmt die Filter.<br>4. Die Filter werden bei der Empfehlungsermittlung berücksichtigt. |
+| Alternativen | Der Benutzer entfernt einen gesetzten Filter. Der Benutzer verwendet keine zusätzlichen Filter. |
+| Fehlerfälle | Eine Filterkombination ist ungültig oder liefert keine Ergebnisse. |
+| Ergebnis | Die gewünschten Suchfilter sind für die Restaurantsuche festgelegt. |
+| Akzeptanzkriterien | Verfügbare Filter werden angezeigt. Filter können gesetzt und entfernt werden. Die gesetzten Filter beeinflussen die Ergebnisse. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-05 – Filter setzen
+## UC-06
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-05 |
-| **Name** | Filter setzen |
-| **Akteur** | Nutzer |
-| **Ziel** | Die Restaurantauswahl anhand zusätzlicher Kriterien einschränken. |
-| **Vorbedingungen** | Ein Standort wurde bestimmt. |
-| **Auslöser** | Der Nutzer öffnet die Filterauswahl. |
-| **Hauptszenario** | 1. Der Nutzer öffnet die Filter.<br>2. Der Nutzer wählt gewünschte Kriterien aus.<br>3. Food-Mood übernimmt die Filter.<br>4. Die Filter werden bei der Empfehlung berücksichtigt. |
-| **Alternativen** | Der Nutzer setzt keine zusätzlichen Filter. |
-| **Fehlerfälle** | Eine Filterkombination liefert keine Ergebnisse. Food-Mood zeigt eine entsprechende Meldung an. |
-| **Ergebnis** | Die gewünschten Filter sind für die Restaurantsuche gesetzt. |
-| **Akzeptanzkriterien** | Filter können ausgewählt und entfernt werden. Die gesetzten Filter beeinflussen die Ergebnisse. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-06 |
+| Name | Empfehlungen berechnen |
+| Akteur | Food-Mood-Anwendung |
+| Ziel | Auf Grundlage der verfügbaren Standort-, Stimmungs-, Anlass- und Filterdaten passende Restaurants ermitteln. |
+| Vorbedingungen | Ein gültiger Standort ist vorhanden. Die gewünschten Suchkriterien wurden übernommen. |
+| Auslöser | Der Benutzer startet die Suche nach Restaurantempfehlungen. |
+| Hauptszenario | 1. Food-Mood sammelt die vorhandenen Suchkriterien.<br>2. Food-Mood fordert passende Restaurantdaten an.<br>3. Die erhaltenen Restaurants werden geprüft.<br>4. Die Restaurants werden anhand der Suchkriterien bewertet.<br>5. Die Ergebnisse werden sortiert.<br>6. Die Empfehlungsliste wird erstellt. |
+| Alternativen | Wenn keine zusätzlichen Filter gesetzt wurden, erfolgt die Berechnung nur anhand der verfügbaren Kriterien. |
+| Fehlerfälle | Der externe Dienst liefert keine Daten. Es können keine passenden Restaurants ermittelt werden. → siehe UC-14. |
+| Ergebnis | Eine sortierte Liste von Restaurantempfehlungen wurde erstellt. |
+| Akzeptanzkriterien | Die vorhandenen Suchkriterien werden berücksichtigt. Restaurantdaten werden verarbeitet. Die Ergebnisse werden bewertet und sortiert. Eine Empfehlungsliste wird erstellt. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-06 – Empfehlungen erhalten
+## UC-07
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-06 |
-| **Name** | Empfehlungen erhalten |
-| **Akteur** | Nutzer |
-| **Ziel** | Passende Restaurants anhand der angegebenen Kriterien erhalten. |
-| **Vorbedingungen** | Standort sowie gegebenenfalls Stimmung, Anlass und Filter sind vorhanden. |
-| **Auslöser** | Der Nutzer startet die Suche nach Empfehlungen. |
-| **Hauptszenario** | 1. Food-Mood sammelt die Suchkriterien.<br>2. Food-Mood ruft verfügbare Restaurantdaten ab.<br>3. Die Restaurants werden anhand der Kriterien bewertet.<br>4. Die Ergebnisse werden sortiert.<br>5. Food-Mood stellt die Empfehlungen bereit. |
-| **Alternativen** | Wenn keine zusätzlichen Kriterien angegeben wurden, erfolgt die Empfehlung anhand des Standorts. |
-| **Fehlerfälle** | Die externe API ist nicht erreichbar oder liefert keine gültigen Daten. Siehe UC-14. |
-| **Ergebnis** | Eine Liste geeigneter Restaurantempfehlungen wurde erstellt. |
-| **Akzeptanzkriterien** | Die Empfehlungen berücksichtigen Standort und gesetzte Kriterien. Die Ergebnisse werden nachvollziehbar sortiert. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-07 |
+| Name | Ergebnisse anzeigen |
+| Akteur | Nutzer |
+| Ziel | Die ermittelten Restaurantempfehlungen übersichtlich anzeigen. |
+| Vorbedingungen | Empfehlungen wurden berechnet. |
+| Auslöser | Eine Empfehlungsliste wurde erfolgreich erstellt. |
+| Hauptszenario | 1. Food-Mood erhält die berechnete Empfehlungsliste.<br>2. Die Restaurants werden in einer Liste angezeigt.<br>3. Relevante Informationen werden dargestellt.<br>4. Der Benutzer kann ein Restaurant auswählen. |
+| Alternativen | Der Benutzer startet eine neue Suche mit anderen Kriterien. |
+| Fehlerfälle | Es wurden keine Restaurants gefunden. Die Ergebnisse können nicht geladen werden. |
+| Ergebnis | Der Benutzer kann die verfügbaren Empfehlungen ansehen. |
+| Akzeptanzkriterien | Die Ergebnisse werden übersichtlich angezeigt. Relevante Restaurantinformationen sind sichtbar. Ein Restaurant kann ausgewählt werden. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-07 – Ergebnisse anzeigen
+## UC-08
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-07 |
-| **Name** | Ergebnisse anzeigen |
-| **Akteur** | Nutzer |
-| **Ziel** | Die berechneten Restaurantempfehlungen übersichtlich anzeigen. |
-| **Vorbedingungen** | Empfehlungen wurden erfolgreich berechnet. |
-| **Auslöser** | Food-Mood stellt die Ergebnisse bereit. |
-| **Hauptszenario** | 1. Food-Mood zeigt die Restaurantliste an.<br>2. Der Nutzer sieht relevante Informationen zu den Restaurants.<br>3. Der Nutzer kann ein Restaurant auswählen. |
-| **Alternativen** | Der Nutzer kann die Suche mit anderen Kriterien wiederholen. |
-| **Fehlerfälle** | Es wurden keine passenden Restaurants gefunden. Food-Mood zeigt eine entsprechende Meldung an. |
-| **Ergebnis** | Der Nutzer erhält eine übersichtliche Liste von Restaurants. |
-| **Akzeptanzkriterien** | Die Ergebnisse werden übersichtlich angezeigt. Der Nutzer kann ein Restaurant auswählen. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-08 |
+| Name | Restaurantdetails anzeigen |
+| Akteur | Nutzer |
+| Ziel | Weitere Informationen zu einem ausgewählten Restaurant anzeigen. |
+| Vorbedingungen | Eine Restaurantempfehlung ist vorhanden. |
+| Auslöser | Der Benutzer wählt ein Restaurant aus der Empfehlungsliste aus. |
+| Hauptszenario | 1. Der Benutzer wählt ein Restaurant aus.<br>2. Food-Mood öffnet die Detailansicht.<br>3. Die verfügbaren Restaurantinformationen werden angezeigt. |
+| Alternativen | Der Benutzer kehrt zur Empfehlungsliste zurück. |
+| Fehlerfälle | Restaurantdaten sind nicht vollständig verfügbar. |
+| Ergebnis | Der Benutzer kann die verfügbaren Details des Restaurants einsehen. |
+| Akzeptanzkriterien | Eine Detailansicht ist verfügbar. Die verfügbaren Restaurantinformationen werden angezeigt. Der Benutzer kann zur Empfehlungsliste zurückkehren. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-08 – Restaurantdetails ansehen
+## UC-09
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-08 |
-| **Name** | Restaurantdetails ansehen |
-| **Akteur** | Nutzer |
-| **Ziel** | Detaillierte Informationen zu einem Restaurant anzeigen. |
-| **Vorbedingungen** | Ein Restaurant wurde aus den Ergebnissen ausgewählt. |
-| **Auslöser** | Der Nutzer wählt ein Restaurant aus. |
-| **Hauptszenario** | 1. Der Nutzer wählt ein Restaurant.<br>2. Food-Mood lädt die verfügbaren Detailinformationen.<br>3. Food-Mood zeigt die Restaurantdetails an. |
-| **Alternativen** | Der Nutzer kehrt zur Ergebnisliste zurück. |
-| **Fehlerfälle** | Detailinformationen sind nicht verfügbar. Food-Mood zeigt die verfügbaren Informationen und weist auf fehlende Daten hin. |
-| **Ergebnis** | Der Nutzer kann die verfügbaren Restaurantdetails ansehen. |
-| **Akzeptanzkriterien** | Die Detailansicht zeigt die verfügbaren Informationen zum ausgewählten Restaurant. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-09 |
+| Name | Restaurant favorisieren |
+| Akteur | Nutzer |
+| Ziel | Ein Restaurant als Favorit speichern. |
+| Vorbedingungen | Ein Restaurant wurde ausgewählt. |
+| Auslöser | Der Benutzer möchte ein Restaurant später wiederfinden. |
+| Hauptszenario | 1. Der Benutzer öffnet die Restaurantdetails.<br>2. Der Benutzer wählt die Favoritenfunktion.<br>3. Food-Mood speichert das Restaurant als Favorit (unter der aktuellen UserID). |
+| Alternativen | Ein bereits gespeichertes Restaurant wird wieder aus den Favoriten entfernt. |
+| Fehlerfälle | Das Restaurant kann nicht gespeichert werden. |
+| Ergebnis | Das Restaurant ist als Favorit gespeichert. |
+| Akzeptanzkriterien | Ein Restaurant kann als Favorit gespeichert werden. Ein Favorit kann wieder entfernt werden. Gespeicherte Favoriten sind über UC-12 erreichbar. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-09 – Restaurant favorisieren
+## UC-10
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-09 |
-| **Name** | Restaurant favorisieren |
-| **Akteur** | Nutzer |
-| **Ziel** | Ein Restaurant als Favorit speichern. |
-| **Vorbedingungen** | Ein Nutzer ist aktiv und ein Restaurant wurde ausgewählt. |
-| **Auslöser** | Der Nutzer markiert ein Restaurant als Favorit. |
-| **Hauptszenario** | 1. Der Nutzer wählt die Favoritenfunktion.<br>2. Food-Mood speichert das Restaurant als Favorit.<br>3. Food-Mood bestätigt die Speicherung. |
-| **Alternativen** | Ein bereits gespeichertes Restaurant kann wieder aus den Favoriten entfernt werden. |
-| **Fehlerfälle** | Der Favorit kann nicht gespeichert werden. Food-Mood zeigt eine Fehlermeldung an. |
-| **Ergebnis** | Das Restaurant ist im Nutzerprofil als Favorit gespeichert. |
-| **Akzeptanzkriterien** | Ein Restaurant kann gespeichert und wieder entfernt werden. Der Favorit ist dem richtigen Nutzer zugeordnet. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-10 |
+| Name | Restaurant als besucht markieren |
+| Akteur | Nutzer |
+| Ziel | Ein Restaurant als bereits besucht kennzeichnen. |
+| Vorbedingungen | Ein Restaurant ist ausgewählt. |
+| Auslöser | Der Benutzer möchte einen Restaurantbesuch speichern. |
+| Hauptszenario | 1. Der Benutzer öffnet die Restaurantdetails.<br>2. Der Benutzer wählt „Als besucht markieren".<br>3. Food-Mood speichert den Besuch (unter der aktuellen UserID).<br>4. Das Restaurant wird als besucht gekennzeichnet. |
+| Alternativen | Ein bereits besuchtes Restaurant wird erneut besucht und entsprechend aktualisiert. |
+| Fehlerfälle | Der Besuch kann nicht gespeichert werden. |
+| Ergebnis | Das Restaurant ist als besucht gespeichert. |
+| Akzeptanzkriterien | Ein Restaurant kann als besucht markiert werden. Der gespeicherte Besuch kann in der Besuchsliste angezeigt werden (siehe UC-13). Ein als besucht markiertes Restaurant kann bewertet werden (siehe UC-11). |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-10 – Restaurant als besucht markieren
+## UC-11
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-10 |
-| **Name** | Restaurant als besucht markieren |
-| **Akteur** | Nutzer |
-| **Ziel** | Einen Restaurantbesuch im Nutzerprofil speichern. |
-| **Vorbedingungen** | Ein Nutzer ist aktiv und ein Restaurant ist ausgewählt. |
-| **Auslöser** | Der Nutzer markiert das Restaurant als besucht. |
-| **Hauptszenario** | 1. Der Nutzer wählt „Als besucht markieren“.<br>2. Food-Mood speichert den Besuch.<br>3. Der Besuch wird dem Nutzer zugeordnet. |
-| **Alternativen** | Ein bereits besuchtes Restaurant bleibt als besucht gespeichert. |
-| **Fehlerfälle** | Der Besuch kann nicht gespeichert werden. Food-Mood zeigt eine Fehlermeldung an. |
-| **Ergebnis** | Das Restaurant ist als besucht gespeichert. |
-| **Akzeptanzkriterien** | Ein Restaurant kann als besucht markiert werden. Der Besuch ist dem richtigen Nutzer zugeordnet. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-11 |
+| Name | Eigene Bewertung abgeben |
+| Akteur | Nutzer |
+| Ziel | Eine persönliche Bewertung für ein bereits besuchtes Restaurant speichern. |
+| Vorbedingungen | Das Restaurant wurde zuvor als besucht markiert (siehe UC-10). |
+| Auslöser | Der Benutzer möchte ein bereits besuchtes Restaurant bewerten. |
+| Hauptszenario | 1. Der Benutzer öffnet ein bereits besuchtes Restaurant.<br>2. Food-Mood prüft, ob ein gespeicherter Besuch vorhanden ist.<br>3. Der Benutzer gibt eine Bewertung ab.<br>4. Food-Mood prüft die Bewertung.<br>5. Die Bewertung wird gespeichert. |
+| Alternativen | Der Benutzer ändert eine bereits abgegebene Bewertung. |
+| Fehlerfälle | Das Restaurant wurde noch nicht als besucht markiert. Die Bewertung liegt außerhalb des erlaubten Wertebereichs. |
+| Ergebnis | Die persönliche Bewertung wurde gespeichert. |
+| Akzeptanzkriterien | Eine Bewertung kann nur für ein besuchtes Restaurant abgegeben werden. Ungültige Bewertungen werden abgelehnt. Eine bestehende eigene Bewertung kann geändert werden. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-11 – Eigene Bewertung abgeben
+## UC-12
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-11 |
-| **Name** | Eigene Bewertung abgeben |
-| **Akteur** | Nutzer |
-| **Ziel** | Ein besuchtes Restaurant persönlich bewerten. |
-| **Vorbedingungen** | Der Nutzer ist aktiv und das Restaurant wurde zuvor als besucht markiert. |
-| **Auslöser** | Der Nutzer möchte eine eigene Bewertung abgeben. |
-| **Hauptszenario** | 1. Der Nutzer öffnet ein besuchtes Restaurant.<br>2. Der Nutzer gibt eine Bewertung ab.<br>3. Food-Mood prüft die Eingabe.<br>4. Food-Mood speichert die Bewertung. |
-| **Alternativen** | Der Nutzer kann die Eingabe abbrechen oder eine bereits vorhandene eigene Bewertung ändern. |
-| **Fehlerfälle** | Die Bewertung ist ungültig oder kann nicht gespeichert werden. Food-Mood zeigt eine Fehlermeldung an. |
-| **Ergebnis** | Die eigene Bewertung wurde gespeichert. |
-| **Akzeptanzkriterien** | Eine Bewertung ist erst möglich, wenn das Restaurant als besucht markiert wurde. Die Bewertung wird dem richtigen Nutzer und Restaurant zugeordnet. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-12 |
+| Name | Favoriten anzeigen |
+| Akteur | Nutzer |
+| Ziel | Die vom Benutzer gespeicherten Lieblingsrestaurants anzeigen. |
+| Vorbedingungen | Die Favoritenfunktion ist verfügbar. |
+| Auslöser | Der Benutzer öffnet seine Favoriten. |
+| Hauptszenario | 1. Der Benutzer öffnet die Favoritenübersicht.<br>2. Food-Mood lädt die gespeicherten Favoriten (der aktuellen UserID).<br>3. Die Favoriten werden angezeigt.<br>4. Der Benutzer kann ein Restaurant auswählen. |
+| Alternativen | Es sind keine Favoriten vorhanden. |
+| Fehlerfälle | Die Favoriten können nicht geladen werden. |
+| Ergebnis | Der Benutzer sieht seine gespeicherten Favoriten. |
+| Akzeptanzkriterien | Gespeicherte Favoriten werden angezeigt. Ein Favorit kann ausgewählt werden. Eine leere Favoritenliste wird verständlich dargestellt. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-12 – Favoriten anzeigen
+## UC-13
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-12 |
-| **Name** | Favoriten anzeigen |
-| **Akteur** | Nutzer |
-| **Ziel** | Die bisher gespeicherten Lieblingsrestaurants anzeigen. |
-| **Vorbedingungen** | Ein Nutzer ist aktiv. |
-| **Auslöser** | Der Nutzer öffnet seine Favoriten. |
-| **Hauptszenario** | 1. Der Nutzer öffnet die Favoritenübersicht.<br>2. Food-Mood lädt die gespeicherten Favoriten.<br>3. Food-Mood zeigt die Favoriten an. |
-| **Alternativen** | Es sind keine Favoriten vorhanden. |
-| **Fehlerfälle** | Die Favoriten können nicht geladen werden. |
-| **Ergebnis** | Die gespeicherten Favoriten werden angezeigt. |
-| **Akzeptanzkriterien** | Nur die Favoriten des aktuell aktiven Nutzers werden angezeigt. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-13 |
+| Name | Besuchte Restaurants anzeigen |
+| Akteur | Nutzer |
+| Ziel | Eine Übersicht der bisher als besucht markierten Restaurants anzeigen. |
+| Vorbedingungen | Die Funktion zum Speichern von Besuchen ist verfügbar. |
+| Auslöser | Der Benutzer öffnet die Übersicht der besuchten Restaurants. |
+| Hauptszenario | 1. Der Benutzer öffnet die Übersicht der besuchten Restaurants.<br>2. Food-Mood lädt die gespeicherten Besuche (der aktuellen UserID).<br>3. Die besuchten Restaurants werden angezeigt.<br>4. Der Benutzer kann ein Restaurant auswählen. |
+| Alternativen | Es wurden noch keine Restaurants als besucht gespeichert. |
+| Fehlerfälle | Die Besuchsdaten können nicht geladen werden. |
+| Ergebnis | Der Benutzer erhält eine Übersicht seiner besuchten Restaurants. |
+| Akzeptanzkriterien | Besuchte Restaurants werden angezeigt. Ein Restaurant kann aus der Übersicht ausgewählt werden. Eine leere Liste wird verständlich dargestellt. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-13 – Besuchte Restaurants anzeigen
+## UC-14
 
 | Feld | Inhalt |
 |---|---|
-| **ID** | UC-13 |
-| **Name** | Besuchte Restaurants anzeigen |
-| **Akteur** | Nutzer |
-| **Ziel** | Die bisher besuchten Restaurants anzeigen. |
-| **Vorbedingungen** | Ein Nutzer ist aktiv. |
-| **Auslöser** | Der Nutzer öffnet die Übersicht der besuchten Restaurants. |
-| **Hauptszenario** | 1. Der Nutzer öffnet die Besuchsübersicht.<br>2. Food-Mood lädt die gespeicherten Besuche.<br>3. Food-Mood zeigt die besuchten Restaurants an. |
-| **Alternativen** | Es wurden noch keine Restaurants besucht. |
-| **Fehlerfälle** | Die Besuchsdaten können nicht geladen werden. |
-| **Ergebnis** | Die besuchten Restaurants werden angezeigt. |
-| **Akzeptanzkriterien** | Nur Besuche des aktuell aktiven Nutzers werden angezeigt. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+| ID | UC-14 |
+| Name | API-Fehler behandeln |
+| Akteur | Food-Mood-Anwendung |
+| Ziel | Fehler bei der Kommunikation mit einem externen Restaurant-/Places-Dienst erkennen und dem Benutzer verständlich mitteilen. |
+| Vorbedingungen | Food-Mood versucht, Daten von einem externen Dienst abzurufen. |
+| Auslöser | Ein externer Dienst liefert einen Fehler oder ist nicht erreichbar. |
+| Hauptszenario | 1. Food-Mood sendet eine Anfrage an den externen Dienst.<br>2. Der externe Dienst liefert einen Fehler oder antwortet nicht.<br>3. Food-Mood erkennt den Fehler.<br>4. Food-Mood beendet die fehlerhafte Anfrage kontrolliert.<br>5. Eine verständliche Fehlermeldung wird angezeigt. |
+| Alternativen | Die Anfrage kann nach einer angemessenen Wartezeit erneut durchgeführt werden. |
+| Fehlerfälle | Der externe Dienst ist dauerhaft nicht erreichbar. Die Antwort enthält ungültige Daten. Die Anfrage überschreitet das Zeitlimit. |
+| Ergebnis | Der Benutzer wird über das Problem informiert, ohne dass die Anwendung unerwartet beendet wird. |
+| Akzeptanzkriterien | API-Fehler werden erkannt. Der Benutzer erhält eine verständliche Fehlermeldung. Die Anwendung bleibt trotz des API-Fehlers bedienbar. Ein erneuter Versuch ist möglich. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 |
 
 ---
 
-## UC-14 – API-Fehler behandeln
+# Besonders berücksichtigen
 
-| Feld | Inhalt |
-|---|---|
-| **ID** | UC-14 |
-| **Name** | API-Fehler behandeln |
-| **Akteur** | Nutzer / externe Restaurant-API |
-| **Ziel** | Fehler bei der Kommunikation mit einer externen API kontrolliert behandeln. |
-| **Vorbedingungen** | Food-Mood benötigt Daten einer externen API. |
-| **Auslöser** | Die API antwortet nicht, liefert einen Fehler oder stellt keine gültigen Daten bereit. |
-| **Hauptszenario** | 1. Food-Mood stellt eine Anfrage an die externe API.<br>2. Die API liefert einen Fehler oder keine gültige Antwort.<br>3. Food-Mood erkennt den Fehler.<br>4. Food-Mood zeigt dem Nutzer eine verständliche Fehlermeldung an. |
-| **Alternativen** | Der Nutzer kann die Anfrage erneut versuchen. |
-| **Fehlerfälle** | Die API bleibt dauerhaft nicht erreichbar. Food-Mood informiert den Nutzer darüber, dass momentan keine Ergebnisse geladen werden können. |
-| **Ergebnis** | Der Fehler wird kontrolliert behandelt und die Anwendung bleibt bedienbar. |
-| **Akzeptanzkriterien** | API-Fehler führen nicht zum Absturz der Anwendung. Der Nutzer erhält eine verständliche Fehlermeldung. Ein erneuter Versuch ist möglich. |
-| **Datenmodell** | Siehe D1/D2 |
-| **Dialog** | Siehe B1 |
+Da Food-Mood laut Vorgabe **keine Benutzeranmeldung** enthält, wird eine leichtgewichtige UserID verwendet, um Favoriten, Besuche und Bewertungen (UC-09 bis UC-13) einer Person zuordnen zu können, ohne einen echten Login-Prozess einzuführen.
 
----
-
-# 3. Besondere UserID-Flows
-
-## Nutzer initialisieren
-
-```text
-Name eingeben
-→ User erzeugen
-→ UserID erzeugen
-→ UserID anzeigen
-→ Session starten
+**User initialisieren:**
