@@ -23,43 +23,27 @@ Die folgende Tabelle gibt einen Überblick über alle für Food-Mood definierten
 
 ---
 
----
-
 ## Use-Case-Diagramm – Gesamtübersicht
 
 Das folgende Diagramm zeigt die wichtigsten Anwendungsfälle des Food-Mood-MVPs und deren Beziehungen zum Nutzer.
 
 ```mermaid
 flowchart LR
-
-    Nutzer["Nutzer"]
-
-    subgraph FoodMood["Food-Mood"]
-        
-        UC00(["UC-00 Nutzer initialisieren"])
-        
-        UC01(["UC-01 Standort automatisch bestimmen"])
-        UC02(["UC-02 Standort manuell eingeben"])
-        
-        UC03(["UC-03 Stimmung auswählen"])
-        UC04(["UC-04 Anlass auswählen"])
-        UC05(["UC-05 Filter setzen"])
-        
-        UC06(["UC-06 Empfehlungen berechnen"])
-        UC07(["UC-07 Ergebnisse anzeigen"])
-        UC08(["UC-08 Restaurantdetails anzeigen"])
-        
-        UC09(["UC-09 Restaurant favorisieren"])
-        UC10(["UC-10 Restaurant als besucht markieren"])
-        UC11(["UC-11 Eigene Bewertung abgeben"])
-        
-        UC12(["UC-12 Favoriten anzeigen"])
-        UC13(["UC-13 Besuchte Restaurants anzeigen"])
-        
-        UC14(["UC-14 API-Fehler behandeln"])
-    end
-
-    Nutzer --> UC00
+    Nutzer[Nutzer]
+    UC01[UC-01 Standort automatisch bestimmen]
+    UC02[UC-02 Standort manuell eingeben]
+    UC03[UC-03 Stimmung auswählen]
+    UC04[UC-04 Anlass auswählen]
+    UC05[UC-05 Filter setzen]
+    UC06[UC-06 Empfehlungen berechnen]
+    UC07[UC-07 Ergebnisse anzeigen]
+    UC08[UC-08 Restaurantdetails anzeigen]
+    UC09[UC-09 Restaurant favorisieren]
+    UC10[UC-10 Restaurant als besucht markieren]
+    UC11[UC-11 Eigene Bewertung abgeben]
+    UC12[UC-12 Favoriten anzeigen]
+    UC13[UC-13 Besuchte Restaurants anzeigen]
+    UC14[UC-14 API-Fehler behandeln]
     Nutzer --> UC01
     Nutzer --> UC02
     Nutzer --> UC03
@@ -72,69 +56,58 @@ flowchart LR
     Nutzer --> UC11
     Nutzer --> UC12
     Nutzer --> UC13
-
-    UC01 -. Standort .-> UC06
-    UC02 -. Standort .-> UC06
-    UC03 -. Suchkriterium .-> UC06
-    UC04 -. Suchkriterium .-> UC06
-    UC05 -. Suchkriterium .-> UC06
-
+    UC01 --> UC06
+    UC02 --> UC06
+    UC03 --> UC06
+    UC04 --> UC06
+    UC05 --> UC06
     UC06 --> UC07
     UC07 --> UC08
-
     UC08 --> UC09
     UC08 --> UC10
     UC10 --> UC11
-
     UC12 --> UC08
     UC13 --> UC08
- 
-    
     UC06 -.-> UC14
-    ```
+```
 
 # Ausführliche Use Cases
 
 ## UC-01 – Standort automatisch bestimmen
 
-**Ziel:**  
+*Ziel:*
 Den aktuellen Standort des Benutzers automatisch ermitteln, um ihn für die Restaurantsuche zu verwenden.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer startet eine Restaurantsuche und erlaubt die Standortbestimmung.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Anwendung ist geöffnet.
 - Das Gerät unterstützt die Standortbestimmung.
 - Der Benutzer erteilt die erforderliche Standortfreigabe.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer startet die Restaurantsuche.
 2. Food-Mood fragt nach der Standortfreigabe.
 3. Der Benutzer erteilt die Freigabe.
 4. Food-Mood ermittelt den aktuellen Standort.
 5. Der Standort wird für die weitere Restaurantsuche verwendet.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer verweigert die Standortfreigabe.
 - Food-Mood bietet die manuelle Eingabe eines Standorts an.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Der Standort kann technisch nicht ermittelt werden.
 - Die Standortdaten sind nicht verfügbar.
 
-**Ergebnis:**  
+*Ergebnis:*
 Ein gültiger Standort steht für die Restaurantsuche zur Verfügung.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Der Benutzer kann die Standortfreigabe erteilen.
 - Bei erfolgreicher Freigabe wird der aktuelle Standort ermittelt.
 - Bei fehlender Standortfreigabe kann ein Standort manuell eingegeben werden.
@@ -143,42 +116,37 @@ Ein gültiger Standort steht für die Restaurantsuche zur Verfügung.
 
 ## UC-02 – Standort manuell eingeben
 
-**Ziel:**  
+*Ziel:*
 Einen Standort manuell festlegen, wenn keine automatische Standortbestimmung verwendet werden kann.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer entscheidet sich für die manuelle Standortangabe.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Anwendung ist geöffnet.
 - Die manuelle Standorteingabe ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet die manuelle Standorteingabe.
 2. Der Benutzer gibt einen Ort oder eine Adresse ein.
 3. Food-Mood prüft die Eingabe.
 4. Der Standort wird übernommen.
 5. Der Standort wird für die Restaurantsuche verwendet.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer ändert seine Eingabe und gibt einen anderen Standort ein.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Der eingegebene Standort kann nicht erkannt werden.
 - Die Eingabe ist leer oder ungültig.
 
-**Ergebnis:**  
+*Ergebnis:*
 Ein gültiger manueller Standort steht für die Restaurantsuche zur Verfügung.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Ein Standort kann manuell eingegeben werden.
 - Ungültige Eingaben werden erkannt.
 - Ein gültiger Standort kann für die Suche verwendet werden.
@@ -187,40 +155,35 @@ Ein gültiger manueller Standort steht für die Restaurantsuche zur Verfügung.
 
 ## UC-03 – Stimmung auswählen
 
-**Ziel:**  
+*Ziel:*
 Die gewünschte Stimmung für die Restaurantempfehlung festlegen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte seine gewünschte Stimmung angeben.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Restaurantsuche wurde gestartet.
 - Die Stimmungsauswahl ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood zeigt verfügbare Stimmungen an.
 2. Der Benutzer wählt eine Stimmung aus.
 3. Food-Mood übernimmt die Auswahl.
 4. Die ausgewählte Stimmung wird für die Empfehlung berücksichtigt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer ändert die ausgewählte Stimmung.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Es kann keine gültige Stimmung ausgewählt werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Eine Stimmung wurde für die Restaurantsuche festgelegt.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Verfügbare Stimmungen werden angezeigt.
 - Der Benutzer kann eine Stimmung auswählen.
 - Die Auswahl wird für die Empfehlung berücksichtigt.
@@ -229,41 +192,36 @@ Eine Stimmung wurde für die Restaurantsuche festgelegt.
 
 ## UC-04 – Anlass auswählen
 
-**Ziel:**  
+*Ziel:*
 Den Anlass für den Restaurantbesuch festlegen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte einen Anlass angeben.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Restaurantsuche wurde gestartet.
 - Die Anlassauswahl ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood zeigt verfügbare Anlässe an.
 2. Der Benutzer wählt einen Anlass aus.
 3. Food-Mood übernimmt die Auswahl.
 4. Der Anlass wird für die Empfehlung berücksichtigt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer ändert den ausgewählten Anlass.
 - Der Benutzer verwendet keinen bestimmten Anlass.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Es kann kein gültiger Anlass ausgewählt werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der gewünschte Anlass steht für die Empfehlungsermittlung zur Verfügung.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Verfügbare Anlässe werden angezeigt.
 - Ein Anlass kann ausgewählt werden.
 - Die Auswahl wird für die Empfehlung berücksichtigt.
@@ -272,41 +230,36 @@ Der gewünschte Anlass steht für die Empfehlungsermittlung zur Verfügung.
 
 ## UC-05 – Filter setzen
 
-**Ziel:**  
+*Ziel:*
 Die Restaurantsuche durch zusätzliche Kriterien einschränken.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte die Suchergebnisse einschränken.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Ein gültiger Standort ist vorhanden.
 - Die Filterschnittstelle ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood zeigt verfügbare Filter an.
 2. Der Benutzer wählt gewünschte Filter aus.
 3. Food-Mood übernimmt die Filter.
 4. Die Filter werden bei der Empfehlungsermittlung berücksichtigt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer entfernt einen gesetzten Filter.
 - Der Benutzer verwendet keine zusätzlichen Filter.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Eine Filterkombination ist ungültig oder liefert keine Ergebnisse.
 
-**Ergebnis:**  
+*Ergebnis:*
 Die gewünschten Suchfilter sind für die Restaurantsuche festgelegt.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Verfügbare Filter werden angezeigt.
 - Filter können gesetzt und entfernt werden.
 - Die gesetzten Filter beeinflussen die Ergebnisse.
@@ -315,22 +268,20 @@ Die gewünschten Suchfilter sind für die Restaurantsuche festgelegt.
 
 ## UC-06 – Empfehlungen berechnen
 
-**Ziel:**  
+*Ziel:*
 Auf Grundlage der verfügbaren Standort-, Stimmungs-, Anlass- und Filterdaten passende Restaurants ermitteln.
 
-**Akteur:**  
+*Akteur:*
 Food-Mood-Anwendung
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer startet die Suche nach Restaurantempfehlungen.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Ein gültiger Standort ist vorhanden.
 - Die gewünschten Suchkriterien wurden übernommen.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood sammelt die vorhandenen Suchkriterien.
 2. Food-Mood fordert passende Restaurantdaten an.
 3. Die erhaltenen Restaurants werden geprüft.
@@ -338,20 +289,17 @@ Der Benutzer startet die Suche nach Restaurantempfehlungen.
 5. Die Ergebnisse werden sortiert.
 6. Die Empfehlungsliste wird erstellt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Wenn keine zusätzlichen Filter gesetzt wurden, erfolgt die Berechnung nur anhand der verfügbaren Kriterien.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Der externe Dienst liefert keine Daten.
 - Es können keine passenden Restaurants ermittelt werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Eine sortierte Liste von Restaurantempfehlungen wurde erstellt.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Die vorhandenen Suchkriterien werden berücksichtigt.
 - Restaurantdaten werden verarbeitet.
 - Die Ergebnisse werden bewertet und sortiert.
@@ -361,40 +309,35 @@ Eine sortierte Liste von Restaurantempfehlungen wurde erstellt.
 
 ## UC-07 – Ergebnisse anzeigen
 
-**Ziel:**  
+*Ziel:*
 Die ermittelten Restaurantempfehlungen übersichtlich anzeigen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Eine Empfehlungsliste wurde erfolgreich erstellt.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Empfehlungen wurden berechnet.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood erhält die berechnete Empfehlungsliste.
 2. Die Restaurants werden in einer Liste angezeigt.
 3. Relevante Informationen werden dargestellt.
 4. Der Benutzer kann ein Restaurant auswählen.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer startet eine neue Suche mit anderen Kriterien.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Es wurden keine Restaurants gefunden.
 - Die Ergebnisse können nicht geladen werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der Benutzer kann die verfügbaren Empfehlungen ansehen.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Die Ergebnisse werden übersichtlich angezeigt.
 - Relevante Restaurantinformationen sind sichtbar.
 - Ein Restaurant kann ausgewählt werden.
@@ -403,38 +346,33 @@ Der Benutzer kann die verfügbaren Empfehlungen ansehen.
 
 ## UC-08 – Restaurantdetails anzeigen
 
-**Ziel:**  
+*Ziel:*
 Weitere Informationen zu einem ausgewählten Restaurant anzeigen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer wählt ein Restaurant aus der Empfehlungsliste aus.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Eine Restaurantempfehlung ist vorhanden.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer wählt ein Restaurant aus.
 2. Food-Mood öffnet die Detailansicht.
 3. Die verfügbaren Restaurantinformationen werden angezeigt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer kehrt zur Empfehlungsliste zurück.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Restaurantdaten sind nicht vollständig verfügbar.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der Benutzer kann die verfügbaren Details des Restaurants einsehen.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Eine Detailansicht ist verfügbar.
 - Die verfügbaren Restaurantinformationen werden angezeigt.
 - Der Benutzer kann zur Empfehlungsliste zurückkehren.
@@ -443,38 +381,33 @@ Der Benutzer kann die verfügbaren Details des Restaurants einsehen.
 
 ## UC-09 – Restaurant favorisieren
 
-**Ziel:**  
+*Ziel:*
 Ein Restaurant als Favorit speichern.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte ein Restaurant später wiederfinden.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Ein Restaurant wurde ausgewählt.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet die Restaurantdetails.
 2. Der Benutzer wählt die Favoritenfunktion.
 3. Food-Mood speichert das Restaurant als Favorit.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Ein bereits gespeichertes Restaurant wird wieder aus den Favoriten entfernt.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Das Restaurant kann nicht gespeichert werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Das Restaurant ist als Favorit gespeichert.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Ein Restaurant kann als Favorit gespeichert werden.
 - Ein Favorit kann wieder entfernt werden.
 - Gespeicherte Favoriten sind über UC-12 erreichbar.
@@ -483,39 +416,34 @@ Das Restaurant ist als Favorit gespeichert.
 
 ## UC-10 – Restaurant als besucht markieren
 
-**Ziel:**  
+*Ziel:*
 Ein Restaurant als bereits besucht kennzeichnen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte einen Restaurantbesuch speichern.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Ein Restaurant ist ausgewählt.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet die Restaurantdetails.
-2. Der Benutzer wählt „Als besucht markieren“.
+2. Der Benutzer wählt „Als besucht markieren".
 3. Food-Mood speichert den Besuch.
 4. Das Restaurant wird als besucht gekennzeichnet.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Ein bereits besuchtes Restaurant wird erneut besucht und entsprechend aktualisiert.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Der Besuch kann nicht gespeichert werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Das Restaurant ist als besucht gespeichert.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Ein Restaurant kann als besucht markiert werden.
 - Der gespeicherte Besuch kann in der Besuchsliste angezeigt werden.
 - Ein als besucht markiertes Restaurant kann bewertet werden.
@@ -524,41 +452,36 @@ Das Restaurant ist als besucht gespeichert.
 
 ## UC-11 – Eigene Bewertung abgeben
 
-**Ziel:**  
+*Ziel:*
 Eine persönliche Bewertung für ein bereits besuchtes Restaurant speichern.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer möchte ein bereits besuchtes Restaurant bewerten.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Das Restaurant wurde zuvor als besucht markiert.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet ein bereits besuchtes Restaurant.
 2. Food-Mood prüft, ob ein gespeicherter Besuch vorhanden ist.
 3. Der Benutzer gibt eine Bewertung ab.
 4. Food-Mood prüft die Bewertung.
 5. Die Bewertung wird gespeichert.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Der Benutzer ändert eine bereits abgegebene Bewertung.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Das Restaurant wurde noch nicht als besucht markiert.
 - Die Bewertung liegt außerhalb des erlaubten Wertebereichs.
 
-**Ergebnis:**  
+*Ergebnis:*
 Die persönliche Bewertung wurde gespeichert.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Eine Bewertung kann nur für ein besuchtes Restaurant abgegeben werden.
 - Ungültige Bewertungen werden abgelehnt.
 - Eine bestehende eigene Bewertung kann geändert werden.
@@ -567,39 +490,34 @@ Die persönliche Bewertung wurde gespeichert.
 
 ## UC-12 – Favoriten anzeigen
 
-**Ziel:**  
+*Ziel:*
 Die vom Benutzer gespeicherten Lieblingsrestaurants anzeigen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer öffnet seine Favoriten.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Favoritenfunktion ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet die Favoritenübersicht.
 2. Food-Mood lädt die gespeicherten Favoriten.
 3. Die Favoriten werden angezeigt.
 4. Der Benutzer kann ein Restaurant auswählen.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Es sind keine Favoriten vorhanden.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Die Favoriten können nicht geladen werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der Benutzer sieht seine gespeicherten Favoriten.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Gespeicherte Favoriten werden angezeigt.
 - Ein Favorit kann ausgewählt werden.
 - Eine leere Favoritenliste wird verständlich dargestellt.
@@ -608,39 +526,34 @@ Der Benutzer sieht seine gespeicherten Favoriten.
 
 ## UC-13 – Besuchte Restaurants anzeigen
 
-**Ziel:**  
+*Ziel:*
 Eine Übersicht der bisher als besucht markierten Restaurants anzeigen.
 
-**Akteur:**  
+*Akteur:*
 Benutzer
 
-**Auslöser:**  
+*Auslöser:*
 Der Benutzer öffnet die Übersicht der besuchten Restaurants.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Die Funktion zum Speichern von Besuchen ist verfügbar.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Der Benutzer öffnet die Übersicht der besuchten Restaurants.
 2. Food-Mood lädt die gespeicherten Besuche.
 3. Die besuchten Restaurants werden angezeigt.
 4. Der Benutzer kann ein Restaurant auswählen.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Es wurden noch keine Restaurants als besucht gespeichert.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Die Besuchsdaten können nicht geladen werden.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der Benutzer erhält eine Übersicht seiner besuchten Restaurants.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - Besuchte Restaurants werden angezeigt.
 - Ein Restaurant kann aus der Übersicht ausgewählt werden.
 - Eine leere Liste wird verständlich dargestellt.
@@ -649,42 +562,37 @@ Der Benutzer erhält eine Übersicht seiner besuchten Restaurants.
 
 ## UC-14 – API-Fehler behandeln
 
-**Ziel:**  
+*Ziel:*
 Fehler bei der Kommunikation mit einem externen Restaurant-/Places-Dienst erkennen und dem Benutzer verständlich mitteilen.
 
-**Akteur:**  
+*Akteur:*
 Food-Mood-Anwendung
 
-**Auslöser:**  
+*Auslöser:*
 Ein externer Dienst liefert einen Fehler oder ist nicht erreichbar.
 
-**Vorbedingungen:**
-
+*Vorbedingungen:*
 - Food-Mood versucht, Daten von einem externen Dienst abzurufen.
 
-**Hauptablauf:**
-
+*Hauptablauf:*
 1. Food-Mood sendet eine Anfrage an den externen Dienst.
 2. Der externe Dienst liefert einen Fehler oder antwortet nicht.
 3. Food-Mood erkennt den Fehler.
 4. Food-Mood beendet die fehlerhafte Anfrage kontrolliert.
 5. Eine verständliche Fehlermeldung wird angezeigt.
 
-**Alternativablauf:**
-
+*Alternativablauf:*
 - Die Anfrage kann nach einer angemessenen Wartezeit erneut durchgeführt werden.
 
-**Fehlerfälle:**
-
+*Fehlerfälle:*
 - Der externe Dienst ist dauerhaft nicht erreichbar.
 - Die Antwort enthält ungültige Daten.
 - Die Anfrage überschreitet das Zeitlimit.
 
-**Ergebnis:**  
+*Ergebnis:*
 Der Benutzer wird über das Problem informiert, ohne dass die Anwendung unerwartet beendet wird.
 
-**Akzeptanzkriterien:**
-
+*Akzeptanzkriterien:*
 - API-Fehler werden erkannt.
 - Der Benutzer erhält eine verständliche Fehlermeldung.
 - Die Anwendung bleibt trotz des API-Fehlers bedienbar.
