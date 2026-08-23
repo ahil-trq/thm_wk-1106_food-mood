@@ -23,6 +23,74 @@ Die folgende Tabelle gibt einen Überblick über alle für Food-Mood definierten
 
 ---
 
+---
+
+## Use-Case-Diagramm – Gesamtübersicht
+
+Das folgende Diagramm zeigt die wichtigsten Anwendungsfälle des Food-Mood-MVPs und deren Beziehungen zum Nutzer.
+
+```mermaid
+flowchart LR
+
+    Nutzer["Nutzer"]
+
+    subgraph FoodMood["Food-Mood"]
+        
+        UC00(["UC-00 Nutzer initialisieren"])
+        
+        UC01(["UC-01 Standort automatisch bestimmen"])
+        UC02(["UC-02 Standort manuell eingeben"])
+        
+        UC03(["UC-03 Stimmung auswählen"])
+        UC04(["UC-04 Anlass auswählen"])
+        UC05(["UC-05 Filter setzen"])
+        
+        UC06(["UC-06 Empfehlungen berechnen"])
+        UC07(["UC-07 Ergebnisse anzeigen"])
+        UC08(["UC-08 Restaurantdetails anzeigen"])
+        
+        UC09(["UC-09 Restaurant favorisieren"])
+        UC10(["UC-10 Restaurant als besucht markieren"])
+        UC11(["UC-11 Eigene Bewertung abgeben"])
+        
+        UC12(["UC-12 Favoriten anzeigen"])
+        UC13(["UC-13 Besuchte Restaurants anzeigen"])
+        
+        UC14(["UC-14 API-Fehler behandeln"])
+    end
+
+    Nutzer --> UC00
+    Nutzer --> UC01
+    Nutzer --> UC02
+    Nutzer --> UC03
+    Nutzer --> UC04
+    Nutzer --> UC05
+    Nutzer --> UC07
+    Nutzer --> UC08
+    Nutzer --> UC09
+    Nutzer --> UC10
+    Nutzer --> UC11
+    Nutzer --> UC12
+    Nutzer --> UC13
+
+    UC01 -. Standort .-> UC06
+    UC02 -. Standort .-> UC06
+    UC03 -. Suchkriterium .-> UC06
+    UC04 -. Suchkriterium .-> UC06
+    UC05 -. Suchkriterium .-> UC06
+
+    UC06 --> UC07
+    UC07 --> UC08
+
+    UC08 --> UC09
+    UC08 --> UC10
+    UC10 --> UC11
+
+    UC12 --> UC08
+    UC13 --> UC08
+
+    UC06 -. Fehler .-> UC14
+
 # Ausführliche Use Cases
 
 ## UC-01 – Standort automatisch bestimmen
