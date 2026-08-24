@@ -1,31 +1,25 @@
 # N1 - Nichtfunktionale Anforderungen
-Diese Datei beschreibt die nichtfunktionalen Anforderungen an Food-Mood. Alle Anforderungen sind Messbar formuliert. Unklare Aussagen wie "schnell" oder "Benutzerfreundlich" werden vermieden.
-## Performance
+
+Diese Datei beschreibt die nichtfunktionalen Anforderungen an Food-Mood. Alle Anforderungen sind messbar formuliert. Unklare Aussagen wie "schnell" oder "benutzerfreundlich" werden vermieden.
 
 (NFA = "Nicht Funktionale Anforderung")
 
-**NFA-1:** Empfehlungen werden unter normalen Bedingungen (stabile Internetverbindung) innerhalb von 5 Sekunden nach Bestätigung der Filter angezeigt.
-**NFA-2:** Die Empfehlungsliste zeigt bei bis zu 50 Ergebnissen innerhalb von 1 Sekunde nach Erhalt der Daten alle Einträge an.
-
-## Bedienbarkeit
-
-**NFA-3:** Die Benutzeroberfläche ist ab einer Bildschirmbreite von 360 Pixeln vollständig nutzbar. Keine abgeschnittenen Inhalte, keine horizontalen Scrollbalken.
-**NFA-4:** Wird die Standortfreigabe abgelehnt oder ist sie nicht verfügbar, kann der Nutzer den Standort manuell eingeben, ohne dass der weitere Ablauf blockiert wird.
-**NFA-5:** Bei einem Fehler der externen API wird eine verständliche, allgemeinsprachliche Fehlermeldung angezeigt (kein technischer Fehlercode wie "Error 500" oder Stacktrace).
-
-## Datenschutz
-
-**NFA-6:** Standortdaten werden ausschließlich zur Berechnung der aktuellen Empfehlungen verarbeitet und nicht dauerhaft gespeichert.
-**NFA-7:** Es werden keine personenbezogenen Kontodaten erhoben oder abgefragt, da die App ohne Benutzerkonten im Frontend auskommt.
-
-## Zuverlässigkeit
-
-**NFA-8:** Abgegebene Bewertungen liegen ausschließlich im Bereich von 1 bis 5 Sternen (ganzzahlig). Ungültige Werte werden bereits in der Eingabemaske verhindert.
-**NFA-9:** Eine Bewertung kann ausschließlich abgegeben werden, nachdem ein Restaurant zuvor als "besucht" markiert wurde.
-**NFA-10:** Favoriten und Besucht Markierungen bleiben nach einem Neustart der App erhalten.
+| ID | Kategorie | Anforderung | Messkriterium |
+|---|---|---|---|
+| NFA-01 | Performance | Empfehlungen erscheinen nach Bestätigung der Filter | ≤ 5 Sekunden (bei stabiler Internetverbindung) |
+| NFA-02 | Performance | Die Empfehlungsliste zeigt die Ergebnisse nach Erhalt der Daten an | ≤ 1 Sekunde bei bis zu 50 Einträgen |
+| NFA-03 | Bedienbarkeit | Die Benutzeroberfläche ist vollständig nutzbar, ohne abgeschnittene Inhalte oder horizontales Scrollen | ab 360 px Bildschirmbreite |
+| NFA-04 | Bedienbarkeit | Bei abgelehnter oder nicht verfügbarer Standortfreigabe kann der Standort manuell eingegeben werden | Ablauf wird dabei nicht blockiert |
+| NFA-05 | Bedienbarkeit | Bei einem Fehler der externen API wird eine verständliche Fehlermeldung angezeigt | keine technischen Fehlercodes oder Stacktraces sichtbar |
+| NFA-06 | Datenschutz | Standortdaten werden ausschließlich zur Berechnung der aktuellen Empfehlungen verarbeitet | keine dauerhafte Speicherung der Standortdaten |
+| NFA-07 | Datenschutz | Es werden keine personenbezogenen Kontodaten erhoben oder abgefragt | 0 gespeicherte Kontodaten, kein Benutzerkonto im Frontend |
+| NFA-08 | Zuverlässigkeit | Abgegebene Bewertungen liegen im gültigen Wertebereich | 1–5 Sterne, ganzzahlig, ungültige Werte werden bereits in der Eingabemaske verhindert |
+| NFA-09 | Zuverlässigkeit | Eine Bewertung ist nur nach vorheriger Besuchs-Markierung möglich | Bewertung gesperrt, solange Restaurant nicht als "besucht" markiert ist |
+| NFA-10 | Zuverlässigkeit | Favoriten- und Besucht-Markierungen bleiben erhalten | Persistenz über einen App-Neustart hinweg |
 
 ## Akzeptanzkriterien
 
 - Alle Anforderungen sind messbar formuliert (konkrete Zahl, Zustand oder Bedingung statt vager Aussagen).
 - Die Kategorien Performance, Bedienbarkeit, Datenschutz und Zuverlässigkeit sind abgedeckt.
 - Unklare, nicht prüfbare Formulierungen wie "schnell" oder "benutzerfreundlich" wurden vermieden.
+- Durchgängige IDs (NFA-01 bis NFA-10).
