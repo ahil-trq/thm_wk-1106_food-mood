@@ -1,33 +1,26 @@
 # P2 – Fachlicher Architekturüberblick
 
-## P2.1 Zweck
+Dieser Überblick beschreibt Food-Mood aus fachlicher Sicht. Er grenzt die Web-App von ihrer Umgebung ab, nennt alle Beteiligten und ordnet die fachlichen Verantwortlichkeiten den Bausteinen der Anwendung zu. Interne technische Entscheidungen, konkrete Schnittstellen und detaillierte Abläufe werden in den dafür vorgesehenen Dokumenten beschrieben.
 
-Dieser Überblick beschreibt Food-Mood aus fachlicher Sicht: Systemgrenze, Nachbarsysteme, Verantwortlichkeiten und Zusammenspiel der Bausteine. Er legt noch keine Klassen, Frameworks oder konkrete Verteilung fest. Technische Entscheidungen werden in der späteren Architekturdokumentation nach arc42 und in ADRs begründet.
+## P2.1 Systemkontext
 
-## P2.2 Systemkontext
-
-Food-Mood unterstützt einen anonymen Benutzer dabei, anhand seines Standorts, einer Stimmung, eines optionalen Anlasses und weiterer Filter passende gastronomische Orte zu finden. Restaurantdaten stammen aus externen OpenStreetMap-Diensten. Favoriten, Besuche und eigene Bewertungen werden von Food-Mood selbst verwaltet.
+Food-Mood unterstützt einen anonymen Benutzer dabei, anhand seines Standorts, einer Stimmung, eines Anlasses und weiterer Filter passende gastronomische Orte zu finden. Die Anwendung verwaltet Favoriten, Besuche und eigene Bewertungen selbst. Restaurant- und Geodaten werden nicht selbst gepflegt, sondern von OpenStreetMap bezogen.
 
 ```mermaid
-flowchart TB
-    user["Anonymer Benutzer"]
+flowchart LR
+    user["AK-01 Anonymer Benutzer"]
     system["Food-Mood"]
-    geo["Browser-Standortdienst"]
-    nominatim["Nominatim"]
-    overpass["OpenStreetMap / Overpass"]
-    tiles["Kartenkacheldienst"]
+    osm["NB-01 OpenStreetMap"]
 
-    user -->|Mood, Anlass, Filter und Aktionen| system
+    user -->|Standort, Stimmung, Anlass, Filter und Aktionen| system
     system -->|Empfehlungen und Restaurantdetails| user
-    system -->|Standort nach Zustimmung| geo
-    system -->|manueller Ortssuchtext| nominatim
-    system -->|Restaurantsuche im Umkreis| overpass
-    system -->|optionaler Kartenausschnitt| tiles
+    system -->|Suchgebiet und Restaurantkategorien| osm
+    osm -->|Restaurants, Positionen und vorhandene Merkmale| system
 ```
 
-Die eigene Speicherung von Favoriten, Besuchen und Bewertungen liegt innerhalb der Systemgrenze von Food-Mood und ist daher im Kontextdiagramm kein Nachbarsystem.
+OpenStreetMap ist das einzige fachliche Nachbarsystem von Food-Mood. Die automatische Standortbestimmung über den Browser, die Verarbeitung einer manuellen Ortseingabe und die Speicherung persönlicher App-Daten gehören zur Systemgrenze von Food-Mood. Bibliotheken und einzelne technische Zugänge zu OpenStreetMap werden nicht als eigene Nachbarsysteme dargestellt.
 
-## P2.3 Fachliche Bausteine
+## P2.2 Beteiligte und fachliche Bausteine
 
 | Baustein | Verantwortung | Zugeordnete Anwendungsfälle |
 |---|---|---|
@@ -120,8 +113,8 @@ Food-Mood übernimmt keine Garantie für Vollständigkeit oder Aktualität exter
 
 ## P2.9 Weiterführende Dokumente
 
-- [D1 – Fachliches Datenmodell](D1-Datenmodell.md)
-- [D2 – Datentypenverzeichnis](D2-Datentypen.md)
+- [D1 – Fachliches Datenmodell](D1-Fachliches-Datenmodell.md)
+- [D2 – Datentypenverzeichnis](D2-Datentypenverzeichnis.md)
 - [S1 – Nachbarsysteme und externe APIs](S1-Nachbarsysteme-und-APIs.md)
 - F1 – Geschäftsprozesse
 - F2 – Anwendungsfälle

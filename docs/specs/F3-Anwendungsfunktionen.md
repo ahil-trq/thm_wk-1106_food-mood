@@ -1,350 +1,60 @@
 # F3 – Anwendungsfunktionen
 
-## Zweck
+## F3.1 Zweck
 
-Dieses Dokument beschreibt die fachlichen Funktionen der Anwendung **Food-Mood**. Die Funktionen bilden die konkrete Umsetzung der in F2 beschriebenen Anwendungsfälle.
+Anwendungsfunktionen beschreiben wiederverwendbare fachliche Berechnungen von Food-Mood. Sie sind keine vollständigen Benutzerabläufe und enthalten keine Dialogbeschreibung. Die aufrufenden Anwendungsfälle werden in F2 dokumentiert.
 
-Jede Funktion besitzt eine eindeutige ID und beschreibt Eingaben, Verarbeitung und Ergebnis.
+## F3.2 Übersicht
 
----
+| ID | Anwendungsfunktion | Zweck | Verwendete Daten |
+|---|---|---|---|
+| [AF-01](#af-01--durchschnittsbewertung-berechnen) | Durchschnittsbewertung berechnen | ermittelt den Bewertungsdurchschnitt und die Bewertungsanzahl eines Restaurants | [`Restaurant`, `Review`, `Rating`, `AverageRating`, `RatingCount`](D1-Datenmodell.md) |
 
-## AF-01 – Standortfreigabe anfordern
+## AF-01 – Durchschnittsbewertung berechnen
 
-**Zugehöriger Use Case:** UC-01
+### Fachlicher Zweck
 
-**Beschreibung:**  
-Die Anwendung fordert den Benutzer auf, den Zugriff auf seinen aktuellen Standort zu erlauben.
+AF-01 berechnet aus den eigenen Food-Mood-Bewertungen eines Restaurants den Durchschnitt und die Anzahl der Bewertungen. Externe Bewertungen von OpenStreetMap werden nicht verwendet.
 
-**Eingabe:**
-- Benutzer startet die Anwendung.
+### Schnittstelle
 
-**Verarbeitung:**
-- Die Anwendung fragt die Berechtigung für den Standortzugriff an.
-
-**Ergebnis:**
-- Der Benutzer kann die Standortfreigabe erlauben oder ablehnen.
-
----
-
-## AF-02 – Standort automatisch bestimmen
-
-**Zugehöriger Use Case:** UC-01
-
-**Beschreibung:**  
-Die Anwendung ermittelt den aktuellen Standort des Benutzers.
-
-**Eingabe:**
-- Erteilte Standortfreigabe.
-
-**Verarbeitung:**
-- Die Anwendung liest die aktuellen Koordinaten.
-
-**Ergebnis:**
-- Standortkoordinaten (Breitengrad und Längengrad) stehen für die Restaurantsuche zur Verfügung.
-
----
-
-## AF-03 – Standort manuell eingeben
-
-**Zugehöriger Use Case:** UC-02
-
-**Beschreibung:**  
-Der Benutzer kann einen Standort manuell eingeben, wenn keine automatische Standortbestimmung möglich oder gewünscht ist.
-
-**Eingabe:**
-- Adresse oder Ort.
-
-**Verarbeitung:**
-- Die Eingabe wird geprüft und als Suchstandort übernommen.
-
-**Ergebnis:**
-- Ein gültiger Standort steht für die Restaurantsuche zur Verfügung.
-
----
-
-## AF-04 – Stimmung auswählen
-
-**Zugehöriger Use Case:** UC-03
-
-**Beschreibung:**  
-Der Benutzer kann eine Stimmung auswählen, die bei der Restaurantempfehlung berücksichtigt wird.
-
-**Eingabe:**
-- Eine verfügbare Stimmung.
-
-**Verarbeitung:**
-- Die ausgewählte Stimmung wird für die Suchanfrage gespeichert.
-
-**Ergebnis:**
-- Eine Stimmung steht für die Empfehlungsberechnung zur Verfügung.
-
----
-
-## AF-05 – Anlass auswählen
-
-**Zugehöriger Use Case:** UC-04
-
-**Beschreibung:**  
-Der Benutzer kann einen Anlass auswählen, für den ein Restaurant gesucht wird.
-
-**Eingabe:**
-- Ein verfügbarer Anlass.
-
-**Verarbeitung:**
-- Der ausgewählte Anlass wird gespeichert.
-
-**Ergebnis:**
-- Der Anlass kann bei der Empfehlungsberechnung berücksichtigt werden.
-
----
-
-## AF-06 – Filter konfigurieren
-
-**Zugehöriger Use Case:** UC-05
-
-**Beschreibung:**  
-Der Benutzer kann zusätzliche Kriterien für die Restaurantsuche festlegen.
-
-**Eingabe:**
-- Preisbereich
-- Entfernung
-- Küche
-- Weitere verfügbare Filter
-
-**Verarbeitung:**
-- Die ausgewählten Filter werden validiert und auf die Restaurantsuche angewendet.
-
-**Ergebnis:**
-- Eine Suchanfrage mit den gewünschten Filterkriterien liegt vor.
-
----
-
-## AF-07 – Restaurants abrufen
-
-**Zugehöriger Use Case:** UC-06
-
-**Beschreibung:**  
-Die Anwendung ruft anhand des festgelegten Standorts und der Suchkriterien Restaurants von einem externen Dienst ab.
-
-**Eingabe:**
-- Standort
-- Stimmung
-- Anlass
-- Filter
-
-**Verarbeitung:**
-- Eine Anfrage wird an den konfigurierten externen Restaurant-/Places-Dienst gesendet.
-- Die erhaltenen Restaurantdaten werden verarbeitet.
-
-**Ergebnis:**
-- Eine Liste verfügbarer Restaurants steht zur weiteren Verarbeitung zur Verfügung.
-
----
-
-## AF-08 – Empfehlungen bewerten und sortieren
-
-**Zugehöriger Use Case:** UC-06
-
-**Beschreibung:**  
-Die Anwendung bewertet die gefundenen Restaurants anhand der festgelegten Kriterien und erstellt daraus eine Rangfolge.
-
-**Eingabe:**
-- Liste der gefundenen Restaurants
-- Stimmung
-- Anlass
-- Filter
-
-**Verarbeitung:**
-- Restaurants werden anhand der verfügbaren Kriterien bewertet.
-- Die Ergebnisse werden nach ihrer Eignung sortiert.
-
-**Ergebnis:**
-- Eine sortierte Liste von Restaurantempfehlungen liegt vor.
-
----
-
-## AF-09 – Ergebnisse anzeigen
-
-**Zugehöriger Use Case:** UC-07
-
-**Beschreibung:**  
-Die Anwendung zeigt die berechneten Restaurantempfehlungen in einer übersichtlichen Liste an.
-
-**Eingabe:**
-- Sortierte Restaurantliste.
-
-**Verarbeitung:**
-- Restaurantdaten werden für die Darstellung aufbereitet.
-
-**Ergebnis:**
-- Der Benutzer sieht die empfohlenen Restaurants.
-
----
-
-## AF-10 – Restaurantdetails anzeigen
-
-**Zugehöriger Use Case:** UC-08
-
-**Beschreibung:**  
-Die Anwendung zeigt detaillierte Informationen zu einem ausgewählten Restaurant.
-
-**Eingabe:**
-- Ausgewähltes Restaurant.
-
-**Verarbeitung:**
-- Verfügbare Restaurantinformationen werden geladen und dargestellt.
-
-**Ergebnis:**
-- Der Benutzer sieht die Details des Restaurants.
-
----
-
-## AF-11 – Favoriten speichern und entfernen
-
-**Zugehöriger Use Case:** UC-09
-
-**Beschreibung:**  
-Der Benutzer kann ein Restaurant als Favorit speichern oder einen bestehenden Favoriten entfernen.
-
-**Eingabe:**
-- Restaurant
-- Aktion „Favorit hinzufügen“ oder „Favorit entfernen“
-
-**Verarbeitung:**
-- Der Favoritenstatus wird gespeichert oder entfernt.
-
-**Ergebnis:**
-- Das Restaurant ist als Favorit gespeichert oder nicht mehr als Favorit markiert.
-
----
-
-## AF-12 – Besuch speichern
-
-**Zugehöriger Use Case:** UC-10
-
-**Beschreibung:**  
-Der Benutzer kann ein Restaurant als besucht markieren.
-
-**Eingabe:**
-- Restaurant
-- Aktion „Als besucht markieren“
-
-**Verarbeitung:**
-- Der Besuch wird gespeichert.
-
-**Ergebnis:**
-- Das Restaurant wird als besucht geführt.
-
----
-
-## AF-13 – Eigene Bewertung speichern und ändern
-
-**Zugehöriger Use Case:** UC-11
-
-**Beschreibung:**  
-Der Benutzer kann ein bereits besuchtes Restaurant bewerten und eine bestehende Bewertung ändern.
-
-**Eingabe:**
-- Besuchsstatus
-- Bewertung
-- Optionaler Kommentar
-
-**Verarbeitung:**
-- Die Anwendung prüft, ob das Restaurant als besucht markiert ist.
-- Die Bewertung wird gespeichert oder aktualisiert.
-
-**Ergebnis:**
-- Die eigene Bewertung ist gespeichert.
-
-**Regel:**
-- Eine eigene Bewertung ist nur möglich, wenn das Restaurant zuvor als besucht markiert wurde.
-
----
-
-## AF-14 – Favoriten anzeigen
-
-**Zugehöriger Use Case:** UC-12
-
-**Beschreibung:**  
-Die Anwendung zeigt alle vom Benutzer gespeicherten Favoriten an.
-
-**Eingabe:**
-- Gespeicherte Favoriten.
-
-**Verarbeitung:**
-- Die Favoriten werden geladen und sortiert dargestellt.
-
-**Ergebnis:**
-- Der Benutzer sieht seine gespeicherten Favoriten.
-
----
-
-## AF-15 – Besuchte Restaurants anzeigen
-
-**Zugehöriger Use Case:** UC-13
-
-**Beschreibung:**  
-Die Anwendung zeigt alle Restaurants an, die der Benutzer als besucht markiert hat.
-
-**Eingabe:**
-- Gespeicherte Besuche.
-
-**Verarbeitung:**
-- Die gespeicherten Restaurantbesuche werden geladen.
-
-**Ergebnis:**
-- Der Benutzer sieht seine besuchten Restaurants.
-
----
-
-## AF-16 – Fehlermeldungen anzeigen
-
-**Zugehöriger Use Case:** UC-14
-
-**Beschreibung:**  
-Die Anwendung informiert den Benutzer über Fehler bei der Verarbeitung oder beim Abruf externer Daten.
-
-**Eingabe:**
-- Fehlerzustand, z. B. API-Ausfall oder fehlende Daten.
-
-**Verarbeitung:**
-- Der Fehler wird erkannt und einer verständlichen Fehlermeldung zugeordnet.
-
-**Ergebnis:**
-- Eine verständliche Fehlermeldung wird angezeigt.
-- Der Benutzer erhält, sofern möglich, eine Möglichkeit zur erneuten Ausführung.
-
----
-
-# Zuordnung Funktionen zu Use Cases
-
-| Funktion | Use Case |
+| Bestandteil | Beschreibung |
 |---|---|
-| AF-01 Standortfreigabe anfordern | UC-01 |
-| AF-02 Standort automatisch bestimmen | UC-01 |
-| AF-03 Standort manuell eingeben | UC-02 |
-| AF-04 Stimmung auswählen | UC-03 |
-| AF-05 Anlass auswählen | UC-04 |
-| AF-06 Filter konfigurieren | UC-05 |
-| AF-07 Restaurants abrufen | UC-06 |
-| AF-08 Empfehlungen bewerten und sortieren | UC-06 |
-| AF-09 Ergebnisse anzeigen | UC-07 |
-| AF-10 Restaurantdetails anzeigen | UC-08 |
-| AF-11 Favoriten speichern und entfernen | UC-09 |
-| AF-12 Besuch speichern | UC-10 |
-| AF-13 Eigene Bewertung speichern und ändern | UC-11 |
-| AF-14 Favoriten anzeigen | UC-12 |
-| AF-15 Besuchte Restaurants anzeigen | UC-13 |
-| AF-16 Fehlermeldungen anzeigen | UC-14 |
+| Eingabe | Liste aller gespeicherten `Review.rating`-Werte für ein Restaurant |
+| Ausgabe | `averageRating: AverageRating` und `ratingCount: RatingCount` |
+| Aufrufer | Anwendungsfälle, die eine Ergebnisliste oder Restaurantdetails mit eigener Bewertung anzeigen |
+| Fehlerfall | ungültige Bewertungswerte werden bereits beim Speichern abgewiesen und dürfen die Berechnung nicht erreichen |
 
----
+### Berechnungsregeln
 
-# Akzeptanzkriterien
+1. Es werden nur eigene, gültige Food-Mood-Bewertungen des ausgewählten Restaurants berücksichtigt.
+2. `ratingCount` entspricht der Anzahl der berücksichtigten Bewertungen.
+3. Bei `ratingCount = 0` ist `averageRating = null`. Die Oberfläche zeigt „Noch keine Bewertungen“ an.
+4. Bei mindestens einer Bewertung wird das arithmetische Mittel berechnet:
 
-- Jede Funktion besitzt eine eindeutige ID.
-- Für jede Funktion sind Eingabe, Verarbeitung und Ergebnis beschrieben.
-- Jede Funktion ist mindestens einem Use Case aus F2 zugeordnet.
-- Alle in F2 beschriebenen Use Cases werden durch mindestens eine Funktion unterstützt.
-- Die Funktionen liegen innerhalb des definierten MVP-Umfangs.
-- Funktionen für Reservierung, Bezahlung oder Benutzeranmeldung sind nicht enthalten.
-- Eine eigene Bewertung kann nur für ein zuvor als besucht markiertes Restaurant gespeichert werden.
+   `averageRating = Summe aller Rating-Werte / ratingCount`
+
+5. Intern bleibt der berechnete Wert unverändert. Erst für die Anzeige wird er auf eine Nachkommastelle gerundet.
+
+### Beispiele
+
+| Bewertungen | Ergebnis `averageRating` | Ergebnis `ratingCount` | Anzeige |
+|---|---:|---:|---|
+| keine | `null` | 0 | Noch keine Bewertungen |
+| 5 | 5,0 | 1 | 5,0 (1 Bewertung) |
+| 3, 4, 5 | 4,0 | 3 | 4,0 (3 Bewertungen) |
+| 4, 4, 5 | 4,333… | 3 | 4,3 (3 Bewertungen) |
+
+### Verknüpfte Dokumente
+
+- [D1 – Fachliches Datenmodell](D1-Datenmodell.md)
+- [D2 – Datentypenverzeichnis](D2-Datentypen.md)
+- F2 – Anwendungsfälle
+
+## F3.3 Akzeptanzkriterien
+
+- Die Funktion ist unabhängig von einer bestimmten Bildschirmmaske beschrieben.
+- Eingaben, Ausgaben und Berechnungsregeln sind eindeutig.
+- Bei einem Restaurant ohne Bewertungen wird kein künstlicher Durchschnitt von `0` erzeugt.
+- Für die Berechnung werden ausschließlich eigene Food-Mood-Bewertungen verwendet.
+- Die Rundung erfolgt nur für die Anzeige.

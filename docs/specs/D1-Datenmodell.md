@@ -5,16 +5,20 @@
 Das fachliche Datenmodell beschreibt die Informationen, mit denen Food-Mood seine Anwendungsfälle erfüllt. Es unterscheidet zwischen kurzlebigen Suchdaten und dauerhaft gespeicherten App-Daten.
 
 - **Kurzlebig:** Standort, Suchanfrage und berechnete Empfehlungen existieren nur während des Suchvorgangs.
-- **Dauerhaft:** anonyme Nutzerkennung, Restaurantreferenzen, Favoriten, Besuche und eigene Bewertungen bleiben nach einem Neustart erhalten.
+- **Dauerhaft:** interne Nutzer-ID, gehashter Zugangsschlüssel, Restaurantreferenzen, Favoriten, Besuche und eigene Bewertungen bleiben nach einem Neustart erhalten.
 - **Extern:** Restaurantstammdaten werden von OpenStreetMap/Overpass geliefert. Food-Mood speichert keine selbst gepflegte vollständige Restaurantdatenbank.
 
-Die exakten Feldtypen und Wertebereiche sind in [D2 – Datentypenverzeichnis](D2-Datentypenverzeichnis.md) definiert.
+Die exakten Feldtypen und Wertebereiche sind in [D2 – Datentypenverzeichnis](D2-Datentypen.md) definiert.
 
 ## D1.2 Fachliche Objekte
 
-### `AnonymousUser` – anonymer Nutzer
+### `User` – anonymer Nutzer
 
-Repräsentiert eine App-Installation ohne Login, Namen oder E-Mail-Adresse. Die technische Kennung ordnet Favoriten, Besuche und Bewertungen derselben Installation zu. Sie ist kein öffentliches Benutzerprofil.
+Repräsentiert einen anonymen Nutzer ohne Registrierung, Namen, E-Mail-Adresse oder Passwort. Beim ersten Aufruf legt das Backend automatisch einen `User` mit einer internen `UserId` an. Alle Favoriten, Besuche und Bewertungen werden über diese ID demselben Nutzer zugeordnet.
+
+Damit der Nutzer seine Daten bei einem späteren Aufruf wieder öffnen kann, erzeugt das Backend zusätzlich einen langen, zufälligen `UserAccessToken`. Dieser wird einmalig als Bestandteil einer persönlichen URL an den Browser zurückgegeben. In der Datenbank wird nicht der Token selbst, sondern nur sein Hash gespeichert. Wer die persönliche URL besitzt, kann auf die zugeordneten Daten zugreifen; deshalb muss der Token ausreichend lang und nicht erratbar sein.
+
+Eine klassische Login-Seite ist für die erste Version nicht erforderlich. Benutzerkonten mit E-Mail-Adresse und Passwort bleiben eine mögliche spätere Erweiterung.
 
 ### `Location` – Suchstandort
 
@@ -54,20 +58,21 @@ Gehört genau zu einem anonymen Nutzer und einem Restaurant. Sie enthält eine g
 
 ```mermaid
 erDiagram
-    AnonymousUser ||--o{ SearchRequest : starts
+    User ||--o{ SearchRequest : starts
     SearchRequest ||--o{ Recommendation : produces
     Recommendation }o--|| Restaurant : suggests
 
-    AnonymousUser ||--o{ Favorite : owns
+    User ||--o{ Favorite : owns
     Restaurant ||--o{ Favorite : is_saved_as
 
-    AnonymousUser ||--o{ Visit : records
+    User ||--o{ Visit : records
     Restaurant ||--o{ Visit : was_visited
-    AnonymousUser ||--o{ Review : writes
+    User ||--o{ Review : writes
     Restaurant ||--o{ Review : receives
 
-    AnonymousUser {
-        UUID id PK
+    User {
+        UserId id PK
+        AccessTokenHash accessTokenHash
         DateTime createdAt
     }
     SearchRequest {
@@ -89,15 +94,19 @@ erDiagram
     }
     Favorite {
         UUID id PK
+        UserId userId FK
+        ExternalRestaurantKey restaurantKey FK
         DateTime createdAt
     }
     Visit {
         UUID id PK
+        UserId userId FK
+        ExternalRestaurantKey restaurantKey FK
         DateTime visitedAt
     }
     Review {
         UUID id PK
-        UUID userId FK
+        UserId userId FK
         ExternalRestaurantKey restaurantKey FK
         Rating rating
         ReviewComment comment_optional
@@ -105,13 +114,13 @@ erDiagram
     }
 ```
 
-`SearchRequest` ist im Diagramm einem `AnonymousUser` zugeordnet, wird aber gemäß NFA-6 nicht dauerhaft gespeichert. Die Beziehung dient ausschließlich der Verarbeitung einer laufenden Sitzung.
+`SearchRequest` ist im Diagramm einem `User` zugeordnet, wird aber gemäß NFA-6 nicht dauerhaft gespeichert. Die Beziehung dient ausschließlich der Verarbeitung einer laufenden Sitzung.
 
 ## D1.4 Persistenzsicht
 
 | Objekt | Dauerhaft gespeichert? | Begründung |
 |---|---|---|
-| `AnonymousUser` | ja | Zuordnung lokaler Nutzerdaten ohne Login |
+| `User` | ja | interne Zuordnung persönlicher Daten ohne Registrierung oder Login |
 | `Location` | nein | Datenschutz; nur für die aktuelle Suche erforderlich |
 | `SearchRequest` | nein | MVP benötigt keine Suchhistorie |
 | `SearchFilters` | nein | Bestandteil der aktuellen Suchanfrage |
@@ -130,13 +139,15 @@ erDiagram
 | DR-03 | Der Suchradius beträgt im MVP 1 km, 3 km, 5 km oder 10 km. |
 | DR-04 | Ein Restaurant wird eindeutig durch `ExternalRestaurantKey` identifiziert, nicht allein durch seinen Namen. |
 | DR-05 | Unbekannte externe Werte werden als unbekannt behandelt und nicht durch erfundene Standardwerte ersetzt. |
-| DR-06 | Pro `AnonymousUser` und `Restaurant` existiert höchstens ein `Favorite`. |
+| DR-06 | Pro `User` und `Restaurant` existiert höchstens ein `Favorite`. |
 | DR-07 | Ein `Visit` gehört genau zu einem Nutzer und genau zu einem Restaurant. |
-| DR-08 | Ein `Review` gehört genau zu einem `AnonymousUser` und einem `Restaurant`. Die Kombination aus Nutzer und Restaurant ist eindeutig. Mindestens ein passender `Visit` muss vorhanden sein. |
+| DR-08 | Ein `Review` gehört genau zu einem `User` und einem `Restaurant`. Die Kombination aus Nutzer und Restaurant ist eindeutig. Mindestens ein passender `Visit` muss vorhanden sein. |
 | DR-09 | `Rating` ist eine ganze Zahl zwischen 1 und 5. |
 | DR-10 | Eine durchschnittliche Food-Mood-Bewertung wird ausschließlich aus eigenen `Review`-Einträgen berechnet. Ohne Bewertungen ist der Durchschnitt nicht `0`, sondern nicht vorhanden. |
 | DR-11 | Restaurantdaten aus einer neuen externen Antwort dürfen veraltete optionale Anzeigedaten aktualisieren, aber keine Besuche, Favoriten oder Bewertungen löschen. |
 | DR-12 | Standortdaten und Suchtext dürfen nicht in `Favorite`, `Visit` oder `Review` kopiert werden. |
+| DR-13 | Jede `UserId` identifiziert genau einen `User`; alle persönlichen Daten verweisen intern ausschließlich auf diese ID. |
+| DR-14 | Zu jedem `User` existiert genau ein aktiver Hash eines zufällig erzeugten `UserAccessToken`; der Token selbst wird nicht im Klartext gespeichert. |
 
 ## D1.6 Ableitung der durchschnittlichen Bewertung
 
@@ -154,14 +165,15 @@ Zusätzlich wird die Anzahl der Bewertungen angezeigt. Bei null Bewertungen laut
 | UC-03, UC-04, UC-05 Auswahl und Filter | `SearchRequest`, `SearchFilters`, `Mood`, `Occasion` |
 | UC-06 Empfehlungen berechnen | `SearchRequest`, `Restaurant`, `Recommendation` |
 | UC-07, UC-08 Ergebnisse und Details | `Restaurant`, `Recommendation` |
-| UC-09 Favorisieren, UC-12 Favoriten anzeigen | `AnonymousUser`, `Restaurant`, `Favorite` |
-| UC-10 Besuch markieren, UC-13 Besuche anzeigen | `AnonymousUser`, `Restaurant`, `Visit` |
-| UC-11 Bewertung abgeben | `AnonymousUser`, `Restaurant`, `Visit`, `Review` |
+| UC-09 Favorisieren, UC-12 Favoriten anzeigen | `User`, `Restaurant`, `Favorite` |
+| UC-10 Besuch markieren, UC-13 Besuche anzeigen | `User`, `Restaurant`, `Visit` |
+| UC-11 Bewertung abgeben | `User`, `Restaurant`, `Visit`, `Review` |
 | UC-14 API-Fehler behandeln | keine dauerhafte Fachdatenänderung |
 
 ## D1.8 Nicht im MVP-Datenmodell
 
-- registrierte Benutzerkonten, Rollen oder Passwörter
+- registrierte Benutzerkonten, Rollen, E-Mail-Adressen oder Passwörter
+- klassische Login- und Passwort-Wiederherstellungsfunktionen
 - Reservierungen und Bestellungen
 - Zahlungsdaten
 - eine selbst gepflegte vollständige Restaurantdatenbank
@@ -173,7 +185,9 @@ Zusätzlich wird die Anzahl der Bewertungen angezeigt. Bei null Bewertungen laut
 
 - Alle Objekte besitzen eine klare fachliche Verantwortung.
 - Dauerhafte und temporäre Daten sind eindeutig getrennt.
-- Favoriten, Besuche und Bewertungen sind einer anonymen Installation zuordenbar.
+- Favoriten, Besuche und Bewertungen sind über die interne `UserId` einem anonymen Nutzer zugeordnet.
+- Ein Nutzer kann seine persönlichen Daten über eine lange, nicht erratbare Zugriffs-URL wieder öffnen.
+- Der Zugangstoken wird in der Datenbank nicht im Klartext gespeichert.
 - Eine Bewertung kann fachlich und technisch nur entstehen, wenn derselbe Nutzer das Restaurant zuvor als besucht markiert hat.
 - Restaurants bleiben auch bei identischen Namen durch den externen Schlüssel unterscheidbar.
 - Das Modell setzt keine externen Bewertungen, Preise oder vollständig gepflegten OSM-Tags voraus.

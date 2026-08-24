@@ -10,7 +10,7 @@ Optionale Werte werden mit `| null` gekennzeichnet. `null` bedeutet „nicht vor
 
 | Typ | Grundtyp / Struktur | Regeln und Bedeutung |
 |---|---|---|
-| `AnonymousUserId` | UUID | intern erzeugte, zufällige Kennung einer App-Installation; enthält keine personenbezogenen Angaben |
+| `UserId` | UUID | intern erzeugte Kennung eines anonymen Nutzers; enthält keine personenbezogenen Angaben und wird nicht als Zugangsschlüssel verwendet |
 | `FavoriteId` | UUID | eindeutige Kennung eines Favoriten |
 | `VisitId` | UUID | eindeutige Kennung eines Besuchs |
 | `ReviewId` | UUID | eindeutige Kennung einer eigenen Bewertung |
@@ -84,14 +84,17 @@ Die Werte beschreiben die Food-Mood-Regeln, nicht objektiv garantierte Eigenscha
 | `MatchReason` | Zeichenkette | 1–120 Zeichen; verständliche Begründung statt interner Formel |
 | `MatchReasonList` | Liste von `MatchReason` | mindestens ein Eintrag pro angezeigter Empfehlung |
 | `DateTime` | ISO-8601-Zeitpunkt mit Zeitzone | serverseitig erzeugt bzw. validiert |
+| `UserAccessToken` | kryptografisch zufällige Zeichenkette | mindestens 128 Bit Entropie; wird als geheimer Bestandteil der persönlichen Zugriffs-URL verwendet und nicht im Klartext gespeichert |
+| `AccessTokenHash` | Zeichenkette | serverseitig erzeugter Hash des `UserAccessToken`; nur dieser Wert wird dauerhaft gespeichert |
 
 ## D2.5 Strukturtypen
 
-### `AnonymousUser`
+### `User`
 
 | Feld | Typ | Pflicht | Bedeutung |
 |---|---|---|---|
-| `id` | `AnonymousUserId` | ja | anonyme Installationskennung |
+| `id` | `UserId` | ja | interne Kennung des anonymen Nutzers |
+| `accessTokenHash` | `AccessTokenHash` | ja | ermöglicht die Prüfung des geheimen Zugangstokens, ohne es im Klartext zu speichern |
 | `createdAt` | `DateTime` | ja | Erzeugungszeitpunkt |
 
 ### `SearchFilters`
@@ -156,7 +159,7 @@ Mindestens eines der Felder `mood` oder `occasion` muss einen Wert enthalten.
 | Feld | Typ | Pflicht | Bedeutung |
 |---|---|---|---|
 | `id` | `FavoriteId` | ja | Favoritenkennung |
-| `userId` | `AnonymousUserId` | ja | zugehörige Installation |
+| `userId` | `UserId` | ja | zugehöriger anonymer Nutzer |
 | `restaurantKey` | `ExternalRestaurantKey` | ja | favorisiertes Restaurant |
 | `createdAt` | `DateTime` | ja | Zeitpunkt der Favorisierung |
 
@@ -167,7 +170,7 @@ Die Kombination `userId + restaurantKey` ist eindeutig.
 | Feld | Typ | Pflicht | Bedeutung |
 |---|---|---|---|
 | `id` | `VisitId` | ja | Besuchskennung |
-| `userId` | `AnonymousUserId` | ja | zugehörige Installation |
+| `userId` | `UserId` | ja | zugehöriger anonymer Nutzer |
 | `restaurantKey` | `ExternalRestaurantKey` | ja | besuchtes Restaurant |
 | `visitedAt` | `DateTime` | ja | Besuchszeitpunkt; darf nicht in der Zukunft liegen |
 | `createdAt` | `DateTime` | ja | Speicherzeitpunkt |
@@ -177,7 +180,7 @@ Die Kombination `userId + restaurantKey` ist eindeutig.
 | Feld | Typ | Pflicht | Bedeutung |
 |---|---|---|---|
 | `id` | `ReviewId` | ja | Bewertungskennung |
-| `userId` | `AnonymousUserId` | ja | bewertende anonyme Installation |
+| `userId` | `UserId` | ja | bewertender anonymer Nutzer |
 | `restaurantKey` | `ExternalRestaurantKey` | ja | bewertetes Restaurant |
 | `rating` | `Rating` | ja | Sternebewertung von 1 bis 5 |
 | `comment` | `ReviewComment` oder `null` | ja | optionaler Kurzkommentar |
