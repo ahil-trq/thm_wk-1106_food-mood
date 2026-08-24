@@ -2,202 +2,193 @@
 
 ## Zweck
 
-Dieses Dokument beschreibt die fachlichen Geschäftsprozesse der Anwendung **Food-Mood**. Ziel der Anwendung ist es, Benutzern anhand ihrer Stimmung, ihres Anlasses und weiterer Filter passende Restaurantempfehlungen bereitzustellen.
+Dieses Dokument beschreibt die übergeordneten Geschäftsprozesse der Anwendung **Food-Mood**.
 
-Die beschriebenen Prozesse bilden die Grundlage für die Anwendungsfälle, die Benutzeroberfläche und die spätere Implementierung.
+Geschäftsprozesse beschreiben zusammenhängende fachliche Abläufe und nicht einzelne Benutzeraktionen. Einzelne Nutzeraktionen wie die Auswahl einer Stimmung, das Setzen eines Filters oder das Speichern eines Favoriten werden daher nicht als eigene Geschäftsprozesse behandelt. Diese werden in **F2 – Anwendungsfälle** und **F3 – Anwendungsfunktionen** beschrieben.
 
 ---
 
-## GP-01 Restaurantempfehlung erhalten (Hauptprozess)
+## 1. GP-01 – Bereitstellung von Restaurantempfehlungen
 
-## Ziel
+### Ziel
 
-Der Benutzer erhält passende Restaurantempfehlungen auf Grundlage seines Standorts, seiner Stimmung, seines Anlasses und optionaler Filter.
+Food-Mood stellt dem Benutzer auf Grundlage eines Suchstandorts, seiner gewünschten Stimmung, eines möglichen Anlasses und weiterer Suchkriterien passende Restaurantempfehlungen bereit.
 
-## Beteiligter Akteur
+### Beteiligte
 
 - Benutzer
+- Food-Mood-Anwendung
+- externer Restaurant-/Places-Dienst
 
-## Vorbedingungen
+### Voraussetzungen
 
-- Die Anwendung ist gestartet.
-- Eine Internetverbindung ist vorhanden.
-- Die Restaurant-API ist erreichbar.
+- Die Anwendung ist verfügbar.
+- Für die Restaurantsuche steht ein gültiger Standort zur Verfügung.
+- Der externe Restaurant-/Places-Dienst ist grundsätzlich erreichbar.
 
-## Ablauf
+### Fachlicher Ablauf
 
-1. Der Benutzer startet die Anwendung.
-2. Die Anwendung fordert die Standortfreigabe an.
-3. Der Benutzer erlaubt den Zugriff auf seinen Standort.
-4. Die Anwendung bestimmt den aktuellen Standort.
-5. Der Benutzer wählt eine Stimmung aus.
-6. Der Benutzer wählt einen Anlass aus.
-7. Optional legt der Benutzer Filter fest (z. B. Preis, Entfernung oder Küche).
-8. Die Anwendung erstellt eine Suchanfrage.
-9. Die Anfrage wird an die Restaurant-API gesendet.
-10. Die API liefert passende Restaurants zurück.
-11. Die Anwendung bewertet und sortiert die Ergebnisse.
-12. Die Empfehlungsliste wird angezeigt.
-13. Der Benutzer wählt ein Restaurant aus.
-14. Die Detailseite des Restaurants wird geöffnet.
+1. Ein Benutzer startet eine Restaurantsuche.
+2. Food-Mood ermittelt oder übernimmt den gewünschten Suchstandort.
+3. Food-Mood übernimmt die vom Benutzer angegebenen Suchkriterien.
+4. Food-Mood beschafft passende Restaurantdaten über den angebundenen externen Dienst.
+5. Die verfügbaren Restaurantdaten werden verarbeitet.
+6. Die Restaurants werden anhand der festgelegten Kriterien bewertet und eingeordnet.
+7. Food-Mood stellt dem Benutzer die resultierenden Restaurantempfehlungen bereit.
+8. Der Benutzer kann auf Grundlage der Empfehlungen ein Restaurant auswählen und weitere Informationen abrufen.
 
-## Ergebnis
+### Ergebnis
 
-Der Benutzer erhält eine Liste passender Restaurants und kann Details zu einem Restaurant ansehen.
+Dem Benutzer steht eine auf seine Suchkriterien abgestimmte Liste von Restaurantempfehlungen zur Verfügung.
+
+### Alternativen und Ausnahmen
+
+- Wenn kein automatischer Standort ermittelt werden kann, kann ein alternativer Suchstandort verwendet werden.
+- Wenn keine passenden Restaurants gefunden werden, wird dem Benutzer ein entsprechender Hinweis angezeigt.
+- Wenn der externe Restaurant-/Places-Dienst nicht erreichbar ist, wird der Prozess kontrolliert abgebrochen und dem Benutzer eine Fehlermeldung angezeigt.
 
 ---
 
-## GP-02 Restaurant als Favorit speichern
+## 2. GP-02 – Betrieb der Food-Mood-Plattform
 
-## Ziel
+### Ziel
 
-Der Benutzer speichert interessante Restaurants für einen späteren Besuch.
+Die Anwendung stellt ihre grundlegenden Funktionen für die Suche und Bereitstellung von Restaurantempfehlungen zuverlässig zur Verfügung.
 
-## Beteiligter Akteur
+### Beteiligte
+
+- Food-Mood-Anwendung
+- externe Dienste
+
+### Fachlicher Ablauf
+
+1. Die Anwendung wird bereitgestellt und gestartet.
+2. Die benötigten Funktionen und Dienste werden verfügbar gemacht.
+3. Eingehende Suchanfragen werden verarbeitet.
+4. Externe Dienste werden bei Bedarf angesprochen.
+5. Ergebnisse werden verarbeitet und an die Anwendung zurückgegeben.
+6. Fehler und nicht verfügbare Dienste werden erkannt und behandelt.
+
+### Ergebnis
+
+Die grundlegenden Funktionen von Food-Mood stehen für die Nutzung zur Verfügung.
+
+### Alternativen und Ausnahmen
+
+- Bei einem Ausfall eines externen Dienstes wird eine geeignete Fehlermeldung ausgegeben.
+- Bei ungültigen oder unvollständigen Daten wird die Verarbeitung entsprechend abgebrochen oder eine erneute Eingabe ermöglicht.
+
+---
+
+## 3. GP-03 – Beschaffung und Verarbeitung von Restaurantdaten
+
+### Ziel
+
+Food-Mood beschafft die für die Restaurantempfehlungen benötigten Daten und bereitet diese für die weitere Verarbeitung auf.
+
+### Beteiligte
+
+- Food-Mood-Anwendung
+- externer Restaurant-/Places-Dienst
+
+### Fachlicher Ablauf
+
+1. Food-Mood erstellt auf Grundlage der Suchparameter eine Anfrage.
+2. Die Anfrage wird an den externen Dienst übermittelt.
+3. Der externe Dienst liefert verfügbare Restaurantdaten zurück.
+4. Food-Mood verarbeitet die erhaltenen Daten.
+5. Nicht benötigte oder ungültige Daten werden bei Bedarf ausgeschlossen.
+6. Die aufbereiteten Daten werden für die Empfehlungsermittlung bereitgestellt.
+
+### Ergebnis
+
+Für die Empfehlungsermittlung stehen aufbereitete Restaurantdaten zur Verfügung.
+
+### Alternativen und Ausnahmen
+
+- Werden keine Daten geliefert, kann keine entsprechende Empfehlung erstellt werden.
+- Bei ungültigen oder unvollständigen Daten werden diese nicht für die Empfehlung verwendet.
+- Bei einem Fehler des externen Dienstes wird der Fehler an den übergeordneten Prozess zur Behandlung weitergegeben.
+
+---
+
+## 4. GP-04 – Pflege nutzerbezogener Restaurantinformationen
+
+### Ziel
+
+Food-Mood ermöglicht die Verwaltung von nutzerbezogenen Informationen zu Restaurants, beispielsweise gespeicherten Favoriten, besuchten Restaurants und eigenen Bewertungen.
+
+### Beteiligte
 
 - Benutzer
+- Food-Mood-Anwendung
 
-## Vorbedingungen
+### Fachlicher Ablauf
 
-- Die Restaurantdetailseite ist geöffnet.
+1. Der Benutzer entscheidet sich, Informationen zu einem Restaurant zu speichern oder zu verändern.
+2. Food-Mood verarbeitet die entsprechende Eingabe.
+3. Die Information wird gespeichert beziehungsweise aktualisiert.
+4. Die gespeicherten Informationen können später wieder bereitgestellt werden.
 
-## Ablauf
+### Ergebnis
 
-1. Der Benutzer öffnet die Detailseite eines Restaurants.
-2. Der Benutzer klickt auf „Zu Favoriten hinzufügen“.
-3. Die Anwendung speichert das Restaurant.
-4. Das Restaurant erscheint in der Favoritenliste.
+Nutzerbezogene Restaurantinformationen stehen für eine spätere Verwendung zur Verfügung.
 
-## Ergebnis
+### Fachliche Einschränkung
 
-Das Restaurant wurde erfolgreich als Favorit gespeichert.
-
----
-
-## GP-03 Restaurant als besucht markieren und bewerten
-
-## Ziel
-
-Der Benutzer kann bereits besuchte Restaurants bewerten.
-
-## Beteiligter Akteur
-
-- Benutzer
-
-## Vorbedingungen
-
-- Die Restaurantdetailseite ist geöffnet.
-
-## Ablauf
-
-1. Der Benutzer markiert das Restaurant als besucht.
-2. Der Benutzer vergibt eine Bewertung.
-3. Optional schreibt der Benutzer einen kurzen Kommentar.
-4. Die Bewertung wird gespeichert.
-
-## Ergebnis
-
-Die Bewertung wurde erfolgreich gespeichert.
+Eine eigene Bewertung kann nur für ein Restaurant abgegeben werden, das zuvor als besucht markiert wurde.
 
 ---
 
-## Alternativprozesse
+## Nicht als Geschäftsprozesse behandelte Einzelaktionen
 
-## AP-01 Standortfreigabe verweigert
+Die folgenden Punkte sind keine eigenständigen Geschäftsprozesse, sondern einzelne Nutzeraktionen beziehungsweise Funktionen:
 
-### Beschreibung
+- Stimmung auswählen
+- Anlass auswählen
+- Filter setzen
+- Restaurant auswählen
+- Restaurantdetails anzeigen
+- Restaurant favorisieren
+- Restaurant als besucht markieren
+- Eigene Bewertung abgeben
+- Favoriten anzeigen
+- Besuchte Restaurants anzeigen
+- Standort automatisch bestimmen
+- Standort manuell eingeben
 
-Falls der Benutzer die Standortfreigabe ablehnt, kann die Restaurantsuche trotzdem durchgeführt werden.
-
-### Ablauf
-
-1. Die Anwendung erkennt, dass keine Standortfreigabe vorliegt.
-2. Die Anwendung bietet eine manuelle Standorteingabe an.
-3. Der Benutzer gibt eine Adresse oder einen Ort ein.
-4. Die Anwendung verwendet den eingegebenen Standort.
-5. Der Hauptprozess wird fortgesetzt.
-
----
-
-## Fehlerprozesse
-
-## FP-01 Restaurant-API nicht erreichbar
-
-### Ablauf
-
-1. Die Anwendung sendet die Suchanfrage.
-2. Die Restaurant-API antwortet nicht oder liefert einen Fehler.
-3. Die Anwendung zeigt eine verständliche Fehlermeldung.
-4. Der Benutzer kann die Suche erneut starten.
+Diese Inhalte werden in **F2 – Anwendungsfälle** und **F3 – Anwendungsfunktionen** detailliert beschrieben.
 
 ---
 
-## FP-02 Keine Restaurants gefunden
+## Abgrenzung des Geschäftsprozesses
 
-### Ablauf
+Für die aktuelle Version von Food-Mood sind folgende Geschäftsprozesse nicht Bestandteil der Anwendung:
 
-1. Die Suchanfrage wird erfolgreich verarbeitet.
-2. Es werden keine passenden Restaurants gefunden.
-3. Die Anwendung informiert den Benutzer.
-4. Der Benutzer kann Filter oder Stimmung ändern und erneut suchen.
+- Restaurantreservierungen
+- Bezahlung von Restaurantleistungen
+- Benutzeranmeldung und Kontoverwaltung
+- Bestellabwicklung
+- Lieferabwicklung
+
+Diese Funktionen gehören nicht zum definierten Funktionsumfang der aktuellen Version von Food-Mood.
 
 ---
 
-## Aktivitätsdiagramm
+## Aktivitätsdiagramm des zentralen Geschäftsprozesses
 
 ```mermaid
 flowchart TD
-    A([App starten])
-    B[Standortfreigabe anfragen]
-    C{Standortfreigabe erlaubt?}
-    D[Standort automatisch bestimmen]
-    E[Standort manuell eingeben]
-    F[Stimmung auswählen]
-    G[Anlass auswählen]
-    H[Filter festlegen]
-    I[Restaurant-API aufrufen]
-    J[Restaurants empfangen]
-    K[Ergebnisse bewerten und sortieren]
-    L[Empfehlungsliste anzeigen]
-    M[Restaurant auswählen]
-    N[Restaurantdetails anzeigen]
-    O([Ende])
+    A([Start]) --> B[Restaurantsuche wird gestartet]
+    B --> C[Suchstandort bereitstellen]
+    C --> D[Suchkriterien übernehmen]
+    D --> E[Restaurantdaten beschaffen]
+    E --> F{Restaurantdaten verfügbar?}
 
-    A --> B
-    B --> C
-    C -->|Ja| D
-    C -->|Nein| E
-    D --> F
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
-    M --> N
-    N --> O
-```
+    F -->|Ja| G[Restaurantdaten verarbeiten]
+    G --> H[Empfehlungen ermitteln]
+    H --> I[Empfehlungen bereitstellen]
+    I --> J([Ende])
 
----
-
-## Geschäftsregeln
-
-- Eine Restaurantsuche ist auch ohne Standortfreigabe möglich.
-- Mindestens eine Stimmung muss ausgewählt werden.
-- Der Anlass ist optional.
-- Filter sind optional.
-- Ohne Internetverbindung können keine Restaurantdaten geladen werden.
-- Empfehlungen werden auf Basis der von der API gelieferten Daten erstellt.
-
----
-
-## Akzeptanzkriterien
-
-- Der Hauptprozess ist vollständig beschrieben.
-- Alle wichtigen Alternativ- und Fehlerprozesse sind dokumentiert.
-- Der Benutzer kann Restaurants auch ohne Standortfreigabe suchen.
-- Mindestens ein Aktivitätsdiagramm ist vorhanden.
-- Alle Prozessschritte sind logisch und nachvollziehbar beschrieben.
-- Die beschriebenen Prozesse stimmen mit den Anwendungsfällen (F2) und den Anwendungsfunktionen (F3) überein.
+    F -->|Nein| K[Fehler oder keine Ergebnisse behandeln]
+    K --> J
