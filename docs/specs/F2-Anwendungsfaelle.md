@@ -90,7 +90,8 @@ flowchart LR
 | Ergebnis | Eine neue UserID wurde erzeugt und dem Nutzer zugeordnet. |
 | Akzeptanzkriterien | Eine neue UserID kann erstellt werden. Die UserID wird dem Nutzer angezeigt. Der Nutzer gelangt danach zur Startseite. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 (M-00 Einstieg) |
+| Dialog | UC-00: | Dialog | [M-00 Einstieg](B1-Dialogspezifikation.md#m-00--einstieg) |
+ 
 
 ---
 
@@ -110,7 +111,7 @@ flowchart LR
 | Ergebnis | Das bestehende Nutzerprofil wurde geladen. |
 | Akzeptanzkriterien | Eine bestehende UserID kann eingegeben werden. Bei gültiger UserID wird das Profil geladen. Bei ungültiger UserID erscheint eine Fehlermeldung. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 (M-00 Einstieg) |
+| Dialog |  UC-01: | Dialog | [M-00 Einstieg](B1-Dialogspezifikation.md#m-00--einstieg) |
 
 ---
 
@@ -130,7 +131,7 @@ flowchart LR
 | Ergebnis | Die App ist mit der neuen UserID verknüpft. |
 | Akzeptanzkriterien | Der Nutzer kann jederzeit zur Einstiegsmaske zurückkehren und die UserID wechseln. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 (M-00 Einstieg, M-01 Start) |
+| Dialog | UC-02: | Dialog | [M-00 Einstieg](B1-Dialogspezifikation.md#m-00--einstieg) |
 
 ---
 
@@ -150,7 +151,7 @@ flowchart LR
 | Ergebnis | Ein gültiger Standort (automatisch oder manuell) steht für die Suche zur Verfügung. |
 | Akzeptanzkriterien | Automatische und manuelle Standortbestimmung sind möglich. Am Ende steht ein gültiger Standort zur Verfügung. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 (M-02 Standortfreigabe) |
+| Dialog | UC-03: | Dialog | [M-02 Standortfreigabe](B1-Dialogspezifikation.md#m-02--standortfreigabe)|
 
 ---
 
@@ -170,7 +171,7 @@ flowchart LR
 | Ergebnis | Stimmung und/oder Anlass wurden für die Restaurantsuche festgelegt. |
 | Akzeptanzkriterien | Verfügbare Stimmungen/Anlässe werden angezeigt. Eine Auswahl ist möglich. Die Auswahl wird für die Empfehlung berücksichtigt. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 (M-03 Stimmung & Anlass) |
+| Dialog | UC-04: | Dialog | [M-03 Stimmung & Anlass](B1-Dialogspezifikation.md#m-03--stimmung--anlass) |
 
 ---
 
@@ -190,7 +191,7 @@ flowchart LR
 | Ergebnis | Die gewünschten Suchfilter sind für die Restaurantsuche festgelegt. |
 | Akzeptanzkriterien | Verfügbare Filter werden angezeigt. Filter können gesetzt und entfernt werden. Die gesetzten Filter beeinflussen die Ergebnisse. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | UC-05: | Dialog | [M-04 Filterauswahl](B1-Dialogspezifikation.md#m-04--filterauswahl)|
 
 ---
 
@@ -210,7 +211,7 @@ flowchart LR
 | Ergebnis | Eine sortierte Liste von Restaurantempfehlungen wurde erstellt. |
 | Akzeptanzkriterien | Die vorhandenen Suchkriterien werden berücksichtigt. Restaurantdaten werden verarbeitet. Die Ergebnisse werden bewertet und sortiert. Eine Empfehlungsliste wird erstellt. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog |  UC-06: | Dialog | [M-05 Empfehlungsliste](B1-Dialogspezifikation.md#m-05--empfehlungsliste)|
 
 ---
 
@@ -230,7 +231,7 @@ flowchart LR
 | Ergebnis | Der Benutzer kann die verfügbaren Empfehlungen ansehen. |
 | Akzeptanzkriterien | Die Ergebnisse werden übersichtlich angezeigt. Relevante Restaurantinformationen sind sichtbar. Ein Restaurant kann ausgewählt werden. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | UC-07: | Dialog | [M-05 Empfehlungsliste](B1-Dialogspezifikation.md#m-05--empfehlungsliste) |
 
 ---
 
@@ -250,7 +251,7 @@ flowchart LR
 | Ergebnis | Der Benutzer kann die verfügbaren Details des Restaurants einsehen. |
 | Akzeptanzkriterien | Eine Detailansicht ist verfügbar. Die verfügbaren Restaurantinformationen werden angezeigt. Der Benutzer kann zur Empfehlungsliste zurückkehren. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog |  UC-08: | Dialog | [M-06 Restaurantdetails](B1-Dialogspezifikation.md#m-06--restaurantdetails)|
 
 ---
 
@@ -270,7 +271,7 @@ flowchart LR
 | Ergebnis | Das Restaurant ist als Favorit gespeichert. |
 | Akzeptanzkriterien | Ein Restaurant kann als Favorit gespeichert werden. Ein Favorit kann wieder entfernt werden. Gespeicherte Favoriten sind über UC-12 erreichbar. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog |UC-09: | Dialog | [M-06 Restaurantdetails](B1-Dialogspezifikation.md#m-06--restaurantdetails) |
 
 ---
 
@@ -290,7 +291,7 @@ flowchart LR
 | Ergebnis | Das Restaurant ist als besucht gespeichert. |
 | Akzeptanzkriterien | Ein Restaurant kann als besucht markiert werden. Der gespeicherte Besuch kann in der Besuchsliste angezeigt werden (siehe UC-13). Ein als besucht markiertes Restaurant kann bewertet werden (siehe UC-11). |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | UC-10: | Dialog | [M-06 Restaurantdetails](B1-Dialogspezifikation.md#m-06--restaurantdetails) |
 
 ---
 
@@ -310,7 +311,7 @@ flowchart LR
 | Ergebnis | Die persönliche Bewertung wurde gespeichert. |
 | Akzeptanzkriterien | Eine Bewertung kann nur für ein besuchtes Restaurant abgegeben werden. Ungültige Bewertungen werden abgelehnt. Eine bestehende eigene Bewertung kann geändert werden. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | UC-11: | Dialog | [M-06 Restaurantdetails](B1-Dialogspezifikation.md#m-06--restaurantdetails) |
 
 ---
 
@@ -330,7 +331,7 @@ flowchart LR
 | Ergebnis | Der Benutzer sieht seine gespeicherten Favoriten. |
 | Akzeptanzkriterien | Gespeicherte Favoriten werden angezeigt. Ein Favorit kann ausgewählt werden. Eine leere Favoritenliste wird verständlich dargestellt. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog |UC-12: | Dialog | [M-07 Favoriten](B1-Dialogspezifikation.md#m-07--favoriten) |
 
 ---
 
@@ -350,7 +351,7 @@ flowchart LR
 | Ergebnis | Der Benutzer erhält eine Übersicht seiner besuchten Restaurants. |
 | Akzeptanzkriterien | Besuchte Restaurants werden angezeigt. Ein Restaurant kann aus der Übersicht ausgewählt werden. Eine leere Liste wird verständlich dargestellt. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | UC-13: | Dialog | [M-07 Favoriten](B1-Dialogspezifikation.md#m-07--favoriten) |
 
 ---
 
@@ -370,7 +371,7 @@ flowchart LR
 | Ergebnis | Der Benutzer wird über das Problem informiert, ohne dass die Anwendung unerwartet beendet wird. |
 | Akzeptanzkriterien | API-Fehler werden erkannt. Der Benutzer erhält eine verständliche Fehlermeldung. Die Anwendung bleibt trotz des API-Fehlers bedienbar. Ein erneuter Versuch ist möglich. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog |  UC-14: | Dialog | [M-05 Empfehlungsliste](B1-Dialogspezifikation.md#m-05--empfehlungsliste)|
 
 ---
 
