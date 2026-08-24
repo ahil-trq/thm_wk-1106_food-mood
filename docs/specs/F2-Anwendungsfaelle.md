@@ -4,42 +4,44 @@
 
 | ID | Use Case |
 |---|---|
-| [UC-01](#uc-01) | Standort automatisch bestimmen |
-| [UC-02](#uc-02) | Standort manuell eingeben |
-| [UC-03](#uc-03) | Stimmung auswählen |
-| [UC-04](#uc-04) | Anlass auswählen |
+| [UC-00](#uc-00) | Nutzer initialisieren |
+| [UC-01](#uc-01) | Bestehenden Nutzer über UserID laden |
+| [UC-02](#uc-02) | Nutzer wechseln |
+| [UC-03](#uc-03) | Standort bestimmen |
+| [UC-04](#uc-04) | Stimmung und/oder Anlass auswählen |
 | [UC-05](#uc-05) | Filter setzen |
-| [UC-06](#uc-06) | Empfehlungen berechnen |
+| [UC-06](#uc-06) | Empfehlungen erhalten |
 | [UC-07](#uc-07) | Ergebnisse anzeigen |
-| [UC-08](#uc-08) | Restaurantdetails anzeigen |
+| [UC-08](#uc-08) | Restaurantdetails ansehen |
 | [UC-09](#uc-09) | Restaurant favorisieren |
 | [UC-10](#uc-10) | Restaurant als besucht markieren |
 | [UC-11](#uc-11) | Eigene Bewertung abgeben |
 | [UC-12](#uc-12) | Favoriten anzeigen |
 | [UC-13](#uc-13) | Besuchte Restaurants anzeigen |
-| [UC-14](#uc-14) | API-Fehler behandeln |
+| [UC-14](#uc-14) | API-Fehler behandeln (Zusatz) |
 
 ---
-
 ## Use-Case-Diagramm – Gesamtübersicht
 
 ```mermaid
 flowchart LR
     Nutzer[Nutzer]
-    UC01[UC-01 Standort automatisch bestimmen]
-    UC02[UC-02 Standort manuell eingeben]
-    UC03[UC-03 Stimmung auswählen]
-    UC04[UC-04 Anlass auswählen]
+    UC00[UC-00 Nutzer initialisieren]
+    UC01[UC-01 Bestehenden Nutzer laden]
+    UC02[UC-02 Nutzer wechseln]
+    UC03[UC-03 Standort bestimmen]
+    UC04[UC-04 Stimmung/Anlass auswählen]
     UC05[UC-05 Filter setzen]
-    UC06[UC-06 Empfehlungen berechnen]
+    UC06[UC-06 Empfehlungen erhalten]
     UC07[UC-07 Ergebnisse anzeigen]
-    UC08[UC-08 Restaurantdetails anzeigen]
+    UC08[UC-08 Restaurantdetails ansehen]
     UC09[UC-09 Restaurant favorisieren]
     UC10[UC-10 Restaurant als besucht markieren]
     UC11[UC-11 Eigene Bewertung abgeben]
     UC12[UC-12 Favoriten anzeigen]
     UC13[UC-13 Besuchte Restaurants anzeigen]
     UC14[UC-14 API-Fehler behandeln]
+    Nutzer --> UC00
     Nutzer --> UC01
     Nutzer --> UC02
     Nutzer --> UC03
@@ -52,8 +54,9 @@ flowchart LR
     Nutzer --> UC11
     Nutzer --> UC12
     Nutzer --> UC13
-    UC01 --> UC06
-    UC02 --> UC06
+    UC00 --> UC03
+    UC01 --> UC03
+    UC02 -.-> UC00
     UC03 --> UC06
     UC04 --> UC06
     UC05 --> UC06
@@ -71,23 +74,43 @@ flowchart LR
 
 # Ausführliche Use Cases (Einheitliches Template)
 
+## UC-00
+
+| Feld | Inhalt |
+|---|---|
+| ID | UC-00 |
+| Name | Nutzer initialisieren |
+| Akteur | Nutzer |
+| Ziel | Eine neue UserID erzeugen, damit der Nutzer ohne klassisches Login eindeutig identifizierbar ist und Favoriten, Besuche und Bewertungen später zugeordnet werden können. |
+| Vorbedingungen | Die App wird geöffnet und es liegt noch keine UserID vor. |
+| Auslöser | Der Nutzer öffnet Food-Mood zum ersten Mal und möchte eine neue UserID anlegen. |
+| Hauptszenario | 1. Der Nutzer öffnet die Einstiegsmaske.<br>2. Der Nutzer gibt seinen Namen ein.<br>3. Der Nutzer wählt "Neue UserID erstellen".<br>4. Food-Mood generiert eine neue, eindeutige UserID.<br>5. Die UserID wird angezeigt und lokal gespeichert.<br>6. Der Nutzer gelangt zur Startseite. |
+| Alternativen | Der Nutzer gibt stattdessen eine bestehende UserID ein (siehe UC-01). |
+| Fehlerfälle | Der Name wird nicht eingegeben. Die UserID kann nicht erzeugt oder gespeichert werden. |
+| Ergebnis | Eine neue UserID wurde erzeugt und dem Nutzer zugeordnet. |
+| Akzeptanzkriterien | Eine neue UserID kann erstellt werden. Die UserID wird dem Nutzer angezeigt. Der Nutzer gelangt danach zur Startseite. |
+| Datenmodell | Link D1/D2 |
+| Dialog | Link B1 (M-00 Einstieg) |
+
+---
+
 ## UC-01
 
 | Feld | Inhalt |
 |---|---|
 | ID | UC-01 |
-| Name | Standort automatisch bestimmen |
+| Name | Bestehenden Nutzer über UserID laden |
 | Akteur | Nutzer |
-| Ziel | Den aktuellen Standort des Benutzers automatisch ermitteln, um ihn für die Restaurantsuche zu verwenden. |
-| Vorbedingungen | Die Anwendung ist geöffnet. Das Gerät unterstützt die Standortbestimmung. Der Benutzer erteilt die erforderliche Standortfreigabe. |
-| Auslöser | Der Benutzer startet eine Restaurantsuche und erlaubt die Standortbestimmung. |
-| Hauptszenario | 1. Der Benutzer startet die Restaurantsuche.<br>2. Food-Mood fragt nach der Standortfreigabe.<br>3. Der Benutzer erteilt die Freigabe.<br>4. Food-Mood ermittelt den aktuellen Standort.<br>5. Der Standort wird für die weitere Restaurantsuche verwendet. |
-| Alternativen | Der Benutzer verweigert die Standortfreigabe → Food-Mood bietet die manuelle Eingabe eines Standorts an (siehe UC-02). |
-| Fehlerfälle | Der Standort kann technisch nicht ermittelt werden. Die Standortdaten sind nicht verfügbar. |
-| Ergebnis | Ein gültiger Standort steht für die Restaurantsuche zur Verfügung. |
-| Akzeptanzkriterien | Der Benutzer kann die Standortfreigabe erteilen. Bei erfolgreicher Freigabe wird der aktuelle Standort ermittelt. Bei fehlender Standortfreigabe kann ein Standort manuell eingegeben werden. |
+| Ziel | Mit einer bereits vorhandenen UserID das eigene Profil (Favoriten, Besuche, Bewertungen) wieder laden. |
+| Vorbedingungen | Der Nutzer besitzt bereits eine gültige UserID. |
+| Auslöser | Der Nutzer wählt auf der Einstiegsmaske "UserID eingeben". |
+| Hauptszenario | 1. Der Nutzer öffnet die Einstiegsmaske.<br>2. Der Nutzer gibt seine bestehende UserID ein.<br>3. Food-Mood prüft die UserID.<br>4. Das zugehörige Profil wird geladen.<br>5. Der Nutzer gelangt zur Startseite. |
+| Alternativen | Der Nutzer entscheidet sich stattdessen für eine neue UserID (siehe UC-00). |
+| Fehlerfälle | Die eingegebene UserID ist ungültig oder unbekannt. |
+| Ergebnis | Das bestehende Nutzerprofil wurde geladen. |
+| Akzeptanzkriterien | Eine bestehende UserID kann eingegeben werden. Bei gültiger UserID wird das Profil geladen. Bei ungültiger UserID erscheint eine Fehlermeldung. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | Link B1 (M-00 Einstieg) |
 
 ---
 
@@ -96,18 +119,18 @@ flowchart LR
 | Feld | Inhalt |
 |---|---|
 | ID | UC-02 |
-| Name | Standort manuell eingeben |
+| Name | Nutzer wechseln |
 | Akteur | Nutzer |
-| Ziel | Einen Standort manuell festlegen, wenn keine automatische Standortbestimmung verwendet werden kann. |
-| Vorbedingungen | Die Anwendung ist geöffnet. Die manuelle Standorteingabe ist verfügbar. |
-| Auslöser | Der Benutzer entscheidet sich für die manuelle Standortangabe. |
-| Hauptszenario | 1. Der Benutzer öffnet die manuelle Standorteingabe.<br>2. Der Benutzer gibt einen Ort oder eine Adresse ein.<br>3. Food-Mood prüft die Eingabe.<br>4. Der Standort wird übernommen.<br>5. Der Standort wird für die Restaurantsuche verwendet. |
-| Alternativen | Der Benutzer ändert seine Eingabe und gibt einen anderen Standort ein. |
-| Fehlerfälle | Der eingegebene Standort kann nicht erkannt werden. Die Eingabe ist leer oder ungültig. |
-| Ergebnis | Ein gültiger manueller Standort steht für die Restaurantsuche zur Verfügung. |
-| Akzeptanzkriterien | Ein Standort kann manuell eingegeben werden. Ungültige Eingaben werden erkannt. Ein gültiger Standort kann für die Suche verwendet werden. |
+| Ziel | Von der aktuellen UserID zu einer anderen wechseln, z. B. wenn eine andere Person dasselbe Gerät nutzt. |
+| Vorbedingungen | Der Nutzer ist bereits mit einer UserID angemeldet. |
+| Auslöser | Der Nutzer möchte die App mit einer anderen Identität nutzen. |
+| Hauptszenario | 1. Der Nutzer kehrt zur Einstiegsmaske zurück.<br>2. Der Nutzer gibt eine andere UserID ein oder erstellt eine neue.<br>3. Food-Mood wechselt zum entsprechenden Profil. |
+| Alternativen | – |
+| Fehlerfälle | Die neue UserID ist ungültig. |
+| Ergebnis | Die App ist mit der neuen UserID verknüpft. |
+| Akzeptanzkriterien | Der Nutzer kann jederzeit zur Einstiegsmaske zurückkehren und die UserID wechseln. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | Link B1 (M-00 Einstieg, M-01 Start) |
 
 ---
 
@@ -116,18 +139,18 @@ flowchart LR
 | Feld | Inhalt |
 |---|---|
 | ID | UC-03 |
-| Name | Stimmung auswählen |
+| Name | Standort bestimmen |
 | Akteur | Nutzer |
-| Ziel | Die gewünschte Stimmung für die Restaurantempfehlung festlegen. |
-| Vorbedingungen | Die Restaurantsuche wurde gestartet. Die Stimmungsauswahl ist verfügbar. |
-| Auslöser | Der Benutzer möchte seine gewünschte Stimmung angeben. |
-| Hauptszenario | 1. Food-Mood zeigt verfügbare Stimmungen an.<br>2. Der Benutzer wählt eine Stimmung aus.<br>3. Food-Mood übernimmt die Auswahl.<br>4. Die ausgewählte Stimmung wird für die Empfehlung berücksichtigt. |
-| Alternativen | Der Benutzer ändert die ausgewählte Stimmung. |
-| Fehlerfälle | Es kann keine gültige Stimmung ausgewählt werden. |
-| Ergebnis | Eine Stimmung wurde für die Restaurantsuche festgelegt. |
-| Akzeptanzkriterien | Verfügbare Stimmungen werden angezeigt. Der Benutzer kann eine Stimmung auswählen. Die Auswahl wird für die Empfehlung berücksichtigt. |
+| Ziel | Einen Standort automatisch oder manuell festlegen, um passende Restaurants in der Nähe zu finden. |
+| Vorbedingungen | Die App ist geöffnet, eine UserID liegt vor. |
+| Auslöser | Der Nutzer startet die Restaurantsuche. |
+| Hauptszenario | 1. Food-Mood fragt nach Standortfreigabe.<br>2. Der Nutzer erteilt die Freigabe.<br>3. Food-Mood ermittelt den aktuellen Standort automatisch.<br>4. Der Standort wird für die Suche verwendet. |
+| Alternativen | Der Nutzer verweigert die automatische Freigabe → er gibt stattdessen Ort/Adresse manuell ein; Food-Mood prüft und übernimmt die Eingabe. |
+| Fehlerfälle | Der Standort kann technisch nicht ermittelt werden. Die manuelle Eingabe ist leer oder ungültig. |
+| Ergebnis | Ein gültiger Standort (automatisch oder manuell) steht für die Suche zur Verfügung. |
+| Akzeptanzkriterien | Automatische und manuelle Standortbestimmung sind möglich. Am Ende steht ein gültiger Standort zur Verfügung. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | Link B1 (M-02 Standortfreigabe) |
 
 ---
 
@@ -136,18 +159,18 @@ flowchart LR
 | Feld | Inhalt |
 |---|---|
 | ID | UC-04 |
-| Name | Anlass auswählen |
+| Name | Stimmung und/oder Anlass auswählen |
 | Akteur | Nutzer |
-| Ziel | Den Anlass für den Restaurantbesuch festlegen. |
-| Vorbedingungen | Die Restaurantsuche wurde gestartet. Die Anlassauswahl ist verfügbar. |
-| Auslöser | Der Benutzer möchte einen Anlass angeben. |
-| Hauptszenario | 1. Food-Mood zeigt verfügbare Anlässe an.<br>2. Der Benutzer wählt einen Anlass aus.<br>3. Food-Mood übernimmt die Auswahl.<br>4. Der Anlass wird für die Empfehlung berücksichtigt. |
-| Alternativen | Der Benutzer ändert den ausgewählten Anlass. Der Benutzer verwendet keinen bestimmten Anlass. |
-| Fehlerfälle | Es kann kein gültiger Anlass ausgewählt werden. |
-| Ergebnis | Der gewünschte Anlass steht für die Empfehlungsermittlung zur Verfügung. |
-| Akzeptanzkriterien | Verfügbare Anlässe werden angezeigt. Ein Anlass kann ausgewählt werden. Die Auswahl wird für die Empfehlung berücksichtigt. |
+| Ziel | Die gewünschte Stimmung und/oder den Anlass für die Restaurantempfehlung festlegen. |
+| Vorbedingungen | Die Restaurantsuche wurde gestartet. |
+| Auslöser | Der Nutzer möchte Stimmung und/oder Anlass angeben. |
+| Hauptszenario | 1. Food-Mood zeigt verfügbare Stimmungen und Anlässe an.<br>2. Der Nutzer wählt eine oder mehrere Stimmungen und/oder einen Anlass aus.<br>3. Food-Mood übernimmt die Auswahl.<br>4. Die Auswahl wird für die Empfehlung berücksichtigt. |
+| Alternativen | Der Nutzer ändert seine Auswahl. Der Nutzer wählt nur eine Stimmung oder nur einen Anlass. |
+| Fehlerfälle | Es kann keine gültige Auswahl getroffen werden. |
+| Ergebnis | Stimmung und/oder Anlass wurden für die Restaurantsuche festgelegt. |
+| Akzeptanzkriterien | Verfügbare Stimmungen/Anlässe werden angezeigt. Eine Auswahl ist möglich. Die Auswahl wird für die Empfehlung berücksichtigt. |
 | Datenmodell | Link D1/D2 |
-| Dialog | Link B1 |
+| Dialog | Link B1 (M-03 Stimmung & Anlass) |
 
 ---
 
@@ -176,7 +199,7 @@ flowchart LR
 | Feld | Inhalt |
 |---|---|
 | ID | UC-06 |
-| Name | Empfehlungen berechnen |
+| Name | Empfehlungen erhalten |
 | Akteur | Food-Mood-Anwendung |
 | Ziel | Auf Grundlage der verfügbaren Standort-, Stimmungs-, Anlass- und Filterdaten passende Restaurants ermitteln. |
 | Vorbedingungen | Ein gültiger Standort ist vorhanden. Die gewünschten Suchkriterien wurden übernommen. |
@@ -216,7 +239,7 @@ flowchart LR
 | Feld | Inhalt |
 |---|---|
 | ID | UC-08 |
-| Name | Restaurantdetails anzeigen |
+| Name | Restaurantdetails ansehen |
 | Akteur | Nutzer |
 | Ziel | Weitere Informationen zu einem ausgewählten Restaurant anzeigen. |
 | Vorbedingungen | Eine Restaurantempfehlung ist vorhanden. |
@@ -351,8 +374,6 @@ flowchart LR
 
 ---
 
-# Besonders berücksichtigen
+## Besonders berücksichtigen
 
-Da Food-Mood laut Vorgabe **keine Benutzeranmeldung** enthält, wird eine leichtgewichtige UserID verwendet, um Favoriten, Besuche und Bewertungen (UC-09 bis UC-13) einer Person zuordnen zu können, ohne einen echten Login-Prozess einzuführen.
-
-**User initialisieren:**
+Da Food-Mood laut Vorgabe *keine Benutzeranmeldung* enthält, wird eine leichtgewichtige UserID verwendet, um Favoriten, Besuche und Bewertungen (UC-09 bis UC-13) einer Person zuordnen zu können, ohne einen echten Login-Prozess einzuführen. Die Initialisierung und Verwaltung der UserID selbst ist in UC-00 bis UC-02 beschrieben.
