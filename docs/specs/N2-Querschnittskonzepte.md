@@ -1,48 +1,69 @@
 # N2 - Querschnittskonzepte
+
 Diese Datei beschreibt kurz die wiederkehrenden Konzepte, die mehrere Ansichten und Funktionen von Food-Mood einheitlich betreffen.
-## 1. Anonyme Nutzeridentifikation
 
-Da es keine Benutzerkonten im Frontend gibt, erhält jede App-Installation im Backend automatisch eine rein technische, anonyme ID (kein Login, kein Name, keine E-Mail). Über diese ID werden Favoriten sowie Besuche/Bewertungen der jeweiligen Installation zugeordnet.
--> Abhängigkeit: D1 (Datenmodell), Objekt "Nutzer/Nutzerprofil".
+## 1. UserID-basierte Identifikation
 
-## 2. Standortverarbeitung
+Da es keine klassischen Benutzerkonten gibt, identifiziert sich jeder Nutzer über eine leichtgewichtige UserID. Beim ersten Start kann eine neue UserID erstellt werden (dabei wird zusätzlich ein Name für die persönliche Begrüßung erfasst), oder es wird eine bestehende UserID eingegeben, um ein vorhandenes Profil zu laden. Über diese UserID werden Favoriten, Besuche und Bewertungen systemweit zugeordnet.
+-> Abhängigkeit: D1 (Datenmodell), Objekt "Nutzer/Nutzerprofil". F2 (Anwendungsfälle), UC-00, UC-01, UC-02.
 
-Der Standort wird entweder automatisch (Geräte/Browser Standort) oder manuell eingegeben ermittelt und ausschließlich zur Berechnung der aktuellen Empfehlungen verwendet.
--> Abhängigkeit: D1 (Datenmodell), Objekt "Standort". F2 (Anwendungsfälle), UC-01 "Standort festlegen".
+## 2. Sessionverwaltung
 
-## 3. Datenschutz
+Nach dem Erstellen oder Laden einer UserID (M-00 Einstieg) wird diese für die aktuelle Nutzung lokal gespeichert (Session), sodass sie nicht bei jeder weiteren Aktion erneut eingegeben werden muss. Alle nachfolgenden Aktionen (Favorisieren, Besuch markieren, Bewerten) verwenden automatisch die UserID der aktiven Session. Die Session bleibt bestehen, bis der Nutzer explizit die UserID wechselt oder die App-Daten gelöscht werden.
 
-Es werden keine personenbezogenen Daten (Name, E-Mail, Adresse der Person) erhoben. Standortdaten liegen nur temporär im Speicher der aktuellen Sitzung vor und werden nicht dauerhaft gespeichert. Favoriten und Bewertungen sind ausschließlich über die anonyme technische ID (siehe Punkt 1) zugeordnet, nicht über persönliche Daten.
+Systemweite Kette:
 
-## 4. Eingabevalidierung
+```text
+UserID
+  → Session
+    → Favoriten
+    → Besuche
+    → Bewertungen
+```
 
-Bewertungen sind ausschließlich über eine Sterne Auswahl (1–5, ganzzahlig) möglich. Filterwerte werden ausschließlich aus vordefinierten Optionen gewählt. Bei manueller Standorteingabe darf das Feld nicht leer bleiben und muss auf einen gültigen Ort auflösbar sein.
+-> Abhängigkeit: D1 (Datenmodell). F2 (Anwendungsfälle), UC-00 bis UC-02.
 
-## 5. Fehlerbehandlung
+## 3. Standortverarbeitung
 
-App weit einheitliches Muster: verständliche, allgemeinsprachliche Fehlermeldung statt technischer Fehlercodes, wo sinnvoll ergänzt um einen "Erneut versuchen" Button.
--> Abhängigkeit: F2 (Anwendungsfälle), UC-08 "Fehler bei externer API behandeln".
+Der Standort wird entweder automatisch (Geräte-/Browser-Standort) oder manuell eingegeben ermittelt und ausschließlich zur Berechnung der aktuellen Empfehlungen verwendet.
+-> Abhängigkeit: D1 (Datenmodell), Objekt "Standort". F2 (Anwendungsfälle), UC-03 "Standort bestimmen".
 
-## 6. Ladezustände
+## 4. Datenschutz
 
-Einheitlicher Ladeindikator (Spinner mit kurzem Hinweistext) für alle asynchronen Vorgänge (Standort ermitteln, Empfehlungen berechnen, Details nachladen), sichtbar ab einer Wartezeit von ca. 300 ms.
+Es werden keine sensiblen personenbezogenen Daten (E-Mail, Adresse, Telefonnummer) erhoben. Der bei der UserID-Erstellung eingegebene Name dient ausschließlich der persönlichen Begrüßung innerhalb der App und wird nicht an Dritte weitergegeben. Standortdaten liegen nur temporär im Speicher der aktuellen Sitzung vor und werden nicht dauerhaft gespeichert. Favoriten, Besuche und Bewertungen sind ausschließlich über die UserID zugeordnet.
 
-## 7. Empfehlungslogik
+## 5. Eingabevalidierung
 
-Fachliches Grundprinzip: passende Küche + passende Preisklasse + geringe Entfernung + geöffnet + passend zur gewählten Stimmung ergeben zusammen eine hohe Empfehlungsbewertung. Die genaue Gewichtung wird erst in der Architekturphase (M2) festgelegt.
--> Abhängigkeit: D1 (Datenmodell), Objekt "Empfehlung", F2 (Anwendungsfälle), UC-04 "Restaurantempfehlungen erzeugen".
+App-weit gelten einheitliche Validierungsregeln:
+- **Name (bei neuer UserID):** darf nicht leer sein.
+- **UserID (bei bestehendem Profil):** muss einem gültigen Format entsprechen und im System vorhanden sein, sonst erscheint eine Fehlermeldung.
+- **Standort (manuelle Eingabe):** darf nicht leer bleiben und muss auf einen gültigen Ort auflösbar sein.
+- **Filterwerte:** werden ausschließlich aus vordefinierten Optionen gewählt, keine Freitexteingabe.
+- **Bewertung:** ausschließlich über eine Sterne-Auswahl (1–5, ganzzahlig) möglich, ungültige Werte werden bereits in der Eingabemaske verhindert.
+- **Kommentar zur Bewertung:** optional, es gibt keine Pflicht zur Eingabe.
 
-## 8. Speicherung von Favoriten
+## 6. Fehlerbehandlung
 
-Favoriten werden dauerhaft (verknüpft mit der anonymen ID) im Backend gespeichert und bleiben nach einem Neustart der App erhalten. Ein Restaurant kann jederzeit favorisiert oder die Favorisierung wieder entfernt werden.
--> Abhängigkeit: D1 (Datenmodell), Objekt "Favorit", F2 (Anwendungsfälle), UC-07 "Restaurant als Favorit speichern".
+App-weit einheitliches Muster: verständliche, allgemeinsprachliche Fehlermeldung statt technischer Fehlercodes, ergänzt um einen "Erneut versuchen"-Button, wo sinnvoll. Konkrete Fehlerfälle:
+- **Externe API nicht erreichbar** (z. B. bei Empfehlungsberechnung): Hinweistext mit "Erneut versuchen".
+- **UserID nicht gefunden/ungültig:** Hinweistext "UserID nicht gefunden. Bitte prüfen oder neues Profil erstellen".
+- **Standort nicht ermittelbar:** Hinweistext, automatische Weiterleitung zur manuellen Eingabe.
+- **Speicherfehler** (z. B. Favorit oder Bewertung kann nicht gespeichert werden): Hinweistext mit Möglichkeit zum erneuten Versuch.
+-> Abhängigkeit: F2 (Anwendungsfälle), UC-14 "API-Fehler behandeln".
 
-## 9. Speicherung von Besuchen und Bewertungen
+## 7. Logging
 
-Ein Restaurant kann erst bewertet werden, nachdem es zuvor als "besucht" markiert wurde. Besuchsmarkierung und Bewertung (1–5 Sterne) werden gemeinsam dauerhaft gespeichert.
+Technische Fehler und wichtige Ereignisse (z. B. fehlgeschlagene API-Anfragen, fehlgeschlagene Speichervorgänge) werden serverseitig protokolliert, um Probleme im Betrieb nachvollziehen zu können. Es werden dabei keine personenbezogenen Daten (Name, Standort) geloggt, ausschließlich technische Informationen (Zeitstempel, Fehlerart).
+
+## 8. Einheitliche Datenbehandlung
+
+Alle nutzerbezogenen Daten (Favoriten, Besuche, Bewertungen) werden nach demselben Muster behandelt: dauerhaft gespeichert, verknüpft mit der UserID der aktiven Session, und bleiben nach einem Neustart der App erhalten. Ein Restaurant kann jederzeit favorisiert oder die Favorisierung entfernt werden. Eine Bewertung ist erst möglich, nachdem ein Restaurant zuvor als "besucht" markiert wurde.
+-> Abhängigkeit: D1 (Datenmodell), Objekte "Favorit", "Besuch", "Bewertung". F2 (Anwendungsfälle), UC-09, UC-10, UC-11.
 
 ## Akzeptanzkriterien
 
+- Nur systemweit relevante Konzepte sind enthalten.
+- Die UserID wird als Querschnittskonzept beschrieben (inkl. Session-Kette).
+- Keine einzelnen Features werden als Querschnittskonzept aufgeführt.
 - Wiederkehrende Konzepte sind zentral an einer Stelle beschrieben.
-- Die Konzepte gelten einheitlich für alle Ansichten der App.
 - Abhängigkeiten zu Datenmodell (D1) und Use Cases (F2) sind bei jedem Konzept genannt, wo zutreffend.
