@@ -1,230 +1,235 @@
 
 # B1 - Dialogspezifikation
-Diese Datei beschreibt die Zentralen Ansichten der Foof-Mood App: Zweck, sichtbare Informationen, Eingabefelder, Aktionen, Navigation sowie Lade- Fehler- und Leerzustände. Die Skizzen sind bewusst einfach gehalten.
-## 1. Startseite
+Diese Datei beschreibt die Zentralen Ansichten der Food-Mood App: Zweck, sichtbare Informationen, Eingabefelder, Aktionen, Navigation sowie Lade- Fehler- und Leerzustände. Die Skizzen sind bewusst einfach gehalten.
 
-**Zweck:** Hier beginnt der Einstiegspunkt der App. Der Benutzer kann mit der Emfehlungssuche beginnen.
+## Maskenübersicht
 
-**Sichtbare Informationen:** App-Name "Food-Mood", Slogan "Dein Mood, dein Biss", Button, um die Suche zu starten.
+| ID | Maske | Zweck | Use Cases |
+|---|---|---|---|
+| M-00 | Einstieg | Nutzer erstellen oder laden | UC-00, UC-01, UC-02 |
+| M-01 | Start | Einstiegspunkt in den Empfehlungsablauf | – |
+| M-02 | Standortfreigabe | Standort automatisch oder manuell festlegen | UC-03 |
+| M-03 | Stimmung & Anlass | Stimmung und/oder Anlass auswählen | UC-04 |
+| M-04 | Filterauswahl | Suche eingrenzen | UC-05 |
+| M-05 | Empfehlungsliste | Berechnete Empfehlungen anzeigen | UC-06, UC-07, UC-14 |
+| M-06 | Restaurantdetails | Restaurant betrachten, favorisieren, besuchen, bewerten | UC-08, UC-09, UC-10, UC-11 |
+| M-07 | Favoriten | Favoriten anzeigen und verwalten | UC-09, UC-12, UC-13 |
 
-**Eingabefelder:** keine.
+## Navigation
 
-**Schaltflächen/Aktionen:** "Los geht's" / "Restaurant finden" -> startet den Ablauf und führt zur Standortfreigabe.
+```mermaid
+flowchart TD
+    EIN[Einstieg]
+    EIN -->|Name eingeben| NEU[neue UserID]
+    EIN -->|UserID eingeben| LAD[Nutzer laden]
+    NEU --> START[Start]
+    LAD --> START
 
-**Navigation:** Standortfreigabe.
+    START --> LOC[Standortfreigabe]
+    LOC --> MOOD["Stimmung / Anlass"]
+    MOOD --> FILT[Filter]
+    FILT --> LIST[Empfehlungen]
+    LIST --> DET[Restaurantdetails]
 
-**Ladezustand:** keine.
+    DET -->|Favorit| FAV[Favoriten]
+    DET -->|Besucht| BEW[Bewertung]
+    BEW --> DET
+    FAV --> DET
+    LIST -.Favorit direkt aus Liste.-> FAV
 
-**Fehlerzustand:** keine.
-
-**Leere Ergebnisse:** Nicht zutreffend.
-
-```Text
------------------------------------------------------
-|                    Food-Mood                      |
-|               Dein Mood, dein Biss                |
-|                                                   |
-|         [ Los geht's / Restaurant finden]         |
------------------------------------------------------
+    START -.jederzeit erreichbar.-> FAV
+    START -.jederzeit erreichbar.-> EIN
 ```
 
-## 2. Standortfreigabe
+## M-00 – Einstieg
 
-**Zweck:** Standort des Nutzers wird ermittelt, um passende Restaurants in der Nähe zu finden.
+- **ID:** M-00
+- **Name:** Einstieg
+- **Zweck:** Ermöglicht dem Nutzer, ein neues Profil zu erstellen oder ein bestehendes Profil über seine UserID zu laden.
+- **Statische GUI-Inhalte:** App-Titel "Food-Mood", Beschriftungen "Neues Profil erstellen" und "Vorhandenes Profil laden". Feldbeschriftungen "Name" und "UserID".
+- **Dynamische GUI-Inhalte:** Fehlermeldung bei ungültiger/nicht gefundener UserID Ladeanzeige während das Profil erstellt/geladen wird.
+- **Eingaben:** Freitextfeld "Name", Freitextfeld "UserID".
+- **Aktionen:** "Neues Profil erstellen", "Profil laden".
+- **Validierungen:** Name darf nicht leer sein (bei neuem Profil). UserID muss einem gültigen Format entsprechen und im System vorhanden sein (bei bestehendem Profil).
+- **Navigation:** -> M-01 Start, sobald Profil erstellt oder geladen wurde.
+- **Fehlerzustände:** UserID nicht gefunden/ungültig -> Hinweistext "UserID nicht gefunden. Bitte prüfen oder neues Profil erstellen". Name leer gelassen -> Hinweistext "Bitte einen Namen eingeben".
+- **Zugehörige Use Cases:** [UC-00](F2-Anwendungsfaelle.md#uc-00), [UC-01](F2-Anwendungsfaelle.md#uc-01), [UC-02](F2-Anwendungsfaelle.md#uc-02).
 
-**Sichtbare Informationen:** Hinweistext, warum der Standort gebraucht wird z.B. "Wir brauchen deinen Standort, um Restaurants in deiner Nähe zu finden". Button für automatische Freigabe. Alternative für manuelle Eingabe.
+### Mockup M-00 – Einstieg/UserID
 
-**Eingabefelder:** Textfeld "Ort oder Adresse eingeben". Nutzbar, wenn der Nutzer die automatische Freigabe ablehnt oder lieber manuell eingeben möchte.
+![Mockup M-00 Einstieg](mockups/M-00-einstieg.png)
 
-**Schaltflächen/Aktionen:** "Standort freigeben" (Standort des Geräts wird gefragt), "Ort manuell eingeben" (öffnet das Textfeld), "Weiter" (bestätigt die manuelle Eingabe).
+- **Was sieht der Nutzer?** Eine kurze Begrüßung, ein Eingabefeld für den Namen sowie zwei Optionen: "Neue UserID erstellen" und "Bestehende UserID eingeben".
+- **Was kann er tun?** Namen eingeben und eine neue UserID erzeugen lassen, oder eine vorhandene UserID eingeben, um sein bestehendes Profil zu laden.
+- **Welche Daten sind dynamisch?** Die generierte UserID (wird erst nach Klick erzeugt), Fehlermeldung bei ungültiger/unbekannter UserID.
+- **Welche Use Cases gehören dazu?** UC-00.
 
-**Navigation:** Stimmung und Anlass (sobald ein Standort, automatisch oder manuell, feststeht)
+## M-01 – Startseite
 
-**Ladezustand:** Ladehinweis "Standort wird ermittelt".
+- **ID:** M-01
+- **Name:** Start
+- **Zweck:** Einstiegspunkt in den eigentlichen Empfehlungsablauf.
+- **Statische GUI-Inhalte:** App-Titel "Food-Mood". Slogan "Dein Mood, dein Biss". Beschriftung Button "Los geht's".
+- **Dynamische GUI-Inhalte:** keine.
+- **Eingaben:** keine.
+- **Aktionen:** "Los geht's".
+- **Validierungen:** nicht zutreffend.
+- **Navigation:** -> M-02 Standortfreigabe.
+- **Fehlerzustände:** keine.
+- **Zugehörige Use Cases:** reiner Einstieg, kein dedizierter Use Case.
 
-**Fehlerzustand:** Standortfreigabe abgelehnt. Hinweistext ("Standort konnte nicht ermittelt werden"). Automatische Weiterleitung zur manuellen Eingabe.
+### Mockup M-01 – Start
 
-**Leere Ergebnisse:** Nicht zutreffend
+![Mockup M-01 Start](mockups/M-01-start.png)
 
-```text
-----------------------------------
-|       Wo bist du gerade?       |
-|                                |
-|     [ Standort freigeben ]     |
-|                                |
-|   oder Ort manuell eingeben:   |
-|   [ z.B. Frankfurt, Zeil 1 ]   |
-|                                |
-|            [ Weiter ]          |
-----------------------------------
-```
+- **Was sieht der Nutzer?** App-Titel "Food-Mood", kurzer Slogan ("Dein Mood, dein Biss"), Begrüßung mit dem geladenen Namen, Button "Los geht's".
+- **Was kann er tun?** Auf "Los geht's" klicken, um mit der Standortfreigabe fortzufahren.
+- **Welche Daten sind dynamisch?** Der angezeigte Name des Nutzers (kommt aus M-00 Einstieg).
+- **Welche Use Cases gehören dazu?** reiner Einstiegspunkt in den Suchablauf, kein eigener Use Case.
 
-## 3. Stimmung und Anlass
+## M-02 – Standortfreigabe
 
-**Zweck:** Der Nutzer wählt seine Stimmung oder seinen Anlass aus, welche später in die Filterung der Empfehlungen einfließt.
+- **ID:** M-02
+- **Name:** Standortfreigabe
+- **Zweck:** Standort des Nutzers ermitteln, damit passende Restaurants in der Nähe gefunden werden können.
+- **Statische GUI-Inhalte:** Hinweistext, warum der Standort gebraucht wird. Beschriftung Button "Standort freigeben". Beschriftung "oder Ort manuell eingeben". Beschriftung Button "Weiter".
+- **Dynamische GUI-Inhalte:** Ladehinweis "Standort wird ermittelt …". Fehlermeldung bei abgelehnter/fehlgeschlagener Standortfreigabe.
+- **Eingaben:** Freitextfeld "Ort oder Adresse eingeben".
+- **Aktionen:** "Standort freigeben", "Weiter".
+- **Validierungen:** Eingabefeld darf bei manueller Eingabe nicht leer sein. Eingegebener Ort muss auf eine gültige Position auflösbar sein.
+- **Navigation:** -> M-03 Stimmung und Anlass.
+- **Fehlerzustände:** Standortfreigabe abgelehnt oder Standortdienst nicht verfügbar -> Hinweistext, Weiterleitung zur manuellen Eingabe.
+- **Zugehörige Use Cases:** [UC-03](F2-Anwendungsfaelle.md#uc-03).
 
-**Sichtbare Informationen:** Auswahlmöglichkeiten für Stimmung (gemütlich, romantisch, schnell, gesellig, neu, günstig). Anlass (Date, Familie, Freunde, Mittagspause, Uni).
+### Mockup M-02 – Standortfreigabe
 
-**Eingabefelder:** Reine Auswahl per Klick (Eine Stimmung und einen Anlass).
+![Mockup M-02 Standortfreigabe](mockups/M-02-standortfreigabe.png)
 
-**Schaltflächen/Aktionen:** Stimmungskacheln (auswählbar), Anlasskacheln (auswählbar). "Weiter" nur auswählbar, wenn beide Kacheln aktiv sind. 
+- **Was sieht der Nutzer?** Kurzen Hinweistext, warum der Standort benötigt wird, einen Button zur automatischen Freigabe sowie eine Alternative zur manuellen Eingabe.
+- **Was kann er tun?** Standort automatisch freigeben oder Ort/Adresse manuell eingeben und bestätigen.
+- **Welche Daten sind dynamisch?** Ladehinweis "Standort wird ermittelt …", Fehlermeldung bei abgelehnter Freigabe oder nicht verfügbarem Standortdienst, der eingegebene Ortstext.
+- **Welche Use Cases gehören dazu?** UC-03.
 
-**Navigation:** Filterauswahl.
+## M-03 – Stimmung und Anlass
 
-**Ladezustand:** Kein Ladezustand, nur die Auswahl erfolgt.
+- **ID:** M-03
+- **Name:** Stimmung & Anlass
+- **Zweck:** Auswahl der aktuellen Stimmung und/oder des Anlasses.
+- **Statische GUI-Inhalte:** Überschriften "Wie ist deine Stimmung?" und "Für welchen Anlass?" Beschriftung Button "Weiter".
+- **Dynamische GUI-Inhalte:** Auswahlzustand der Stimmungs- und Anlass-Kacheln (welche gerade aktiv sind).
+- **Eingaben:** keine Freitexteingabe, reine Auswahl per Klick (Stimmung: gemütlich, romantisch, schnell, gesellig, neu, günstig. Anlass: Date, Familie, Freunde, Mittagspause, Uni).
+- **Aktionen:** Stimmungs-Kachel auswählen, Anlass-Kachel auswählen, "Weiter".
+- **Validierungen:** mindestens eine Auswahl (Stimmung oder Anlass) muss getroffen sein, bevor "Weiter" aktiv wird.
+- **Navigation:** -> M-04 Filterauswahl.
+- **Fehlerzustände:** keine Auswahl getroffen und "Weiter" angetippt -> Hinweistext "Bitte wähle Stimmung und/oder Anlass aus".
+- **Zugehörige Use Cases:** [UC-04](F2-Anwendungsfaelle.md#uc-04).
 
-**Fehlerzustand:** Klick auf "Weiter" ohne vollständige Auswahl. Hinweistext (Bitte wähle Stimmung und Anlass aus).
+### Mockup M-03 – Stimmung und Anlass
 
-**Leere Ergebnisse:** Nicht zutreffend.
+![Mockup M-03 Stimmung und Anlass](mockups/M-03-stimmung-anlass.png)
 
-```text
-----------------------------------
-|    Wie ist deine Stimmung?     |
-|                                |
-|  ( gemütlich ) ( romantisch )  |
-|  (  schnell  ) (  gesellig  )  |
-|                                |
-|   Für welchen Anlass?          |
-|  (   Date  ) (    Familie   )  |
-|  ( Freunde ) ( Mittagspause )  |
-|                                |
-|          [ Weiter ]            |
-----------------------------------
-```
+- **Was sieht der Nutzer?** Anklickbare Kacheln für Stimmungen (gemütlich, romantisch, schnell, gesellig, neu, günstig) und für Anlässe (Date, Familie, Freunde, Mittagspause, Uni).
+- **Was kann er tun?** Eine oder mehrere Stimmungs-/Anlass-Kacheln auswählen und mit "Weiter" bestätigen.
+- **Welche Daten sind dynamisch?** Der optische Auswahlzustand der Kacheln (ausgewählt/nicht ausgewählt). Der "Weiter"-Button wird erst aktiv, sobald mindestens eine Auswahl getroffen wurde.
+- **Welche Use Cases gehören dazu?** UC-04.
 
-## 4. Filterauswahl
+## M-04 – Filterauswahl
 
-**Zweck:** Nutzer grenzt die Restaurantsuche durch Filterkriterien ein, bevor die Empfehlungen berechnet werden.
+- **ID:** M-04
+- **Name:** Filterauswahl
+- **Zweck:** Eingrenzung der Restaurantsuche über Filterkriterien.
+- **Statische GUI-Inhalte:** Überschrift "Filter". Feldbeschriftungen "Preis", "Entfernung", "Küche", "Ernährung", "Bewertung". Beschriftung Schalter "nur geöffnete Restaurants". Beschriftungen Buttons "Zurücksetzen"/"Anzeigen".
+- **Dynamische GUI-Inhalte:** aktueller Auswahlzustand aller Filter (welche Chips/Werte gerade aktiv sind).
+- **Eingaben:** Auswahlfeld Entfernung, Mehrfachauswahl Küche, Mehrfachauswahl Ernährung, Auswahlfeld Mindestbewertung, Ein/Aus-Schalter "nur geöffnet".
+- **Aktionen:** "Zurücksetzen", "Anzeigen".
+- **Validierungen:** keine Pflichtfelder. Alle Filter sind optional und dürfen leer bleiben.
+- **Navigation:** -> M-05 Empfehlungsliste.
+- **Fehlerzustände:** nicht zutreffend.
+- **Zugehörige Use Cases:** [UC-05](F2-Anwendungsfaelle.md#uc-05).
 
-**Sichtbare Informationen:** Filterkategorien: Preis (€ / €€ / €€€), Entfernung (z.B. bis 1 km / 3 km / 5 km / 10 km), Küche (Mehrfachauswahl, z.B. Italienisch, Asiatisch, Deutsch, …), Ernährung (Mehrfachauswahl, z.B. vegetarisch, vegan, glutenfrei), Mindestbewertung (z.B. ab 3 Sternen), Schalter "nur aktuell geöffnete Restaurants".
+### Mockup M-04 – Filter
 
-**Eingabefelder:** Auswahlfeld/Slider für Entfernung, Mehrfachauswahl Chips für Küche und Ernährung, Sterne-Auswahl für Mindestbewertung, Ein/Aus-Schalter für "nur geöffnet". Alle Filter sind optional (Standardwert: keine Einschränkung).
+![Mockup M-04 Filter](mockups/M-04-filter.png)
 
-**Schaltflächen/Aktionen:** "Filter zurücksetzen" (alle Filter auf Standard), "Empfehlungen anzeigen" (bestätigt Auswahl und startet Berechnung).
+- **Was sieht der Nutzer?** Filteroptionen für Preis, Entfernung, Küche, Ernährung, Mindestbewertung sowie einen Schalter "nur geöffnete Restaurants".
+- **Was kann er tun?** Filter setzen, zurücksetzen und die gefilterte Suche über "Anzeigen" starten.
+- **Welche Daten sind dynamisch?** Die aktuell gewählten Filterwerte, ob der "Anzeigen"-Button aktiv ist, hängt vom Auswahlstatus ab.
+- **Welche Use Cases gehören dazu?** UC-05.
 
-**Navigation:** Empfehlungsliste
+## M-05 – Empfehlungsliste
 
-**Ladezustand:** Keine Ladevorgänge auf dieser Seite selbst. Der Ladezustand tritt erst nach Klick auf "Empfehlungen anzeigen" ein, sichtbar auf der nächsten Ansicht.
+- **ID:** M-05
+- **Name:** Empfehlungsliste
+- **Zweck:** Anzeige der berechneten Restaurant Empfehlungen.
+- **Statische GUI-Inhalte:** Überschrift "Empfehlungen für dich". Beschriftung Button "Filter anpassen".
+- **Dynamische GUI-Inhalte:** Liste der Restaurant Einträge (Name, Küche, Entfernung, Preisklasse, Bewertung, Öffnungsstatus, Favoriten-Symbol-Zustand). Ladeanzeige, Fehlermeldung: Hinweis bei leerer Ergebnisliste.
+- **Eingaben:** keine. Optional Sortier Auswahl.
+- **Aktionen:** Restaurant antippen, Favoriten Symbol antippen, "Filter anpassen".
+- **Validierungen:** nicht zutreffend.
+- **Navigation:** -> M-06 Restaurantdetails. <- zurück zu M-04.
+- **Fehlerzustände:** externe API nicht erreichbar -> Hinweis mit "Erneut versuchen". Keine passenden Restaurants gefunden -> Hinweis mit Verweis auf "Filter anpassen".
+- **Zugehörige Use Cases:** [UC-06](F2-Anwendungsfaelle.md#uc-06), [UC-07](F2-Anwendungsfaelle.md#uc-07), [UC-14](F2-Anwendungsfaelle.md#uc-14).
 
-**Fehlerzustand:** Nicht zutreffend, da alle Filter optional sind.
+### Mockup M-05 – Ergebnisse (Empfehlungen)
 
-**Leere Ergebnisse:** Nicht zutreffend.
+![Mockup M-05 Ergebnisse](mockups/M-05-empfehlungsliste.png)
 
-```text
-------------------------------------
-|            Filter                |
-|                                  |
-| Preis:      ( € )( €€ )( €€€ )   |
-| Entfernung: [ bis 5 km v ]       |
-| Küche:      ( Italienisch )      |
-|             ( Asiatisch )        |
-| Ernährung:  ( vegetarisch )      |
-| Bewertung:  [ ab ★★★ v ]        |
-| [ ] nur geöffnete Restaurants    |
-|                                  |
-| [ Zurücksetzen ]   [ Anzeigen ]  |
-------------------------------------
-```
+- **Was sieht der Nutzer?** Eine Liste berechneter Restaurant Empfehlungen mit Name, Küche, Entfernung, Preisklasse, Bewertung, Öffnungsstatus und Favoriten Symbol je Eintrag.
+- **Was kann er tun?** Einen Eintrag antippen (öffnet Restaurantdetails), direkt aus der Liste favorisieren, Filter erneut anpassen.
+- **Welche Daten sind dynamisch?** Die komplette Liste inkl. aller Restaurantdaten (kommt live von der API), Ladezustand während der Berechnung, Leerzustand bei keinen Treffern.
+- **Welche Use Cases gehören dazu?** UC-06, UC-07, UC-14
 
-## 5. Empfehlungsliste
+## M-06 – Restaurantdetails
 
-**Zweck:** Zeigt die anhand von Stimmung, Anlass und Filtern berechneten Restaurant Empfehlungen an. Ausgangspunkt, um ein Restaurant genauer anzusehen oder direkt zu favorisieren.
+- **ID:** M-06
+- **Name:** Restaurantdetails
+- **Zweck:** Detailansicht eines Restaurants. Ermöglicht Favorisieren sowie "als besucht markieren und bewerten".
+- **Statische GUI-Inhalte:** Beschriftungen Buttons "Favorit hinzufügen/entfernen", "Als besucht markieren", "Bewertung speichern", "Zurück zur Liste". Beschriftung "Bewertung", Beschriftung Kommentarfeld "Kommentar (optional)".
+- **Dynamische GUI-Inhalte:** Restaurant Stammdaten (Name, Adresse, Küche, Preisklasse, Entfernung, Öffnungsstatus, Durchschnittsbewertung), Kartenausschnitt, eigene Sterne Bewertung (nach Aktivierung), Ladeanzeige, Fehlermeldung.
+- **Eingaben:** Sterne Bewertung (1–5), Kommentarfeld (optional).
+- **Aktionen:** "Favorit hinzufügen/entfernen", "Als besucht markieren", "Bewertung speichern", "Zurück zur Liste".
+- **Validierungen:** Sterne-Bewertung ist Pflicht, sobald "Bewertung speichern" gedrückt wird (ganzzahlig, 1–5). Kommentar ist optional.
+- **Navigation:** <- zurück zu M-05 bzw. M-07, je nachdem von wo geöffnet.
+- **Fehlerzustände:** Detaildaten nicht ladbar -> Hinweis mit "Erneut versuchen". Bewertung nicht speicherbar (z.B. kein Netz) -> entsprechender Hinweis.
+- **Zugehörige Use Cases:** [UC-08](F2-Anwendungsfaelle.md#uc-08), [UC-09](F2-Anwendungsfaelle.md#uc-09), [UC-10](F2-Anwendungsfaelle.md#uc-10).
 
-**Sichtbare Informationen:** Liste von Restaurants, je Eintrag: Name, Küche, Entfernung, Preisklasse, Bewertung (Sterne), Öffnungsstatus (geöffnet/geschlossen), Favoriten-Symbol falls zutreffend ein kleines "Schon besucht" Badge.
+### Mockup M-06 – Restaurantdetails
 
-**Eingabefelder:** Keine. Optional eine Sortier Auswahl (z.B. nach Entfernung, Bewertung oder Empfehlungsgrad).
+![Mockup M-06 Restaurantdetails](mockups/M-06-restaurantdetails.png)
 
-**Schaltflächen/Aktionen:** Restaurant antippen (öffnet Details), Favoriten Symbol direkt in der Liste antippen (Favorit setzen/entfernen, ohne Detailseite zu öffnen), "Filter anpassen" (zurück zur Filterauswahl).
+- **Was sieht der Nutzer?** Name, Adresse, Küche, Preisklasse, Entfernung, Öffnungsstatus, Durchschnittsbewertung und eine kleine Karte des Restaurants.
+- **Was kann er tun?** Favorit hinzufügen/entfernen, das Restaurant als besucht markieren, zurück zur Liste navigieren.
+- **Welche Daten sind dynamisch?** Alle Detaildaten des Restaurants (werden ggf. nachgeladen), aktueller Favoriten-Status, aktueller Öffnungsstatus.
+- **Welche Use Cases gehören dazu?** UC-08, UC-09, UC-10
 
-**Navigation:** Restaurantdetails (bei Auswahl eines Eintrags); <- zurück zur Filterauswahl möglich.
+### Mockup Bewertung (Zustand innerhalb M-06)
 
-**Ladezustand:** Ladeanzeige "Empfehlungen werden berechnet …", während die Restaurantdaten von der externen API geholt und nach Stimmung/Filtern bewertet werden.
+![Mockup Bewertung](mockups/M-06-bewertung.png)
 
-**Fehlerzustand:** Externe API nicht erreichbar oder Zeitüberschreitung -> Hinweistext "Empfehlungen konnten nicht geladen werden" mit Button "Erneut versuchen".
+- **Was sieht der Nutzer?** Ein Bewertungsbereich mit Sterne-Auswahl (1–5) und optionalem Kommentarfeld, der erscheint, nachdem "Als besucht markieren" angeklickt wurde.
+- **Was kann er tun?** Eine Sternebewertung vergeben, optional einen Kommentar eingeben und die Bewertung speichern.
+- **Welche Daten sind dynamisch?** Die aktuell gewählte Sternezahl, der eingegebene Kommentar, Bestätigungs-/Fehlermeldung nach dem Speichern.
+- **Welche Use Cases gehören dazu?**[UC-11](F2-Anwendungsfaelle.md#uc-11).
 
-**Leere Ergebnisse:** keine passenden Restaurants gefunden (z.B. Filter zu eng) -> Hinweistext "Keine passenden Restaurants gefunden. Passe deine Filter an." mit Button "Filter anpassen".
+## M-07 – Favoriten
 
-```text
---------------------------------------
-|  Empfehlungen für dich             |
-|                                    |
-|  Trattoria Bella      ★★★★  ♥    |
-|  Italienisch · 800 m · €€          |
-|  geöffnet                          |
-|  -----------------------------     |
-|  Sushi Zen            ★★★★★ ♡   |
-|  Asiatisch · 1,2 km · €€€          |
-|  geöffnet                          |
-|  -----------------------------     |
-|  ...                               |
-|                                    |
-|         [ Filter anpassen ]        |
---------------------------------------
-```
+- **ID:** M-07
+- **Name:** Favoriten
+- **Zweck:** Übersicht und Verwaltung aller favorisierten Restaurants.
+- **Statische GUI-Inhalte:** Überschrift "Deine Favoriten".
+- **Dynamische GUI-Inhalte:** Liste der favorisierten Restaurants (Name, Küche, Entfernung, Bewertung, Öffnungsstatus, "Schon besucht" Badge). Ladeanzeige, Fehlermeldung: Hinweis bei leerer Liste.
+- **Eingaben:** keine.
+- **Aktionen:** Eintrag antippen, Favoriten Symbol antippen (entfernen).
+- **Validierungen:** nicht zutreffend.
+- **Navigation:** -> M-06 Restaurantdetails.
+- **Fehlerzustände:** Favoriten nicht ladbar -> Hinweistext. Keine Favoriten vorhanden -> Hinweistext mit Link zur Empfehlungssuche.
+- **Zugehörige Use Cases:** [UC-09](F2-Anwendungsfaelle.md#uc-09), [UC-12](F2-Anwendungsfaelle.md#uc-12), [UC-13](F2-Anwendungsfaelle.md#uc-13).
 
-## 6. Restaurantsdetails
+### Mockup M-07 – Favoriten/Besucht
 
-**Zweck:**  Zeigt alle Details zu einem ausgewählten Restaurant und ermöglicht es, es zu favorisieren oder als besucht zu markieren und zu bewerten.
+![Mockup M-07 Favoriten](mockups/M-07-favoriten.png)
 
-**Sichtbare Informationen:** Name, Adresse, Küche, Preisklasse, Entfernung, Öffnungszeiten/status, Durchschnittsbewertung (Sterne), Standort auf einer kleinen Karte, Hinweise zu Ernährungsoptionen (z.B. vegetarisch verfügbar).
-
-**Eingabefelder:** Sterne Bewertung (1–5), die erst sichtbar/aktiv wird, nachdem "Als besucht markieren" angetippt wurde, optionales kurzes Kommentarfeld zur Bewertung (kann übersprungen werden).
-
-**Schaltflächen/Aktionen:** "Favorit hinzufügen/entfernen" (Herz-Symbol), "Als besucht markieren" (öffnet die Bewertungs-Eingabe), "Bewertung speichern", "Zurück zur Liste".
-
-**Navigation:** <- zurück zur Empfehlungsliste bzw. Favoritenliste, je nachdem von wo aus die Ansicht geöffnet wurde.
-
-**Ladezustand:** kurzer Ladehinweis, falls zusätzliche Detaildaten (z.B. genaue Öffnungszeiten) separat nachgeladen werden müssen.
-
-**Fehlerzustand:** Detaildaten konnten nicht geladen werden -> Hinweistext mit "Erneut versuchen, Bewertung konnte nicht gespeichert werden (z.B. kein Netz) -> Hinweistext "Bewertung konnte nicht gespeichert werden, bitte erneut versuchen".
-
-**Leere Ergebnisse:** Nicht zutreffend
-
-```text
----------------------------------------
-|  Beispiel Restaurant                |
-|  Italienisch  €€  800m              |
-|  ★★★★  (124 Bewertungen)          |
-|  Babastraße 12, Frankfurt           |
-|  geöffnet bis 22:00                 |
-|  [ kleine Karte / Standort-Pin ]    |
-|                                     |
-|  [ Als besucht markieren ]          |
-|   -> Bewertung: ★ ★ ★ ★ ★        |
-|      Kommentar (optional): [....] m |
-|      [ Bewertung speichern ]        |
-|                                     |
-|          [ Zurück zur Liste ]       |
----------------------------------------
-```
-
-## 7. Favoriten
-
-**Zweck:** Übersicht aller vom Nutzer favorisierten Restaurants. Ermöglicht schnellen Zugriff auf gemerkte Orte sowie deren Verwaltung (entfernen, als besucht markieren/bewerten).
-
-**Sichtbare Informationen:** Liste favorisierter Restaurants mit Name, Küche, Entfernung, Preisklasse, Bewertung, Öffnungsstatus. Falls bereits besucht, zusätzlich ein "Schon besucht" Badge mit der eigenen abgegebenen Bewertung.
-
-**Eingabefelder:** Keine.
-
-**Schaltflächen/Aktionen:** Eintrag antippen (öffnet Restaurantdetails), Favoriten Symbol antippen (entfernt direkt aus der Liste, ohne Detailseite zu öffnen), "Als besucht markieren" als Kurzweg direkt aus der Liste.
-
-**Navigation:** -> Restaurantdetails (bei Auswahl eines Eintrags). Die Favoritenliste ist über ein permanentes Element (z.B. Symbol/Tab) von mehreren Ansichten aus erreichbar, nicht nur Teil des linearen Hauptablaufs.
-
-**Ladezustand:** Kurzer Ladehinweis beim Öffnen.
-
-**Fehlerzustand:** Favoriten konnten nicht geladen werden (z.B. lokaler Speicherfehler) -> Hinweistext "Favoriten konnten nicht geladen werden".
-
-**Leere Ergebnisse:** Keine Favoriten vorhanden -> Hinweistext "Du hast noch keine Favoriten gespeichert." mit Link/Button "Zur Empfehlungssuche".
-
-```text
-----------------------------------------
-|  Deine Favoriten                     |
-|                                      |
-|  Beispiel Restaurant      ★★★★     |
-|  Italienisch · 800 m · besucht ★★★★|
-|  -----------------------------       |
-|  Beispiel Restaurant 2    ★★★★★   |
-|  Asiatisch · 1,2 km · noch nicht     |
-|     besucht                          |
-----------------------------------------
-```
+- **Was sieht der Nutzer?** Liste favorisierter Restaurants mit Name, Küche, Entfernung, Bewertung, Öffnungsstatus sowie einem "Schon besucht"-Badge, falls zutreffend.
+- **Was kann er tun?** Einen Eintrag öffnen (Restaurantdetails), einen Eintrag aus den Favoriten entfernen.
+- **Welche Daten sind dynamisch?** Die Favoritenliste selbst, der "Schon besucht"-Status je Eintrag, Leerzustand bei keinen Favoriten.
+- **Welche Use Cases gehören dazu?** UC-09, UC-12, UC-13.
