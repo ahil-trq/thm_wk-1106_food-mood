@@ -6,14 +6,14 @@ Diese Datei beschreibt die Zentralen Ansichten der Food-Mood App: Zweck, sichtba
 
 | ID | Maske | Zweck | Use Cases |
 |---|---|---|---|
-| M-00 | Einstieg | Nutzer erstellen oder laden | UC-00, UC-01, UC-02 |
+| M-00 | Einstieg | Nutzer erstellen oder laden | [UC-00](F2-Anwendungsfaelle.md#uc-00), [UC-01](F2-Anwendungsfaelle.md#uc-01), [UC-02](F2-Anwendungsfaelle.md#uc-02) |
 | M-01 | Start | Einstiegspunkt in den Empfehlungsablauf | – |
-| M-02 | Standortfreigabe | Standort automatisch oder manuell festlegen | UC-03 |
-| M-03 | Stimmung & Anlass | Stimmung und/oder Anlass auswählen | UC-04 |
-| M-04 | Filterauswahl | Suche eingrenzen | UC-05 |
-| M-05 | Empfehlungsliste | Berechnete Empfehlungen anzeigen | UC-06, UC-07, UC-14 |
-| M-06 | Restaurantdetails | Restaurant betrachten, favorisieren, besuchen, bewerten | UC-08, UC-09, UC-10, UC-11 |
-| M-07 | Favoriten | Favoriten anzeigen und verwalten | UC-09, UC-12, UC-13 |
+| M-02 | Standortfreigabe | Standort automatisch oder manuell festlegen | [UC-03](F2-Anwendungsfaelle.md#uc-03) |
+| M-03 | Stimmung & Anlass | Stimmung und/oder Anlass auswählen | [UC-04](F2-Anwendungsfaelle.md#uc-04) |
+| M-04 | Filterauswahl | Suche eingrenzen | [UC-05](F2-Anwendungsfaelle.md#uc-05) |
+| M-05 | Empfehlungsliste | Berechnete Empfehlungen anzeigen | [UC-06](F2-Anwendungsfaelle.md#uc-06), [UC-07](F2-Anwendungsfaelle.md#uc-07), [UC-14](F2-Anwendungsfaelle.md#uc-14) |
+| M-06 | Restaurantdetails | Restaurant betrachten, favorisieren, besuchen, bewerten | [UC-11](F2-Anwendungsfaelle.md#uc-11) |
+| M-07 | Favoriten | Favoriten anzeigen und verwalten | [UC-09](F2-Anwendungsfaelle.md#uc-09), [UC-12](F2-Anwendungsfaelle.md#uc-12), [UC-13](F2-Anwendungsfaelle.md#uc-13) |
 
 ## Navigation
 
