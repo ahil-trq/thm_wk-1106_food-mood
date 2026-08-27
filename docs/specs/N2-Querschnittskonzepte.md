@@ -59,11 +59,3 @@ Technische Fehler und wichtige Ereignisse (z. B. fehlgeschlagene API-Anfragen, f
 
 Alle nutzerbezogenen Daten (Favoriten, Besuche, Bewertungen) werden nach demselben Muster behandelt: dauerhaft gespeichert, verknüpft mit der UserID der aktiven Session, und bleiben nach einem Neustart der App erhalten. Ein Restaurant kann jederzeit favorisiert oder die Favorisierung entfernt werden. Eine Bewertung ist erst möglich, nachdem ein Restaurant zuvor als "besucht" markiert wurde.
 -> Abhängigkeit: D1 (Datenmodell), Objekte "Favorit", "Besuch", "Bewertung". F2 (Anwendungsfälle), UC-09, UC-10, UC-11.
-
-## Akzeptanzkriterien
-
-- Nur systemweit relevante Konzepte sind enthalten.
-- Die UserID wird als Querschnittskonzept beschrieben (inkl. Session-Kette).
-- Keine einzelnen Features werden als Querschnittskonzept aufgeführt.
-- Wiederkehrende Konzepte sind zentral an einer Stelle beschrieben.
-- Abhängigkeiten zu Datenmodell (D1) und Use Cases (F2) sind bei jedem Konzept genannt, wo zutreffend.
