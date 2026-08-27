@@ -16,10 +16,3 @@ Diese Datei beschreibt die nichtfunktionalen Anforderungen an Food-Mood. Alle An
 | NFA-08 | Zuverlässigkeit | Abgegebene Bewertungen liegen im gültigen Wertebereich | 1–5 Sterne, ganzzahlig, ungültige Werte werden bereits in der Eingabemaske verhindert |
 | NFA-09 | Zuverlässigkeit | Eine Bewertung ist nur nach vorheriger Besuchs-Markierung möglich | Bewertung gesperrt, solange Restaurant nicht als "besucht" markiert ist |
 | NFA-10 | Zuverlässigkeit | Favoriten- und Besucht-Markierungen bleiben erhalten | Persistenz über einen App-Neustart hinweg |
-
-## Akzeptanzkriterien
-
-- Alle Anforderungen sind messbar formuliert (konkrete Zahl, Zustand oder Bedingung statt vager Aussagen).
-- Die Kategorien Performance, Bedienbarkeit, Datenschutz und Zuverlässigkeit sind abgedeckt.
-- Unklare, nicht prüfbare Formulierungen wie "schnell" oder "benutzerfreundlich" wurden vermieden.
-- Durchgängige IDs (NFA-01 bis NFA-10).
