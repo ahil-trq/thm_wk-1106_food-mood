@@ -109,3 +109,10 @@ Food-Mood ist ein Greenfield-Projekt ohne Vorgängersystem und ohne vorhandene A
 
 ## Anmerkungen
 - `S1` ist jetzt als separates Spezifikationsdokument vorhanden und beschreibt die externen Dienste sowie deren fachliche Erwartungen. Nachbarsysteme sind damit konsistent dokumentiert.
+
+## KI-Unterstützung
+
+Bei der Erstellung und Weiterentwicklung der Spezifikation wurden folgende Werkzeuge zur Unterstützung eingesetzt:
+
+- ChatGPT: Strukturierung und Präzisierung der Anforderungen
+- GitHub Copilot: Codeunterstützung und Unterstützung bei der Dokumentation

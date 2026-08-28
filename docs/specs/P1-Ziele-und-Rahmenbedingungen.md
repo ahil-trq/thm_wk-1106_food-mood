@@ -21,14 +21,17 @@ Viele Restaurantfinder liefern zu viele irrelevante Treffer oder erfordern, dass
 - Klare, überprüfbare Ziele und Erfolgskriterien für den MVP.
 
 ## P1.5 Enthaltene Funktionen
-- Erfassung aktueller Stimmung, Anlass und Rahmenbedingungen über ein Formular.
-- Nutzung des aktuellen Standortes zur Einschränkung auf nahe Restaurants.
-- Anzeige von Restaurantvorschlägen mit Name, Bewertung, Entfernung und Kurzinformationen.
-- Favoritenverwaltung: Speichern, Anzeigen und Entfernen von Lieblingsrestaurants.
-- Besuchshistorie: Protokoll vergangener Besuche und Einbindung in die Empfehlung.
-- Bewertungsübersicht: Anzeige von Bewertungen und durchschnittlichen Ratings.
-- Filter für Preisniveau, Distanz und Öffnungsstatus.
-- Responsive Oberfläche für Smartphone und Desktop.
+
+| ID | Funktion | Beschreibung |
+|----|----------|-------------|
+| FN-01 | Stimmung, Anlass und Rahmenbedingungen erfassen | Der Nutzer gibt die aktuellen Kriterien über ein Formular ein. |
+| FN-02 | Standort verwenden | Der aktuelle Standort schränkt die Suche auf nahe Restaurants ein. |
+| FN-03 | Restaurantvorschläge anzeigen | Restaurantvorschläge werden mit Name, Bewertung, Entfernung und Kurzinformationen dargestellt. |
+| FN-04 | Favoriten verwalten | Lieblingsrestaurants können gespeichert, angezeigt und entfernt werden. |
+| FN-05 | Besuchshistorie führen | Vergangene Besuche werden protokolliert und bei Empfehlungen berücksichtigt. |
+| FN-06 | Bewertungen anzeigen | Eigene Bewertungen und durchschnittliche Ratings werden angezeigt. |
+| FN-07 | Restaurants filtern | Ergebnisse können nach Preisniveau, Distanz und Öffnungsstatus gefiltert werden. |
+| FN-08 | Responsive Oberfläche bereitstellen | Die Weboberfläche ist für Smartphones und Desktopgeräte geeignet. |
 
 ## P1.6 Ausgeschlossene Funktionen
 - Keine Mehrbenutzerkonten, keine Nutzerverwaltung, kein gemeinschaftliches Teilen von Listen.

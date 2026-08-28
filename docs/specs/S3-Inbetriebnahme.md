@@ -53,27 +53,37 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 ## 9. Webserver vorbereiten
 
 - Für den Produktivbetrieb wird ein Webserver benötigt, der die gebauten Frontend-Dateien ausliefert und das Backend erreichbar macht.
-- Der genaue Anbieter (z.B. eigener Server, Cloud-Hosting-Dienst) steht noch nicht fest und wird erst in der Architekturphase (M2) entschieden.
-- Der Server benötigt Node.js zur Ausführung des Backends sowie Netzwerkzugriff auf die PostgreSQL-Datenbank und die externen OpenStreetMap-Dienste.
+- Der Server benötigt Node.js in der aktuellen LTS-Version zur Ausführung des Backends sowie Netzwerkzugriff auf die PostgreSQL-Datenbank und die externen OpenStreetMap-Dienste.
+- Ein Reverse Proxy (z.B. Nginx oder Caddy) nimmt Anfragen auf Port 80/443 entgegen, liefert das Frontend aus und leitet `/api` an das Backend weiter.
+- Das Backend läuft als verwalteter Prozess (z.B. über systemd oder PM2) und wird nach einem Neustart des Servers automatisch gestartet.
+- Die Datenbank ist nicht direkt aus dem Internet erreichbar. Firewall-Regeln erlauben ausschließlich die notwendigen Verbindungen zu Webserver, Backend und Datenbank.
 
 ## 10. Deployment durchführen
 
-- Die gebauten Dateien (siehe Punkt 8) werden auf den Webserver übertragen.
-- Die produktiven Umgebungsvariablen (siehe Punkt 4) werden auf dem Server hinterlegt, nicht im Repository.
-- Das Backend wird auf dem Server gestartet, das Frontend wird darüber ausgeliefert.
-- Genaue Schritte (z.B. manuell, per Skript oder automatisiert über CI/CD) werden erst in der Architekturphase (M2) final festgelegt.
+1. Der aktuelle Stand wird auf dem Webserver bereitgestellt und die Abhängigkeiten werden mit `npm ci` installiert.
+2. Die Anwendung wird mit `npm run build` gebaut; die erzeugten Frontend-Dateien werden im konfigurierten Webserver-Verzeichnis abgelegt.
+3. Die produktiven Umgebungsvariablen (siehe Punkt 4) werden sicher auf dem Server hinterlegt, nicht im Repository.
+4. Die PostgreSQL-Datenbank wird eingerichtet und das Datenbankschema wird über die vorgesehenen Migrations- oder Initialisierungsskripte angelegt.
+5. Das Backend wird als verwalteter Prozess gestartet bzw. neu geladen.
+6. Der Reverse Proxy wird so konfiguriert, dass `foodmood-thm.de` das Frontend ausliefert und API-Anfragen an das Backend weiterleitet.
+7. Nach jedem Deployment werden die Erreichbarkeit und die Kernfunktionen gemäß Punkt 12 geprüft.
+
+Die konkrete Umsetzung (manuell, per Skript oder automatisiert über CI/CD) kann nach Festlegung der Architektur ergänzt werden.
 
 ## 11. Domain konfigurieren
 
-- Damit Food-Mood öffentlich erreichbar ist, wird eine Domain benötigt, die per DNS-Eintrag auf den Webserver zeigt.
-- Der genaue Domain-Anbieter steht noch nicht fest, da die technische Entscheidung dazu noch offen ist.
+- Die öffentliche Domain der Anwendung ist `foodmood-thm.de`.
+- Beim Domainanbieter wird ein DNS-A-Record für `foodmood-thm.de` auf die öffentliche IPv4-Adresse des Webservers gesetzt. Falls eine IPv6-Adresse verwendet wird, wird zusätzlich ein AAAA-Record eingerichtet.
+- Ein optionaler `www`-Eintrag kann per CNAME auf `foodmood-thm.de` zeigen und auf die Hauptdomain weiterleiten.
+- Für `foodmood-thm.de` wird ein TLS-Zertifikat eingerichtet. HTTP-Anfragen werden dauerhaft auf HTTPS umgeleitet.
+- Der Reverse Proxy nimmt HTTPS-Anfragen entgegen und leitet interne Backend-Anfragen weiter, ohne den Backend-Port öffentlich freizugeben.
 
 Domain und Hosting im Überblick:
 
 ```mermaid
 flowchart TD
     INTERNET[Internet]
-    DOMAIN[Domain]
+    DOMAIN[foodmood-thm.de]
     WEB[Webserver]
     APP[Food-Mood]
     BACKEND["Backend / Datenbank / OpenStreetMap"]
@@ -86,6 +96,6 @@ flowchart TD
 
 ## 12. Produktivbetrieb prüfen
 
-- Nach dem Deployment wird geprüft, ob die App über die Domain erreichbar ist.
+- Nach dem Deployment wird geprüft, ob die App über `https://foodmood-thm.de` erreichbar ist und HTTP korrekt auf HTTPS weiterleitet.
 - Es wird geprüft, ob die Kernfunktionen (Standortbestimmung, Empfehlungen abrufen, Favoriten/Besuche speichern) im Produktivbetrieb wie im lokalen Betrieb funktionieren.
 - Es wird geprüft, ob keine unerwarteten Fehler auftreten (z.B. in den Server-Logs, siehe N2 "Logging").

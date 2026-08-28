@@ -20,6 +20,8 @@ flowchart LR
 
 OpenStreetMap ist das einzige fachliche Nachbarsystem von Food-Mood. Die automatische Standortbestimmung über den Browser, die Verarbeitung einer manuellen Ortseingabe und die Speicherung persönlicher App-Daten gehören zur Systemgrenze von Food-Mood. Bibliotheken und einzelne technische Zugänge zu OpenStreetMap werden nicht als eigene Nachbarsysteme dargestellt.
 
+Im Produktivbetrieb ist Food-Mood über die öffentliche Domain `https://foodmood-thm.de` erreichbar. Die konkrete Hosting- und Deployment-Konfiguration ist in [S3 – Inbetriebnahme](S3-Inbetriebnahme.md) beschrieben.
+
 ## P2.2 Beteiligte und fachliche Bausteine
 
 | Baustein | Verantwortung | Zugeordnete Anwendungsfälle |
