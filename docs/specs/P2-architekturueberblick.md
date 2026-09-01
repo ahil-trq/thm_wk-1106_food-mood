@@ -20,115 +20,27 @@ flowchart LR
 
 OpenStreetMap ist das einzige fachliche Nachbarsystem von Food-Mood. Die automatische Standortbestimmung über den Browser, die Verarbeitung einer manuellen Ortseingabe und die Speicherung persönlicher App-Daten gehören zur Systemgrenze von Food-Mood. Bibliotheken und einzelne technische Zugänge zu OpenStreetMap werden nicht als eigene Nachbarsysteme dargestellt.
 
-Im Produktivbetrieb ist Food-Mood über die öffentliche Domain `https://foodmood-thm.de` erreichbar. Die konkrete Hosting- und Deployment-Konfiguration ist in [S3 – Inbetriebnahme](S3-Inbetriebnahme.md) beschrieben.
-
 ## P2.2 Beteiligte und fachliche Bausteine
 
-| Baustein | Verantwortung | Zugeordnete Anwendungsfälle |
-|---|---|---|
-| Benutzerinteraktion | führt durch Standort, Mood, Anlass, Filter, Ergebnisse und Detailansichten; zeigt Lade-, Leer- und Fehlerzustände | UC-01 bis UC-05, UC-07, UC-08, UC-12, UC-13, UC-14 |
-| Standortbestimmung | erzeugt aus Browserfreigabe oder manueller Ortssuche ein temporäres `Location`-Objekt | UC-01, UC-02 |
-| Suchprofil | prüft und bündelt `Mood`, optionalen `Occasion` und `SearchFilters` zu einer `SearchRequest` | UC-03, UC-04, UC-05 |
-| Restaurantzugriff | fragt externe Restaurantdaten ab und normalisiert unterschiedliche OSM-Objekte in das interne Format `Restaurant` | UC-06, UC-08, UC-14 |
-| Empfehlungslogik | filtert und bewertet Restaurants nach Mood, Anlass, Entfernung, Öffnungsstatus, Küche, Ernährung und vorhandener Historie | UC-06 |
-| Ergebnisdarstellung | zeigt sortierte `Recommendation`-Einträge und Restaurantdetails; Karte ist eine optionale Ergänzung | UC-07, UC-08 |
-| Persönliche App-Daten | verwaltet anonyme Nutzerkennung, `Favorite`, `Visit` und `Review` dauerhaft | UC-09 bis UC-13 |
+### Beteiligte
 
-## P2.4 Zusammenspiel im Hauptprozess
+| ID | Beteiligter | Einordnung | Verantwortung | Ausgetauschte Informationen |
+|---|---|---|---|---|
+| `AK-01` | Anonymer Benutzer | Akteur | wählt Standort, Stimmung, Anlass und Filter aus und verwendet die persönlichen Funktionen der App | Ortseingabe oder Standort, Auswahlwerte, Favoriten, Besuche und eigene Bewertungen; erhält Empfehlungen und Restaurantdetails |
+| `NB-01` | [OpenStreetMap](S1-Nachbarsysteme-und-APIs.md) | einziges fachliches Nachbarsystem | stellt vorhandene Restaurant- und Geodaten bereit | erhält Suchgebiet und Restaurantkategorien; liefert gefundene Restaurants mit Positionen und vorhandenen Merkmalen |
 
-```mermaid
-sequenceDiagram
-    actor U as Benutzer
-    participant UI as Benutzerinteraktion
-    participant L as Standortbestimmung
-    participant R as Restaurantzugriff
-    participant M as Empfehlungslogik
-    participant D as App-Daten
+Food-Mood übernimmt keine Garantie für die Vollständigkeit oder Aktualität der OpenStreetMap-Daten. Fehlende Angaben werden als unbekannt behandelt und nicht durch erfundene Werte ersetzt.
 
-    U->>UI: Suche starten
-    UI->>L: Standort anfordern oder Ort suchen
-    L-->>UI: Location
-    U->>UI: Mood, Anlass und Filter wählen
-    UI->>R: SearchRequest übergeben
-    R-->>M: normalisierte Restaurants
-    M->>D: Favoriten, Besuche und Bewertungen lesen
-    D-->>M: persönliche App-Daten
-    M-->>UI: sortierte Recommendations
-    UI-->>U: Ergebnisliste anzeigen
-```
+### Fachliche Bausteine
 
-Der Restaurantzugriff kapselt die Besonderheiten externer APIs. Dadurch arbeitet die Empfehlungslogik ausschließlich mit den in D2 festgelegten Food-Mood-Typen und ist nicht von der ursprünglichen OSM-Antwortstruktur abhängig.
+| ID | Fachlicher Baustein | Verantwortung | Zugeordnete Anwendungsfälle |
+|---|---|---|---|
+| `FB-01` | Benutzerinteraktion | führt durch Standort, Stimmung, Anlass, Filter, Ergebnisse und Detailansichten und zeigt Lade-, Leer- und Fehlerzustände | [UC-01](F2-Anwendungsfaelle.md#uc-01-standort-automatisch-bestimmen), [UC-02](F2-Anwendungsfaelle.md#uc-02-standort-manuell-eingeben), [UC-03](F2-Anwendungsfaelle.md#uc-03-stimmung-auswählen), [UC-04](F2-Anwendungsfaelle.md#uc-04-anlass-auswählen), [UC-05](F2-Anwendungsfaelle.md#uc-05-filter-setzen), [UC-07](F2-Anwendungsfaelle.md#uc-07-ergebnisse-anzeigen), [UC-08](F2-Anwendungsfaelle.md#uc-08-restaurantdetails-anzeigen), [UC-12](F2-Anwendungsfaelle.md#uc-12-favoriten-anzeigen), [UC-13](F2-Anwendungsfaelle.md#uc-13-besuchte-restaurants-anzeigen), [UC-14](F2-Anwendungsfaelle.md#uc-14-api-fehler-behandeln) |
+| `FB-02` | Standortbestimmung | erzeugt aus der Browserfreigabe oder einer manuellen Ortseingabe einen temporären Suchstandort | [UC-01](F2-Anwendungsfaelle.md#uc-01-standort-automatisch-bestimmen), [UC-02](F2-Anwendungsfaelle.md#uc-02-standort-manuell-eingeben) |
+| `FB-03` | Suchprofil | prüft die Auswahl und bündelt Standort, Stimmung, Anlass und Filter zu einer Suchanfrage | [UC-03](F2-Anwendungsfaelle.md#uc-03-stimmung-auswählen), [UC-04](F2-Anwendungsfaelle.md#uc-04-anlass-auswählen), [UC-05](F2-Anwendungsfaelle.md#uc-05-filter-setzen) |
+| `FB-04` | Restaurantzugriff | fragt Restaurantdaten bei OpenStreetMap ab und überführt sie in das interne Restaurantformat | [UC-06](F2-Anwendungsfaelle.md#uc-06-empfehlungen-berechnen), [UC-08](F2-Anwendungsfaelle.md#uc-08-restaurantdetails-anzeigen), [UC-14](F2-Anwendungsfaelle.md#uc-14-api-fehler-behandeln) |
+| `FB-05` | Empfehlungslogik | filtert und bewertet Restaurants anhand der Auswahl des Benutzers und der vorhandenen Restaurantdaten | [UC-06](F2-Anwendungsfaelle.md#uc-06-empfehlungen-berechnen) |
+| `FB-06` | Ergebnisdarstellung | zeigt sortierte Empfehlungen und Restaurantdetails | [UC-07](F2-Anwendungsfaelle.md#uc-07-ergebnisse-anzeigen), [UC-08](F2-Anwendungsfaelle.md#uc-08-restaurantdetails-anzeigen) |
+| `FB-07` | Persönliche App-Daten | verwaltet die anonyme Nutzerkennung, Favoriten, Besuche und eigene Bewertungen dauerhaft | [UC-09](F2-Anwendungsfaelle.md#uc-09-restaurant-favorisieren), [UC-10](F2-Anwendungsfaelle.md#uc-10-restaurant-als-besucht-markieren), [UC-11](F2-Anwendungsfaelle.md#uc-11-eigene-bewertung-abgeben), [UC-12](F2-Anwendungsfaelle.md#uc-12-favoriten-anzeigen), [UC-13](F2-Anwendungsfaelle.md#uc-13-besuchte-restaurants-anzeigen) |
 
-## P2.5 Fachlicher Datenfluss
-
-1. Die Standortbestimmung erzeugt ein `Location`-Objekt.
-2. Der Benutzer wählt genau einen `Mood`; `Occasion` und `SearchFilters` sind optional.
-3. Das Suchprofil erzeugt eine gültige `SearchRequest`.
-4. Der Restaurantzugriff lädt Orte und normalisiert sie zu `Restaurant`.
-5. Die Empfehlungslogik erzeugt pro passendem Restaurant eine `Recommendation` mit Score, Entfernung und nachvollziehbaren Gründen.
-6. Die Ergebnisdarstellung zeigt die sortierten Empfehlungen.
-7. Bei einer Benutzeraktion speichern die persönlichen App-Daten einen `Favorite`, einen `Visit` oder eine `Review`.
-
-`Location`, `SearchRequest` und `Recommendation` werden im MVP nicht dauerhaft gespeichert. Der genaue Persistenzumfang ist in D1 festgelegt.
-
-## P2.6 Abgrenzung der Verantwortlichkeiten
-
-### Food-Mood ist verantwortlich für
-
-- Benutzerführung und Validierung
-- regelbasiertes Mood-Matching und Sortierung
-- Berechnung der Entfernung
-- anonyme Zuordnung persönlicher App-Daten
-- Speicherung von Favoriten, Besuchen und eigenen Bewertungen
-- verständliche Fehler- und Leerzustände
-- korrekte Kennzeichnung unbekannter externer Werte
-
-### Nachbarsysteme sind verantwortlich für
-
-- Browser: Bereitstellung des Standorts nach Zustimmung
-- Nominatim: Auflösung einer manuellen Ortseingabe in Koordinaten
-- OpenStreetMap/Overpass: Bereitstellung vorhandener gastronomischer Geodaten
-- Kartenkacheldienst: optionale visuelle Kartengrundlage
-
-Food-Mood übernimmt keine Garantie für Vollständigkeit oder Aktualität externer Daten. Fehlende Angaben werden als unbekannt angezeigt und nicht erfunden.
-
-## P2.7 Fehler- und Ersatzwege
-
-| Situation | Verhalten von Food-Mood |
-|---|---|
-| Standortfreigabe verweigert | manuelle Ortseingabe anbieten |
-| manueller Ort nicht gefunden | Korrektur oder andere Eingabe ermöglichen |
-| Restaurantdienst nicht erreichbar | verständliche Fehlermeldung und begrenzten erneuten Versuch anbieten |
-| keine Restaurants gefunden | Filter lockern oder Radius ändern lassen |
-| optionale Restaurantangabe fehlt | Feld ausblenden oder als unbekannt kennzeichnen |
-| Kartenanzeige fällt aus | Restaurantliste bleibt vollständig bedienbar |
-| Speichern persönlicher Daten schlägt fehl | Aktion nicht als erfolgreich darstellen und erneuten Versuch anbieten |
-
-## P2.8 Qualitätsleitlinien
-
-- **Nachvollziehbarkeit:** Jede Empfehlung besitzt mindestens einen verständlichen Match-Grund.
-- **Datensparsamkeit:** Standort und Suchanfrage werden nicht dauerhaft gespeichert.
-- **Austauschbarkeit:** Externe Anbieter werden hinter dem Restaurantzugriff bzw. der Standortbestimmung gekapselt.
-- **Robustheit:** Fehlende optionale API-Felder brechen die Suche nicht ab.
-- **Konsistenz:** Die in D1 und D2 definierten Objekt- und Typnamen werden in Architektur und Code weiterverwendet.
-- **Mobile Nutzung:** Der Hauptablauf bleibt ab 360 Pixel Bildschirmbreite vollständig bedienbar.
-
-## P2.9 Weiterführende Dokumente
-
-- [D1 – Fachliches Datenmodell](D1-Fachliches-Datenmodell.md)
-- [D2 – Datentypenverzeichnis](D2-Datentypenverzeichnis.md)
-- [S1 – Nachbarsysteme und externe APIs](S1-Nachbarsysteme-und-APIs.md)
-- F1 – Geschäftsprozesse
-- F2 – Anwendungsfälle
-- B1 – Dialogspezifikation
-- N1 – Nichtfunktionale Anforderungen
-- N2 – Querschnittskonzepte
-
-## P2.10 Akzeptanzkriterien
-
-- Die Systemgrenze und alle für das MVP benötigten Nachbarsysteme sind erkennbar.
-- Jeder fachliche Baustein besitzt eine eindeutige Verantwortung.
-- Der Hauptprozess vom Standort bis zur Empfehlung ist vollständig nachvollziehbar.
-- Anwendungsfälle, Datenobjekte und Bausteine sind miteinander verknüpft.
-- Temporäre Standort- und Suchdaten sind von dauerhaft gespeicherten App-Daten getrennt.
-- Der Überblick bleibt fachlich und nimmt keine später zu begründenden Framework- oder Deploymententscheidungen vorweg.
+Das genaue Zusammenspiel der Bausteine innerhalb einzelner Benutzerabläufe wird in [F2 – Anwendungsfälle](F2-Anwendungsfaelle.md) beschrieben. Wiederverwendbare fachliche Berechnungen, beispielsweise das Mapping von Stimmung und Anlass oder die Berechnung einer Bewertung, werden in [F3 – Anwendungsfunktionen](F3-Anwendungsfunktionen.md) dokumentiert.
