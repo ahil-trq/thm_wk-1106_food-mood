@@ -34,7 +34,7 @@ Enthält den maximalen Suchradius, gewünschte Küchen, Ernährungsoptionen und 
 
 ### `Restaurant` – normalisiertes Restaurant
 
-Stellt einen extern gefundenen gastronomischen Ort im einheitlichen Food-Mood-Format dar. Der externe Schlüssel besteht aus Datenanbieter, OSM-Objekttyp und OSM-ID. Optionale Angaben bleiben unbekannt, wenn die externe Quelle sie nicht liefert.
+Stellt einen extern gefundenen gastronomischen Ort im einheitlichen Food-Mood-Format dar. Der externe Schlüssel besteht aus OSM-Objekttyp und OSM-ID. Optionale Angaben bleiben unbekannt, wenn die externe Quelle sie nicht liefert.
 
 Ein `Restaurant` wird nur dauerhaft referenziert, wenn mindestens ein Favorit, Besuch oder eine Bewertung darauf verweist. Bei einer neuen Suche können die anzeigbaren Restaurantdaten aus der externen Quelle aktualisiert werden.
 
