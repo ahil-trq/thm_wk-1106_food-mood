@@ -6,7 +6,7 @@ Dieses Dokument beschreibt das fachliche Nachbarsystem von Food-Mood und grenzt 
 
 ## S1.2 Einordnung im Systemkontext
 
-Food-Mood besitzt in der ersten Version genau ein fachliches Nachbarsystem: **OpenStreetMap**. Die Darstellung entspricht dem Systemkontext in [P2 – Fachlicher Architekturüberblick](P2-architekturueberblick.md#p22-systemkontext).
+Food-Mood besitzt in der ersten Version genau ein fachliches Nachbarsystem: **OpenStreetMap**. Die Darstellung entspricht dem Systemkontext in [P2 – Fachlicher Architekturüberblick](P2-architekturueberblick.md#p21-systemkontext).
 
 ```mermaid
 flowchart LR
@@ -82,17 +82,7 @@ Fehler externer Dienste dürfen keine Favoriten, Besuche oder eigenen Bewertunge
 
 Die Begründung, warum OpenStreetMap statt anderer Datenanbieter eingesetzt wird, ist eine Architekturentscheidung und gehört nicht in S1. Sie wird später beispielsweise als **ADR-001 – OpenStreetMap als Restaurantdatenquelle verwenden** dokumentiert. Dort werden Entscheidung, Alternativen, Vor- und Nachteile sowie Folgen wie unvollständige Preis- oder Bewertungsdaten festgehalten.
 
-## S1.9 Akzeptanzkriterien
-
-- OpenStreetMap ist als einziges fachliches Nachbarsystem erkennbar.
-- Browserfunktionen, Bibliotheken, Overpass und Nominatim werden nicht als zusätzliche fachliche Nachbarsysteme dargestellt.
-- Verantwortlichkeiten von Food-Mood und OpenStreetMap sind voneinander abgegrenzt.
-- Fehlende optionale Daten führen nicht zum Abbruch der gesamten Suche.
-- Externe Preisstufen und Bewertungen werden weder vorausgesetzt noch erfunden.
-- Die Nutzungsvorgaben der eingesetzten öffentlichen OpenStreetMap-Dienste werden eingehalten.
-- Die Auswahl und Begründung des Datenanbieters wird in einem ADR statt in S1 dokumentiert.
-
-## S1.10 Quellen
+## S1.9 Quellen
 
 - [Overpass API – Benutzerhandbuch](https://dev.overpass-api.de/overpass-doc/de/)
 - [OpenStreetMap Wiki – Restaurant](https://wiki.openstreetmap.org/wiki/Tag:amenity%3Drestaurant)
@@ -101,4 +91,4 @@ Die Begründung, warum OpenStreetMap statt anderer Datenanbieter eingesetzt wird
 - [OpenStreetMap Foundation – Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)
 - [OpenStreetMap Foundation – Tile Usage Policy](https://operations.osmfoundation.org/policies/tiles/)
 
-Stand der Prüfung: 24. August 2026.
+Stand der Prüfung: 1. September 2026.
