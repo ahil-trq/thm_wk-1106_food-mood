@@ -1,0 +1,11 @@
+flowchart TD
+    UID["UserID<br/>(12 Zeichen, zufällig,<br/>nur beim Nutzer bekannt)"]
+    HASH["UserIdHash<br/>(gespeichert)"]
+    FAV[Favorite]
+    BES[Visit]
+    BEW[Review]
+
+    UID -- "wird gehasht" --> HASH
+    HASH --> FAV
+    HASH --> BES
+    HASH --> BEW
