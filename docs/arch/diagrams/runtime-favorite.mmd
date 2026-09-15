@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor Nutzer
+    participant Frontend
+    participant Backend
+    participant DB as Datenbank
+
+    Nutzer->>Frontend: Favorit-Symbol antippen
+    Frontend->>Backend: POST /favorites {userIdHash, restaurantKey}
+    Backend->>DB: Prüfen, ob Favorit bereits existiert (DR-06)
+    DB-->>Backend: Status
+    Backend->>DB: Favorit speichern oder entfernen
+    DB-->>Backend: Bestätigung
+    Backend-->>Frontend: Aktualisierter Favoriten-Status
+    Frontend-->>Nutzer: Favoriten-Symbol aktualisieren

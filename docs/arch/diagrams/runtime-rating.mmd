@@ -1,0 +1,18 @@
+sequenceDiagram
+    actor Nutzer
+    participant Frontend
+    participant Backend
+    participant DB as Datenbank
+
+    Nutzer->>Frontend: Bewertung abgeben (Sterne, Kommentar)
+    Frontend->>Backend: POST /reviews {userIdHash, restaurantKey, rating, comment}
+    Backend->>DB: Prüfen, ob Visit vorhanden (DR-08)
+    DB-->>Backend: Visit-Status
+    alt Visit vorhanden
+        Backend->>DB: Review speichern oder aktualisieren
+        DB-->>Backend: Bestätigung
+        Backend-->>Frontend: Erfolg
+    else kein Visit vorhanden
+        Backend-->>Frontend: Fehler - Bewertung nur nach Besuch möglich
+    end
+    Frontend-->>Nutzer: Ergebnis anzeigen
