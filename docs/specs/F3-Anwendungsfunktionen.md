@@ -76,6 +76,19 @@ AF-02 ermittelt passende Restaurants anhand der aktuellen Suchanfrage und person
 5. Die Ergebnisse werden absteigend nach `Score` sortiert. Bei gleichem Score entscheidet die Entfernung.
 6. Die verwendete `UserId` wird nicht in der sichtbaren Empfehlung ausgegeben und nicht an externe Restaurantdienste übertragen.
 
+### Verbindliche MVP-Score-Regel
+
+Vor der Score-Berechnung werden harte Filter angewendet. Der normalisierte Score setzt sich aus folgenden Faktoren zusammen:
+
+| Faktor | Gewicht |
+|---|---:|
+| Entfernung | 35 % |
+| Stimmung und Anlass | 25 % |
+| persönliche Historie aus Favoriten, Besuchen und Bewertungen | 25 % |
+| unterstützte optionale Restaurantmerkmale | 15 % |
+
+Fehlende externe Merkmale werden nicht durch Standardwerte ersetzt. Der jeweilige Faktor wird dann neutral behandelt und in der Begründung nicht als Treffer ausgegeben. Die Berechnung ist deterministisch; bei gleichem Gesamtscore entscheidet die geringere Entfernung. Die zurückgegebenen Match-Gründe müssen auf tatsächlich erfüllten Kriterien beruhen.
+
 ### Beispiele
 
 | Nutzerprofil | Ergebnis |
@@ -90,15 +103,3 @@ AF-02 ermittelt passende Restaurants anhand der aktuellen Suchanfrage und person
 - [D2 – Datentypenverzeichnis](D2-Datentypen.md)
 - [N2 – Querschnittskonzepte](N2-Querschnittskonzepte.md)
 - F2 – UC-06 „Empfehlungen erhalten“
-
-## F3.3 Akzeptanzkriterien
-
-- Die Funktion ist unabhängig von einer bestimmten Bildschirmmaske beschrieben.
-- Eingaben, Ausgaben und Berechnungsregeln sind eindeutig.
-- Bei einem Restaurant ohne Bewertungen wird kein künstlicher Durchschnitt von `0` erzeugt.
-- Für die Berechnung werden ausschließlich eigene Food-Mood-Bewertungen verwendet.
-- Die Rundung erfolgt nur für die Anzeige.
-- Jede Anwendungsfunktion besitzt eine eindeutige ID und ist in der Übersichtstabelle dokumentiert.
-- `AF-02` nimmt eine gültige `UserId` als Eingabe entgegen und verwendet sie zum Laden der nutzerbezogenen Daten.
-- Favoriten, Besuche und Bewertungen der `UserId` beeinflussen die personalisierte Empfehlung.
-- Ohne nutzerbezogene Historie bleibt die Empfehlung anhand der aktuellen Suchkriterien funktionsfähig.

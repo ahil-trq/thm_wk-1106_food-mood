@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor Nutzer
+    participant Frontend
+    participant Backend
+    participant OSM as OpenStreetMap/Overpass
+    participant DB as Datenbank
+
+    Nutzer->>Frontend: Sucheanfrage (Standort, Stimmung, Anlass, Filter)
+    Frontend->>Backend: POST /api/v1/recommendations
+    Backend->>OSM: OSM-Adapter: Restaurants im Suchradius anfragen
+    OSM-->>Backend: Restaurantliste (Rohdaten)
+    Backend->>Backend: Matching-Score berechnen (ADR-05, AF-02)
+    Backend->>DB: Favoriten/Bewertungen zur UserIdHash laden
+    DB-->>Backend: Nutzerbezogene Zusatzdaten
+    Backend-->>Frontend: Sortierte Empfehlungsliste
+    Frontend-->>Nutzer: Empfehlungen anzeigen

@@ -212,14 +212,3 @@ Die Kombination `userIdHash + restaurantKey` ist eindeutig. Vor dem Erstellen de
 4. Vorhandene OpenStreetMap-Tags werden in die definierten Food-Mood-Typen überführt; Listenwerte werden normalisiert und dedupliziert.
 5. Ein Restaurant wird durch die Kombination aus `OsmType` und `OsmId` eindeutig referenziert.
 6. Eine Nominatim-`place_id` wird nicht als Restaurantschlüssel verwendet.
-
-## D2.8 Konsistenz- und Akzeptanzkriterien
-
-- Alle in D1 modellierten Objekte besitzen hier einen gleich geschriebenen Typnamen.
-- Für IDs, Bewertungen, Koordinaten, Distanzen und Zeitpunkte existieren eindeutige Wertebereiche.
-- Optionale externe Werte sind erkennbar und werden nicht mit negativen Aussagen verwechselt.
-- Die sichtbare `UserId` besitzt genau zwölf Zeichen und wird nicht im Klartext gespeichert.
-- `UserIdHash` wird für alle internen Beziehungen zu Favoriten, Besuchen und Bewertungen verwendet.
-- `ExternalRestaurantKey` verhindert Kollisionen zwischen OSM-Knoten, -Wegen und -Relationen.
-- Eine `Review` ist nur zulässig, wenn für denselben Nutzer und dasselbe Restaurant mindestens ein `Visit` vorhanden ist.
-- Im späteren TypeScript-Code werden diese Typnamen beibehalten oder Abweichungen in einer Architekturentscheidung begründet.

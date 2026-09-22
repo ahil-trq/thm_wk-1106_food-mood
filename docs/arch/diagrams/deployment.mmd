@@ -1,0 +1,15 @@
+flowchart LR
+    BROWSER[Browser]
+    DOMAIN[DNS / Domain]
+    PROXY[Reverse Proxy<br/>TLS-Terminierung]
+    FRONT[Statische Frontend-Dateien]
+    API[Backend API<br/>/api/v1]
+    DB[(PostgreSQL<br/>nicht öffentlich)]
+    ADAPTER[OSM-Adapter]
+    OSM[Overpass / Nominatim]
+
+    BROWSER --> DOMAIN --> PROXY
+    PROXY --> FRONT
+    PROXY --> API
+    API --> DB
+    API --> ADAPTER --> OSM
