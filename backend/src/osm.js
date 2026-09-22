@@ -94,7 +94,9 @@ export async function getRestaurants(latitude, longitude, radiusMeters = 5000) {
   const cached = cache.get(cacheKey)
   if (cached && cached.expiresAt > Date.now()) return cached.value
   const query = `[out:json][timeout:5];(nwr[amenity~"^(restaurant|fast_food|cafe)$"](around:${radiusMeters},${coordinates.latitude},${coordinates.longitude}););out center tags;`
-  const data = await request(overpassUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: query })
+ const url = new URL(overpassUrl)
+ url.searchParams.set('data', query)
+const data = await request(url.toString())
   const restaurants = data.elements.map((element) => normalizeElement(element, coordinates)).filter(Boolean)
   cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })
   return restaurants
