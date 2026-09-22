@@ -77,9 +77,15 @@ app.post('/api/v1/recommendations', async (request, response) => {
     for (const restaurant of restaurants) await ensureRestaurantReference(restaurant)
     const recommendations = restaurants.map((restaurant, index) => ({ restaurant, score: Math.max(0, 100 - index), distance: restaurant.distance, reasons: [mood ? `passt zur Stimmung ${mood}` : `passt zum Anlass ${occasion}`] })).slice(0, 50)
     response.json({ recommendations, userIdHash })
-  } catch (error) {
-    console.error('OSM recommendation failed:', error.message)
-    sendError(response, 502, 'OSM_UNAVAILABLE', 'Restaurantdaten konnten momentan nicht geladen werden.')
+  }   catch (error) {
+    console.error('Restaurant search failed:', error)
+
+    sendError(
+      response,
+      502,
+      'OSM_UNAVAILABLE',
+      error.message || 'Restaurantdaten konnten momentan nicht geladen werden.'
+    )
   }
 })
 app.get("/health", async (req, res) => {
@@ -92,6 +98,7 @@ app.get("/health", async (req, res) => {
     });
 
   } catch (error) {
+    
     res.status(500).json({
       status: "ok",
       database: false
