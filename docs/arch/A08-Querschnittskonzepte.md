@@ -36,7 +36,7 @@ Food-Mood erhebt bewusst nur die minimal notwendigen Daten. Es gibt keine E-Mail
 
 Wichtige fachliche Einschränkung: Standortdaten, Suchanfragen und kurzfristige Ergebnisse werden nur für die aktuelle Nutzung verarbeitet und nicht dauerhaft gespeichert. Der aktuelle Standort ist damit ein transientes Suchkriterium, kein Profilattribut. Das schützt die Privatsphäre und entspricht der Mehrfachforderung aus [A02 – Randbedingungen](A02-Randbedingungen.md) und [N1 – Nichtfunktionale Anforderungen](../specs/N1-Nichtfunktionale-Anforderungen.md). Siehe auch [§ 8.1](#81-userid-konzept-statt-login) und [§ 8.3](#83-validierung-fachlicher-regeln).
 
-Außerdem gilt: Standort- und Suchtextdaten dürfen nicht nachträglich in Favoriten, Besuche oder Bewertungen kopiert werden. So bleibt die dauerhaft gespeicherte Datenbasis auf das Nötigste begrenzt. Diese Regel verhindert eine ungewollte Erstellung von Profilprofilen auf Basis von Ad-hoc-Suchverhalten und ist ein zentraler Beitrag zur Datenminimierung.
+Außerdem gilt: Standort- und Suchtextdaten dürfen nicht nachträglich in Favoriten, Besuche oder Bewertungen kopiert werden. So bleibt die dauerhaft gespeicherte Datenbasis auf das Nötigste begrenzt. Diese Regel verhindert eine ungewollte Erstellung von Nutzerprofilen auf Basis von Ad-hoc-Suchverhalten und ist ein zentraler Beitrag zur Datenminimierung.
 
 <a id="83-validierung-fachlicher-regeln"></a>
 ## § 8.3 Validierung fachlicher Regeln
@@ -72,16 +72,19 @@ Diese Regel ist besonders wichtig, weil Food-Mood externe Anbieter nicht als „
 <a id="85-session-und-profilzustand"></a>
 ## § 8.5 Session- und Profilzustand
 
-Food-Mood verwendet keine klassische serverseitige Session mit Benutzerkonto, Cookie-Auth und Rollenmodell. Stattdessen ist der aktive Zustand des Nutzers durch die lokale `UserID` bzw. den `UserIdHash` des aktuellen Profils bestimmt. Der Nutzer bleibt über die laufende App-Nutzung als aktiver Benutzer identifiziert, bis er ein anderes Profil lädt oder die App-Daten lokal zurücksetzt.
+Food-Mood verwendet keine klassische serverseitige Session mit Benutzerkonto, Cookie-Auth und Rollenmodell. Stattdessen wird die UserID nach der Profilerstellung oder -auswahl im Browser per `localStorage` persistent gespeichert. Für API-Aufrufe wird daraus der `UserIdHash` abgeleitet und ausschließlich über HTTPS übertragen. Die UserID ist dabei ein Besitzschlüssel, keine starke Authentifizierung.
 
 Diese Logik ist im fachlichen Sinne eine Session-ähnliche Zustandsverwaltung:
 
-- Nach dem erfolgreichen Laden oder Erstellen eines Profils wird die aktive `UserID` für die laufende App-Nutzung als aktuell gesetzt.
+- Nach dem erfolgreichen Laden oder Erstellen eines Profils wird die aktive `UserID` in `localStorage` gespeichert und für die laufende App-Nutzung als aktuell gesetzt.
 - Danach werden Favoriten, Besuche und Bewertungen automatisch dem aktiven Profil zugeordnet.
+- Beim Browser- oder App-Neustart wird die lokal gespeicherte UserID wieder geladen; beim Profilwechsel oder beim Zurücksetzen der App-Daten wird sie gelöscht oder ersetzt.
 - Eine laufende Suchanfrage ist nur für die aktuelle Sitzung relevant und wird nicht als dauerhaftes Benutzerprofil gespeichert.
 - Ein Wechsel des Profils ersetzt lediglich die aktive Identität; es gibt keinen klassischen Logout-Prozess im Sinne eines Benutzerkontos.
 
 Damit bleibt das System einfach, schnell und datensparsam, ohne die fachlichen Anforderungen an Personalisierung zu verlieren. Siehe auch [§ 8.1](#81-userid-konzept-statt-login) und [§ 8.2](#82-datenschutz-und-minimale-datenerhebung).
+
+Für die externe Kommunikation gelten zusätzlich ein Timeout von 5 Sekunden, höchstens ein Wiederholungsversuch bei transienten Fehlern und eine Cache-Dauer von 10 Minuten für geeignete OSM-Ergebnisse. Bei Rate-Limits und HTTP-4xx-Fehlern wird nicht wiederholt. Die Anwendung zeigt in diesen Fällen eine verständliche Fehlermeldung und bietet, sofern sinnvoll, eine manuelle Suche oder einen erneuten Versuch an.
 
 ## Diagramm: UserID-Konzept
 

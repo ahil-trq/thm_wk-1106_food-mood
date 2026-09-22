@@ -1,6 +1,6 @@
 # S3 - Inbetriebnahme
 
-Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten und produktiv in Betrieb zu nehmen. Genaue Befehle und Anbieter können sich noch ändern, sobald die Architektur in M2 final feststeht.
+Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten und für die Projektlaufzeit bei All-Inkl produktiv zu betreiben. Die Architekturentscheidungen sind in [A09 – Architekturentscheidungen](../arch/A09-Architekturentscheidungen.md) dokumentiert.
 
 ## 1. Voraussetzungen
 
@@ -22,7 +22,8 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 Die Konfiguration erfolgt über Umgebungsvariablen in einer lokalen env-Datei, die nicht Teil des Repositorys ist (in .gitignore eingetragen). Voraussichtlich benötigt:
 
-- `OVERPASS_API_URL` Basis-URL des Overpass-Servers.
+- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`.
+- `NOMINATIM_API_URL` Basis-URL des Nominatim-Servers, Standardwert `https://nominatim.openstreetmap.org`.
 - `DATABASE_URL` Verbindungsangabe zur Datenbank (siehe Datenbankkonfiguration).
 - `PORT` Port, unter dem die Anwendung lokal erreichbar ist (optional, mit Standardwert).
 
@@ -30,14 +31,14 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 
 ## 5. Datenbank konfigurieren
 
-- Die Persistenz erfolgt voraussichtlich über PostgreSQL (siehe TEAMINFO.md).
-- Für die lokale Entwicklung reicht eine leere, lokale PostgreSQL-Datenbank. Das Schema wird beim ersten Start automatisch angelegt bzw. über Migrationsskripte eingerichtet (genaue Umsetzung folgt in der Architekturphase, M2).
-- Gespeichert werden ausschließlich die UserID sowie die zugehörigen Favoriten und Besuche/Bewertungen. Keine sensiblen personenbezogenen Daten.
+- Die Persistenz erfolgt über PostgreSQL.
+- Für die lokale Entwicklung reicht eine leere, lokale PostgreSQL-Datenbank. Das Schema wird über versionierte SQL-Migrationen eingerichtet; das Backend verwendet dafür `pg`.
+- Die UserID wird lokal im Browser gespeichert. Serverseitig werden ausschließlich der `UserIdHash` sowie die zugehörigen Favoriten, Besuche und Bewertungen gespeichert. Keine sensiblen personenbezogenen Daten.
 
 ## 6. OpenStreetMap-Anbindung konfigurieren
 
-- Food-Mood nutzt OpenStreetMap/Overpass als Datenquelle für Restaurants sowie voraussichtlich Nominatim zur Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten.
-- Beide Dienste sind öffentlich und kostenlos nutzbar. Die jeweilige Basis-URL wird über eine Umgebungsvariable konfiguriert, damit sie bei Bedarf ausgetauscht werden kann, ohne den Code zu ändern.
+- Food-Mood nutzt OpenStreetMap/Overpass als Datenquelle für Restaurants sowie Nominatim zur Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten.
+- Beide Dienste sind öffentlich und kostenlos nutzbar. Die Basis-URLs werden über `OVERPASS_API_URL` und `NOMINATIM_API_URL` konfiguriert, damit sie bei Bedarf ausgetauscht werden können, ohne den Code zu ändern.
 - Für die aktuell vorgesehene Datenquelle werden keine geheimen API-Schlüssel benötigt. Sollte im weiteren Verlauf dennoch ein Dienst mit Schlüsselpflicht eingesetzt werden, gilt als Grundsatz: Schlüssel werden nicht im Quellcode oder Repository hinterlegt, sondern ausschließlich über die lokale, nicht versionierte env-Datei bereitgestellt.
 
 ## 7. Anwendung lokal starten
@@ -54,7 +55,7 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 
 - Für den Produktivbetrieb wird ein Webserver benötigt, der die gebauten Frontend-Dateien ausliefert und das Backend erreichbar macht.
 - Der Server benötigt Node.js in der aktuellen LTS-Version zur Ausführung des Backends sowie Netzwerkzugriff auf die PostgreSQL-Datenbank und die externen OpenStreetMap-Dienste.
-- Ein Reverse Proxy (z.B. Nginx oder Caddy) nimmt Anfragen auf Port 80/443 entgegen, liefert das Frontend aus und leitet `/api` an das Backend weiter.
+- Ein Reverse Proxy (z.B. Nginx oder Caddy, soweit im All-Inkl-Tarif verfügbar) nimmt Anfragen auf Port 80/443 entgegen, liefert das Frontend aus und leitet `/api/v1` an das Backend weiter.
 - Das Backend läuft als verwalteter Prozess (z.B. über systemd oder PM2) und wird nach einem Neustart des Servers automatisch gestartet.
 - Die Datenbank ist nicht direkt aus dem Internet erreichbar. Firewall-Regeln erlauben ausschließlich die notwendigen Verbindungen zu Webserver, Backend und Datenbank.
 
@@ -68,7 +69,7 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 6. Der Reverse Proxy wird so konfiguriert, dass `foodmood-thm.de` das Frontend ausliefert und API-Anfragen an das Backend weiterleitet.
 7. Nach jedem Deployment werden die Erreichbarkeit und die Kernfunktionen gemäß Punkt 12 geprüft.
 
-Die konkrete Umsetzung (manuell, per Skript oder automatisiert über CI/CD) kann nach Festlegung der Architektur ergänzt werden.
+Die Bereitstellung erfolgt für die Projektlaufzeit; nach der Abgabe kann die Domain abgeschaltet werden. Backups der PostgreSQL-Datenbank werden täglich erstellt und sieben Tage aufbewahrt.
 
 ## 11. Domain konfigurieren
 

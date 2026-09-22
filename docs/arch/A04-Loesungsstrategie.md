@@ -36,11 +36,12 @@ Die Lösung ist eine modular aufgebaute Drei-Schichten-Anwendung und keine Micro
 | `LS-01` | Programmiersprache | JavaScript im Frontend und Backend | Das Team verwendet nur eine zentrale Programmiersprache. Datenobjekte und Validierungsregeln können zwischen den Anwendungsteilen konsistent gehalten werden. |
 | `LS-02` | Frontend | React mit Vite | React ermöglicht eine komponentenbasierte Umsetzung der in B1 beschriebenen Masken. Vite stellt den Entwicklungsserver und den Produktions-Build bereit. |
 | `LS-03` | Backend | Node.js mit Express | Express stellt eine schlanke HTTP- und REST-Schnittstelle bereit. Fachlogik, Validierung, Datenzugriff und externe Zugriffe werden in getrennten Modulen organisiert. |
-| `LS-04` | Persistenz | PostgreSQL | Das relationale Datenmodell aus D1 kann mit Schlüsseln, Beziehungen und Integritätsregeln umgesetzt werden. UserIDs, Favoriten, Besuche und Bewertungen werden dauerhaft gespeichert. |
+| `LS-04` | Persistenz | PostgreSQL | Das relationale Datenmodell aus D1 kann mit Schlüsseln, Beziehungen und Integritätsregeln umgesetzt werden. Der UserIdHash, Favoriten, Besuche und Bewertungen werden dauerhaft gespeichert; die UserID bleibt lokal im Browser. |
 | `LS-05` | Restaurant- und Geodaten | OpenStreetMap über einen eigenen Backend-Adapter | OpenStreetMap bleibt das einzige fachliche Nachbarsystem. Overpass kann für Restaurantabfragen und Nominatim für die Auflösung manueller Ortseingaben verwendet werden. Technische Details bleiben hinter einer internen Schnittstelle verborgen. |
 | `LS-06` | Entwicklung | Docker Compose | Frontend, Backend und PostgreSQL erhalten eine einheitliche lokale Umgebung, die von allen Teammitgliedern reproduzierbar gestartet werden kann. |
-| `LS-07` | Bereitstellung | Webserver mit Domain und HTTPS | Die Anwendung ist ohne Installation über einen Browser erreichbar. Die genaue Serverstruktur wird in A07 beschrieben. |
+| `LS-07` | Bereitstellung | All-Inkl mit Domain und HTTPS | Die Anwendung wird für die Projektlaufzeit unter `foodmood-thm.de` bereitgestellt. Die konkrete Serverstruktur wird in A07 beschrieben; der gewählte All-Inkl-Tarif muss den Betrieb des Node.js-/Express-Backends ermöglichen. |
 | `LS-08` | Nutzeridentifikation | anonyme UserID statt klassischem Benutzerkonto | Es werden keine E-Mail-Adresse und kein Passwort benötigt. Favoriten, Besuche und Bewertungen werden der aktiven UserID zugeordnet. |
+| `LS-09` | Datenzugriff und Schemaänderungen | `pg` und versionierte SQL-Migrationen | Das Backend greift direkt über `pg` auf PostgreSQL zu. Änderungen am Datenbankschema werden als nachvollziehbare SQL-Migrationen versioniert; ein ORM wird nicht eingesetzt. |
 
 Versionsnummern werden nicht dauerhaft in dieser Strategie festgeschrieben. Die tatsächlich eingesetzten Versionen werden in den Projekt- und Build-Dateien verwaltet, damit die Architekturdokumentation nicht durch reguläre Aktualisierungen veraltet.
 
@@ -68,10 +69,10 @@ Die Benutzeroberfläche greift nicht direkt auf PostgreSQL zu. Ebenso werden Res
 | [NFA-04](../specs/N1-Nichtfunktionale-Anforderungen.md) – manueller Standort als Ersatzweg | Das Frontend bietet neben der Browserfreigabe immer eine manuelle Ortseingabe an. Die Auflösung erfolgt über die gekapselte OSM-Anbindung. |
 | [NFA-05](../specs/N1-Nichtfunktionale-Anforderungen.md) – verständliche Fehlermeldungen | Das Backend übersetzt technische Fehler in einheitliche Fehlerantworten. Das Frontend zeigt allgemeinsprachliche Hinweise und, wenn sinnvoll, „Erneut versuchen“ an. |
 | [NFA-06](../specs/N1-Nichtfunktionale-Anforderungen.md) – Standort nicht dauerhaft speichern | Koordinaten und Ortseingaben werden nur für die aktuelle Suche verarbeitet und nicht in PostgreSQL gespeichert. |
-| [NFA-07](../specs/N1-Nichtfunktionale-Anforderungen.md) – keine personenbezogenen Kontodaten | Es gibt keine Registrierung mit E-Mail-Adresse oder Passwort. Die Zuordnung persönlicher App-Daten erfolgt ausschließlich über die UserID. |
+| [NFA-07](../specs/N1-Nichtfunktionale-Anforderungen.md) – keine personenbezogenen Kontodaten | Es gibt keine Registrierung mit E-Mail-Adresse oder Passwort. Die Zuordnung persönlicher App-Daten erfolgt ausschließlich über den aus der UserID abgeleiteten UserIdHash. |
 | [NFA-08](../specs/N1-Nichtfunktionale-Anforderungen.md) – gültige Bewertungen | Frontend und Backend prüfen den ganzzahligen Wertebereich von einem bis fünf Sternen. Ungültige Werte werden nicht gespeichert. |
 | [NFA-09](../specs/N1-Nichtfunktionale-Anforderungen.md) – Bewertung erst nach Besuch | Die Fachlogik prüft vor dem Speichern einer Bewertung, ob für dieselbe UserID und dasselbe Restaurant ein Besuch vorhanden ist. |
-| [NFA-10](../specs/N1-Nichtfunktionale-Anforderungen.md) – dauerhafte persönliche Daten | PostgreSQL speichert UserIDs, Favoriten, Besuche und Bewertungen dauerhaft und stellt ihre Beziehungen durch Schlüssel sicher. |
+| [NFA-10](../specs/N1-Nichtfunktionale-Anforderungen.md) – dauerhafte persönliche Daten | PostgreSQL speichert den UserIdHash sowie Favoriten, Besuche und Bewertungen dauerhaft und stellt ihre Beziehungen durch Schlüssel sicher. |
 
 ## A04.6 Integrationsstrategie für OpenStreetMap
 
@@ -102,7 +103,7 @@ Für die lokale Entwicklung werden mindestens drei Docker-Compose-Dienste vorges
 
 Im Produktivbetrieb wird das mit Vite erzeugte Frontend über HTTPS bereitgestellt. Das Backend ist über dieselbe Domain oder einen eindeutig festgelegten API-Pfad erreichbar. PostgreSQL ist nicht öffentlich aus dem Internet erreichbar. Konfigurationen und mögliche Zugangsdaten werden außerhalb des Quellcodes über Umgebungsvariablen bereitgestellt.
 
-Die konkreten Server, Ports, Container, Sicherungswege und Installationsschritte werden erst in [A07 – Verteilungssicht](A07-Verteilungssicht.md) und [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) festgelegt.
+Die konkreten Serverports, Prozessverwaltung und Installationsschritte werden in [A07 – Verteilungssicht](A07-Verteilungssicht.md) und [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) beschrieben. Die Datenbank wird täglich gesichert; Sicherungen werden für sieben Tage aufbewahrt. Der Produktivbetrieb ist bis zur Projektabgabe vorgesehen.
 
 ## A04.8 Bewusste Vereinfachungen für die erste Version
 
@@ -117,37 +118,8 @@ Folgende Ansätze werden für den MVP nicht verwendet:
 - kein klassisches Login mit E-Mail-Adresse und Passwort
 - keine verpflichtende Kartenansicht
 
-Falls später eine Kartenansicht benötigt wird, kann Leaflet als austauschbare Frontend-Bibliothek ergänzt werden. Sie ist nicht erforderlich, um die Restaurantliste und die Kernfunktionen der ersten Version umzusetzen.
+Eine Kartenansicht gehört ausdrücklich nicht zum MVP und wird frühestens in Version 2 betrachtet. Falls sie aufgenommen wird, muss die Auswahl der Kartenbibliothek, der Tile-Anbieter, der Attribution und des Datenflusses separat entschieden werden.
 
-## A04.9 Offene Detailentscheidungen
+## A04.9 Verbleibende Detailentscheidungen
 
-Die folgenden Punkte müssen vor oder während der Implementierung in A07 beziehungsweise A09 konkretisiert werden, verändern aber nicht die grundlegende Lösungsstrategie:
-
-| ID | Offener Punkt | Zuständiges Dokument |
-|---|---|---|
-| `OD-01` | konkreter Hosting-Anbieter und Domain | A07 |
-| `OD-02` | konkrete Bibliothek für PostgreSQL-Zugriffe und Migrationen | A09 |
-| `OD-03` | konkrete Cache-Dauer und Begrenzung externer Anfragen | A08 oder A09 |
-| `OD-04` | Entscheidung, ob eine Kartenansicht nach dem MVP ergänzt wird | A09 |
-| `OD-05` | konkrete Endpunkte und Ports der Produktionsumgebung | A07 |
-
-## A04.10 Weiterführende Dokumente
-
-| Thema | Dokument |
-|---|---|
-| Ziele und Rahmenbedingungen | [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md) |
-| Kontext und Systemgrenze | [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
-| fachliche Bausteine | [P2 – Fachlicher Architekturüberblick](../specs/P2-architekturueberblick.md) |
-| detaillierte technische Bausteine | [A05 – Bausteinsicht](A05-Bausteinsicht.md) |
-| Datenmodell und Datentypen | [D1 – Datenmodell](../specs/D1-Datenmodell.md) und [D2 – Datentypen](../specs/D2-Datentypen.md) |
-| Architekturentscheidungen | [A09 – Architekturentscheidungen](A09-Architekturentscheidungen.md) |
-
-## A04.11 Akzeptanzkriterien
-
-- Die grundlegenden Technologien und ihre Aufgaben sind eindeutig benannt.
-- Frontend, Backend, Fachlogik, Integration und Persistenz sind voneinander abgegrenzt.
-- OpenStreetMap bleibt das einzige fachliche Nachbarsystem.
-- Die Strategie unterstützt die nichtfunktionalen Anforderungen aus N1.
-- Standort- und UserID-Daten werden entsprechend den Vorgaben aus M1 behandelt.
-- Offene Detailentscheidungen sind sichtbar und den passenden Architekturkapiteln zugeordnet.
-- Die Lösung bleibt für ein vierköpfiges Team und den Umfang der ersten Version realistisch.
+Die grundlegenden Architekturentscheidungen sind getroffen. Produktionsports und die konkrete Prozessverwaltung können bei der Einrichtung des All-Inkl-Servers festgelegt werden, ohne die Lösungsstrategie zu ändern.

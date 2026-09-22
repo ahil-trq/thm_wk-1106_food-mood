@@ -3,6 +3,7 @@
 | Begriff | Erklärung |
 | --- | --- |
 | UserID | Eindeutige, anonyme Kennung eines Nutzers, mit der Favoriten, Besuche und Bewertungen gespeichert und wieder geladen werden. Sie ersetzt ein klassisches Login-System und passt zu Food-Mood; siehe auch [A01 – Einführung und Ziele](A01-Einfuehrung-und-Ziele.md), [A02 – Randbedingungen](A02-Randbedingungen.md) und [A08 – Querschnittskonzepte](A08-Querschnittskonzepte.md). |
+| UserIdHash | Serverseitig gespeicherter Hash der UserID. Er dient als Zuordnungsschlüssel für persönliche App-Daten; die UserID selbst bleibt im lokalen Browserzustand. |
 | Backend | Der serverseitige Teil der Anwendung, der fachliche Logik, Datenzugriff und Verarbeitung übernimmt. Das Backend stellt die Daten für das Frontend bereit; vgl. [A04 – Lösungsstrategie](A04-Loesungsstrategie.md) und [A05 – Bausteinsicht](A05-Bausteinsicht.md). |
 | Frontend | Die Benutzeroberfläche der Web-App, die im Browser dargestellt wird und die Interaktion mit dem Nutzer übernimmt; siehe [A04 – Lösungsstrategie](A04-Loesungsstrategie.md) und [A05 – Bausteinsicht](A05-Bausteinsicht.md). |
 | Web-App | Eine Anwendung, die im Browser genutzt wird und nicht als native App installiert werden muss. Food-Mood ist als Web-App konzipiert; siehe [A01 – Einführung und Ziele](A01-Einfuehrung-und-Ziele.md) und [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md). |
@@ -28,5 +29,10 @@
 | Nutzerprofil | Die persönlichen Daten und Merkmale eines Nutzers innerhalb von Food-Mood, etwa Favoriten, Besuche und Bewertungen; siehe [A08 – Querschnittskonzepte](A08-Querschnittskonzepte.md) und [D1 – Datenmodell](../specs/D1-Datenmodell.md). |
 | Server | Die technische Laufzeitumgebung, auf der die Anwendungslogik und die Datenverarbeitung stattfinden; siehe [A05 – Bausteinsicht](A05-Bausteinsicht.md) und [A07 – Verteilungssicht](A07-Verteilungssicht.md). |
 | API | Schnittstelle, über die verschiedene Softwarebestandteile oder externe Systeme miteinander kommunizieren; siehe [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) und [A04 – Lösungsstrategie](A04-Loesungsstrategie.md). |
+| Reverse Proxy | Vorgeschalteter Server, der HTTPS beendet, Frontend-Dateien ausliefert und API-Anfragen an das Backend weiterleitet; siehe [A07 – Verteilungssicht](A07-Verteilungssicht.md). |
+| OSM-Adapter | Gekapselter Backend-Baustein für OpenStreetMap-Zugriffe, der Overpass- und Nominatim-Antworten prüft und in interne Datentypen überführt; siehe [A05 – Bausteinsicht](A05-Bausteinsicht.md). |
+| Overpass | Technischer Zugang zu OpenStreetMap für räumliche Abfragen von Restaurantobjekten; siehe [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md). |
+| Nominatim | Technischer Zugang zu OpenStreetMap zur Auflösung einer manuellen Ortseingabe in Koordinaten; siehe [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md). |
+| Matching-Score | Transparenter, deterministischer Wert zur Sortierung von Restaurantempfehlungen anhand definierter Faktoren; siehe [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) und [A09 – Architekturentscheidungen](A09-Architekturentscheidungen.md). |
 | Datenfluss | Der Weg, den Informationen im System nehmen, zum Beispiel von der Benutzereingabe über die Logik zur Empfehlung; siehe [A06 – Laufzeitsicht](A06-Laufzeitsicht.md) und [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md). |
 

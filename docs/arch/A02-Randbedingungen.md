@@ -27,7 +27,7 @@ Die technischen Randbedingungen beschreiben die grundlegenden Architekturentsche
 | ID | Randbedingung | Beschreibung / Quelle |
 | --- | --- | --- |
 | TEC-01 | Web-App statt native App | Food-Mood wird als Webanwendung bereitgestellt und läuft im Browser. Eine native iOS- oder Android-App ist nicht Bestandteil des Projekts. Siehe auch [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md). |
-| TEC-02 | Webserver als Betriebssystem | Die Anwendung läuft auf einem Webserver mit öffentlich erreichbarer Domain. Der Betrieb erfolgt in einer einfachen Hosting-Umgebung ohne komplexe Container- oder Microservice-Architektur. |
+| TEC-02 | Webserver als Bereitstellungsrolle | Die Anwendung wird über einen Webserver mit öffentlich erreichbarer Domain bereitgestellt. Der Betrieb erfolgt in einer einfachen Hosting-Umgebung ohne komplexe Container- oder Microservice-Architektur. |
 | TEC-03 | Domain und öffentliche Verfügbarkeit | Die App wird über eine Domain erreichbar sein. Das Deployment muss deshalb mit einer stabilen, im Internet nutzbaren URL funktionieren. Weitere Details folgen in [A07 – Verteilungssicht](A07-Verteilungssicht.md). |
 | TEC-04 | Datenbank im Backend | Für die persistenten Nutzerdaten werden Favoriten, Besuche und Bewertungen in einer Datenbank gespeichert. Die Speicherung muss zuverlässig und leicht wartbar erfolgen. Siehe auch [D1 – Datenmodell](../specs/D1-Datenmodell.md). |
 | TEC-05 | OpenStreetMap als Datenquelle | Restaurant- und Geodaten werden aus OpenStreetMap bezogen. Dabei werden nur relevante gastronomische Einträge verarbeitet und in interne Datenstrukturen überführt. Detaillierte fachliche Grenzen sind in [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) beschrieben. |

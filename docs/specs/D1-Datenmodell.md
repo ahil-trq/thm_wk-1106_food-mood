@@ -5,7 +5,7 @@
 Das fachliche Datenmodell beschreibt die Informationen, mit denen Food-Mood seine Anwendungsfälle erfüllt. Es unterscheidet zwischen kurzlebigen Suchdaten und dauerhaft gespeicherten App-Daten.
 
 - **Kurzlebig:** Standort, Suchanfrage und berechnete Empfehlungen existieren nur während des Suchvorgangs.
-- **Dauerhaft:** Nutzername, Hash der UserID, Restaurantreferenzen, Favoriten, Besuche und eigene Bewertungen bleiben nach einem Neustart erhalten.
+- **Dauerhaft:** Nutzername, Hash der UserID, Restaurantreferenzen, Favoriten, Besuche und eigene Bewertungen bleiben nach einem Neustart erhalten. Die UserID selbst bleibt ausschließlich im lokalen Browserzustand.
 - **Extern:** Restaurantstammdaten werden von OpenStreetMap/Overpass geliefert. Food-Mood speichert keine selbst gepflegte vollständige Restaurantdatenbank.
 
 Die exakten Feldtypen und Wertebereiche sind in [D2 – Datentypenverzeichnis](D2-Datentypen.md) definiert.
@@ -16,7 +16,7 @@ Die exakten Feldtypen und Wertebereiche sind in [D2 – Datentypenverzeichnis](D
 
 Repräsentiert ein einfaches Nutzerprofil ohne E-Mail-Adresse und Passwort. Bei der Initialisierung gibt der Nutzer einen Namen ein. Food-Mood erzeugt daraufhin eine zufällige, genau zwölf Zeichen lange `UserId` und zeigt sie dem Nutzer an. Mit dieser UserID kann das Profil bei einem späteren Aufruf erneut geladen oder auf demselben Gerät gewechselt werden.
 
-Die UserID wird nicht im Klartext gespeichert und ist kein Bestandteil einer persönlichen URL. Vor der dauerhaften Speicherung wird sie gehasht. Food-Mood sucht ein bestehendes Profil, indem es die eingegebene UserID mit demselben Verfahren hasht und den Wert mit dem gespeicherten `UserIdHash` vergleicht. Favoriten, Besuche und Bewertungen werden intern über den `UserIdHash` dem richtigen Nutzerprofil zugeordnet.
+Die UserID wird nicht im Klartext auf dem Server gespeichert und ist kein Bestandteil einer persönlichen URL. Vor der dauerhaften Speicherung wird sie gehasht. Food-Mood sucht ein bestehendes Profil, indem es die eingegebene UserID mit demselben Verfahren hasht und den Wert mit dem gespeicherten `UserIdHash` vergleicht. Die UserID bleibt im lokalen Browserzustand; Favoriten, Besuche und Bewertungen werden intern über den `UserIdHash` dem richtigen Nutzerprofil zugeordnet.
 
 Eine Registrierung mit E-Mail-Adresse und Passwort gehört nicht zur ersten Version.
 
@@ -120,7 +120,7 @@ erDiagram
 
 | Objekt | Dauerhaft gespeichert? | Begründung |
 |---|---|---|
-| `User` | ja | Zuordnung persönlicher Daten über den Hash der zwölfstelligen UserID; keine Registrierung mit E-Mail-Adresse oder Passwort |
+| `User` | ja | Zuordnung persönlicher Daten über den Hash der zwölfstelligen UserID; die UserID selbst liegt nur lokal im Browser; keine Registrierung mit E-Mail-Adresse oder Passwort |
 | `Location` | nein | Datenschutz; nur für die aktuelle Suche erforderlich |
 | `SearchRequest` | nein | MVP benötigt keine Suchhistorie |
 | `SearchFilters` | nein | Bestandteil der aktuellen Suchanfrage |

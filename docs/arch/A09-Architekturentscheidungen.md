@@ -8,6 +8,9 @@
 | [ADR-02](#adr-02-openstreetmap-als-datenquelle) | OpenStreetMap/Overpass statt kostenpflichtiger Anbieter | [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md), [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
 | [ADR-03](#adr-03-web-app-statt-native-app) | Web-App statt native Mobile-App | [A07 – Verteilungssicht](A07-Verteilungssicht.md), [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) |
 | [ADR-04](#adr-04-matching-score-statt-lernendem-system) | serverseitiger Matching-Score statt lernendem Empfehlungsmodell | [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md), [A06 – Laufzeitsicht](A06-Laufzeitsicht.md) |
+| [ADR-05](#adr-05-versionierte-rest-api-und-score-regeln) | versionierte REST-API und feste Score-Regeln | [A05 – Bausteinsicht](A05-Bausteinsicht.md), [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
+| [ADR-06](#adr-06-pg-und-sql-migrationen) | `pg` und versionierte SQL-Migrationen | [A04 – Lösungsstrategie](A04-Loesungsstrategie.md), [A05 – Bausteinsicht](A05-Bausteinsicht.md) |
+| [ADR-07](#adr-07-all-inkl-und-konfigurierbare-osm-endpunkte) | All-Inkl, Domain und konfigurierbare OSM-Endpunkte | [A07 – Verteilungssicht](A07-Verteilungssicht.md), [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) |
 
 Diese Entscheidungen definieren den Kern der Food-Mood-Architektur. Sie sind bewusst auf den MVP-Fokus aus [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md) zugeschnitten und legen feste Grundsätze fest, ohne die spätere Erweiterung auszuschließen.
 
@@ -109,6 +112,50 @@ Diese Entscheidungen definieren den Kern der Food-Mood-Architektur. Sie sind bew
 - Empfehlungsergebnisse sind deterministisch und nachvollziehbar,
 - die Berechnung bleibt unkompliziert und gut testbar,
 - eine spätere Erweiterung um ein lernendes Modell ist technisch möglich, aber kein Teil der aktuellen Architektur.
+
+<a id="adr-05-versionierte-rest-api-und-score-regeln"></a>
+## ADR-05: Versionierte REST-API und feste Score-Regeln
+
+**Status:** Entschieden
+
+**Kontext:** Frontend, Backend und Dokumentation benötigen einen stabilen Vertrag für die Kernabläufe. Der Matching-Score muss reproduzierbar und testbar sein.
+
+**Entscheidung:** Die API verwendet versionierte Pfade unter `/api/v1`, JSON für Anfragen und Antworten sowie ein einheitliches Fehlerobjekt mit `errorCode` und verständlicher `message`. Harte Suchfilter werden vor der Bewertung angewendet. Der Score wird transparent aus vier Faktoren berechnet: Entfernung 35 %, Stimmung und Anlass 25 %, persönliche Historie 25 % sowie unterstützte optionale Merkmale 15 %. Fehlende externe Merkmale erhalten keinen erfundenen Wert; bei gleichem Score entscheidet die geringere Entfernung.
+
+**Konsequenzen:**
+- API-Pfade bleiben erweiterbar, ohne bestehende Clients unbemerkt zu brechen.
+- Empfehlungen sind mit festen Testdaten reproduzierbar.
+- Die Gewichte müssen bei fachlichen Änderungen gemeinsam mit F3 und den Akzeptanztests angepasst werden.
+- Eine Kartenansicht ist kein Bestandteil des MVP und wird frühestens in Version 2 entschieden.
+
+<a id="adr-06-pg-und-sql-migrationen"></a>
+## ADR-06: `pg` und versionierte SQL-Migrationen
+
+**Status:** Entschieden
+
+**Kontext:** Das Backend benötigt einen einfachen und transparenten Zugriff auf PostgreSQL. Das Projekt benötigt außerdem eine nachvollziehbare Einrichtung und Änderung des Datenbankschemas.
+
+**Entscheidung:** Das Backend verwendet das Node.js-Paket `pg` für PostgreSQL-Zugriffe. Datenbankschemaänderungen werden als versionierte SQL-Migrationsdateien im Repository gepflegt und beim Deployment in definierter Reihenfolge ausgeführt. Ein ORM wird nicht eingesetzt.
+
+**Konsequenzen:**
+- SQL und Datenbankabfragen bleiben direkt nachvollziehbar.
+- Das Schema kann lokal und produktiv reproduzierbar eingerichtet werden.
+- Die Migration von Altdaten ist nicht erforderlich; SQL-Migrationen betreffen nur das Datenbankschema.
+
+<a id="adr-07-all-inkl-und-konfigurierbare-osm-endpunkte"></a>
+## ADR-07: All-Inkl und konfigurierbare OSM-Endpunkte
+
+**Status:** Entschieden
+
+**Kontext:** Die Web-App soll für die Projektlaufzeit öffentlich erreichbar sein. OpenStreetMap benötigt technische Endpunkte, die bei Ausfällen oder Anbieterwechseln ohne Änderung der Fachlogik austauschbar bleiben.
+
+**Entscheidung:** Food-Mood wird bis zur Projektabgabe bei All-Inkl unter `foodmood-thm.de` betrieben. Overpass und Nominatim werden ausschließlich über Umgebungsvariablen konfiguriert. Die Standardwerte sind `https://overpass-api.de/api/interpreter` für `OVERPASS_API_URL` und `https://nominatim.openstreetmap.org` für `NOMINATIM_API_URL`. Die Datenbank wird täglich gesichert; Sicherungen werden sieben Tage aufbewahrt.
+
+**Konsequenzen:**
+- Der All-Inkl-Tarif muss den Betrieb des Node.js-/Express-Backends ermöglichen.
+- PostgreSQL bleibt von außen nicht direkt erreichbar.
+- OSM-Endpunkte können ohne Änderung der Empfehlungslogik ausgetauscht werden.
+- Der Produktivbetrieb ist zeitlich auf die Projektlaufzeit begrenzt.
 
 ## Ergebnis in einem Satz
 

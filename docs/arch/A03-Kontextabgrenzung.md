@@ -66,7 +66,7 @@ flowchart LR
 
 | ID | Verbindung | Technik | Inhalt und Regeln |
 |---|---|---|---|
-| `TK-01` | Webbrowser ↔ Food-Mood | HTTPS | Auslieferung der Weboberfläche sowie Übertragung von Benutzereingaben und Ergebnissen. Die aktive UserID wird innerhalb der Sitzung verwendet. |
+| `TK-01` | Webbrowser ↔ Food-Mood | HTTPS | Auslieferung der Weboberfläche sowie Übertragung von Benutzereingaben und Ergebnissen. Die UserID wird lokal persistent gehalten; API-Aufrufe verwenden den daraus abgeleiteten UserIdHash. |
 | `TK-02` | Food-Mood ↔ OpenStreetMap | HTTPS über eine gekapselte OSM-Anbindung | Räumliche Restaurantabfragen und Rückgabe vorhandener OSM-Objekte. Overpass kann für Restaurantabfragen und Nominatim für die Auflösung einer manuellen Ortseingabe eingesetzt werden. Beide sind technische Zugänge zu OpenStreetMap und keine zusätzlichen fachlichen Nachbarsysteme. |
 | `TK-03` | Anwendungslogik ↔ App-Datenhaltung | interne Datenbankverbindung | Dauerhafte Speicherung von Nutzerprofil, Favoriten, Besuchen und eigenen Bewertungen. Die Datenhaltung ist Teil von Food-Mood und kein Nachbarsystem. |
 

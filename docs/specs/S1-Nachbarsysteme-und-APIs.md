@@ -74,13 +74,14 @@ Fehler externer Dienste dürfen keine Favoriten, Besuche oder eigenen Bewertunge
 - Externe Antworten gelten als nicht vertrauenswürdig und werden vor Verarbeitung und HTML-Ausgabe validiert.
 - Der Zugriff erfolgt gekapselt, damit ein technischer Endpunkt ohne Änderung der fachlichen Logik ausgetauscht werden kann.
 - Anfragen werden begrenzt, mit einer Zeitüberschreitung versehen und geeignete Antworten zwischengespeichert.
+- Für den MVP gilt: 5 Sekunden Timeout, höchstens ein Wiederholungsversuch bei transienten Fehlern und 10 Minuten Cache für geeignete Restaurantabfragen. Bei Rate-Limits und HTTP-4xx-Fehlern wird nicht wiederholt.
 - Die vorgeschriebene OpenStreetMap-Attribution wird sichtbar angezeigt.
 - Falls die öffentliche Nominatim-Instanz verwendet wird, gelten höchstens eine Anfrage pro Sekunde, ein identifizierender HTTP-Referer oder `User-Agent`, Zwischenspeicherung und kein Autocomplete bei jedem Tastendruck.
 - Standort und manuelle Ortseingabe werden nicht dauerhaft gespeichert.
 
 ## S1.8 Abgrenzung zur Architekturentscheidung
 
-Die Begründung, warum OpenStreetMap statt anderer Datenanbieter eingesetzt wird, ist eine Architekturentscheidung und gehört nicht in S1. Sie wird später beispielsweise als **ADR-001 – OpenStreetMap als Restaurantdatenquelle verwenden** dokumentiert. Dort werden Entscheidung, Alternativen, Vor- und Nachteile sowie Folgen wie unvollständige Preis- oder Bewertungsdaten festgehalten.
+Die Begründung, warum OpenStreetMap statt anderer Datenanbieter eingesetzt wird, ist als [ADR-02 – OpenStreetMap als Datenquelle](../arch/A09-Architekturentscheidungen.md#adr-02-openstreetmap-als-datenquelle) dokumentiert. Dort werden Entscheidung, Alternativen, Vor- und Nachteile sowie Folgen wie unvollständige Preis- oder Bewertungsdaten festgehalten.
 
 ## S1.9 Quellen
 

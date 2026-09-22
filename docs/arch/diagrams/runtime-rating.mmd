@@ -5,7 +5,7 @@ sequenceDiagram
     participant DB as Datenbank
 
     Nutzer->>Frontend: Bewertung abgeben (Sterne, Kommentar)
-    Frontend->>Backend: POST /reviews {userIdHash, restaurantKey, rating, comment}
+    Frontend->>Backend: POST /api/v1/reviews {userIdHash, restaurantKey, rating, comment}
     Backend->>DB: Prüfen, ob Visit vorhanden (DR-08)
     DB-->>Backend: Visit-Status
     alt Visit vorhanden

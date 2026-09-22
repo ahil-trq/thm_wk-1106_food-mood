@@ -18,7 +18,7 @@ Diese Datei zeigt architektonisch wichtige Abläufe von Food-Mood zur Laufzeit �
 
 Quelldatei: [diagrams/runtime-recommendation.mmd](diagrams/runtime-recommendation.mmd)
 
-Das Frontend sendet die aktuelle Suchanfrage (Standort, Stimmung, Anlass, Filter) an das Backend. Das Backend fragt passende Restaurants im Suchradius bei OpenStreetMap/Overpass ab, berechnet anschließend für jedes Restaurant einen Matching-Score (vgl. [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md), AF-01 bis AF-06) und reichert die Liste bei Bedarf mit nutzerbezogenen Daten (z. B. bereits gesetzte Favoriten) aus der Datenbank an. Das Ergebnis ist eine sortierte Empfehlungsliste, die an das Frontend zurückgegeben und dem Nutzer angezeigt wird.
+Das Frontend sendet die aktuelle Suchanfrage (Standort, Stimmung, Anlass, Filter) über die versionierte API an das Backend. Das Backend ruft über den OSM-Adapter passende Restaurants im Suchradius ab, berechnet anschließend für jedes Restaurant den in [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) und [ADR-05](A09-Architekturentscheidungen.md) definierten Matching-Score und reichert die Liste mit nutzerbezogenen Daten aus der Datenbank an. Das Ergebnis ist eine sortierte Empfehlungsliste, die an das Frontend zurückgegeben und dem Nutzer angezeigt wird.
 
 <a id="62-favorit-speichern-uc-09"></a>
 ## § 6.2 Favorit speichern (UC-09)

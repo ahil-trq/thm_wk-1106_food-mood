@@ -9,16 +9,17 @@ Da es keine klassischen Benutzerkonten gibt, identifiziert sich jeder Nutzer üb
 
 ## 2. Sessionverwaltung
 
-Nach dem Erstellen oder Laden einer UserID (M-00 Einstieg) wird diese für die aktuelle Nutzung lokal gespeichert (Session), sodass sie nicht bei jeder weiteren Aktion erneut eingegeben werden muss. Alle nachfolgenden Aktionen (Favorisieren, Besuch markieren, Bewerten) verwenden automatisch die UserID der aktiven Session. Die Session bleibt bestehen, bis der Nutzer explizit die UserID wechselt oder die App-Daten gelöscht werden.
+Nach dem Erstellen oder Laden einer UserID (M-00 Einstieg) wird diese im Browser per `localStorage` persistent gespeichert, sodass sie nicht bei jeder weiteren Aktion erneut eingegeben werden muss. Alle nachfolgenden Aktionen (Favorisieren, Besuch markieren, Bewerten) verwenden automatisch den daraus abgeleiteten `UserIdHash`. Die lokale Zuordnung bleibt bestehen, bis der Nutzer explizit die UserID wechselt oder die App-Daten löscht.
 
 Systemweite Kette:
 
 ```text
 UserID
-  → Session
-    → Favoriten
-    → Besuche
-    → Bewertungen
+  → lokaler Browserzustand
+    → UserIdHash über HTTPS
+      → Favoriten
+      → Besuche
+      → Bewertungen
 ```
 
 -> Abhängigkeit: D1 (Datenmodell). F2 (Anwendungsfälle), UC-00 bis UC-02.
@@ -30,7 +31,7 @@ Der Standort wird entweder automatisch (Geräte-/Browser-Standort) oder manuell 
 
 ## 4. Datenschutz
 
-Es werden keine sensiblen personenbezogenen Daten (E-Mail, Adresse, Telefonnummer) erhoben. Der bei der UserID-Erstellung eingegebene Name dient ausschließlich der persönlichen Begrüßung innerhalb der App und wird nicht an Dritte weitergegeben. Standortdaten liegen nur temporär im Speicher der aktuellen Sitzung vor und werden nicht dauerhaft gespeichert. Favoriten, Besuche und Bewertungen sind ausschließlich über die UserID zugeordnet.
+Es werden keine sensiblen personenbezogenen Daten (E-Mail, Adresse, Telefonnummer) erhoben. Der bei der UserID-Erstellung eingegebene Name dient ausschließlich der persönlichen Begrüßung innerhalb der App und wird nicht an Dritte weitergegeben. Standortdaten liegen nur temporär im Speicher der aktuellen Suche vor und werden nicht dauerhaft gespeichert. Favoriten, Besuche und Bewertungen sind ausschließlich über den UserIdHash zugeordnet. Die UserID ist ein Besitzschlüssel und keine starke Authentifizierung.
 
 ## 5. Eingabevalidierung
 
@@ -57,5 +58,5 @@ Technische Fehler und wichtige Ereignisse (z. B. fehlgeschlagene API-Anfragen, f
 
 ## 8. Einheitliche Datenbehandlung
 
-Alle nutzerbezogenen Daten (Favoriten, Besuche, Bewertungen) werden nach demselben Muster behandelt: dauerhaft gespeichert, verknüpft mit der UserID der aktiven Session, und bleiben nach einem Neustart der App erhalten. Ein Restaurant kann jederzeit favorisiert oder die Favorisierung entfernt werden. Eine Bewertung ist erst möglich, nachdem ein Restaurant zuvor als "besucht" markiert wurde.
+Alle nutzerbezogenen Daten (Favoriten, Besuche, Bewertungen) werden nach demselben Muster behandelt: dauerhaft gespeichert, über den UserIdHash verknüpft, und bleiben nach einem Neustart der App erhalten. Ein Restaurant kann jederzeit favorisiert oder die Favorisierung entfernt werden. Eine Bewertung ist erst möglich, nachdem ein Restaurant zuvor als "besucht" markiert wurde.
 -> Abhängigkeit: D1 (Datenmodell), Objekte "Favorit", "Besuch", "Bewertung". F2 (Anwendungsfälle), UC-09, UC-10, UC-11.

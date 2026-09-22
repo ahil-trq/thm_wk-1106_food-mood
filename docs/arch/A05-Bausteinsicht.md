@@ -65,7 +65,7 @@ flowchart TD
 | ID | Von → Nach | Vertrag |
 |---|---|---|
 | `IF-01` | Webbrowser ↔ Web-Frontend | Oberfläche und statische Dateien werden über HTTPS bereitgestellt; Benutzereingaben werden im Browser verarbeitet. |
-| `IF-02` | Web-Frontend → API-Schicht | REST-Anfragen und strukturierte Antworten, beispielsweise für Profile, Suche, Favoriten, Besuche und Bewertungen |
+| `IF-02` | Web-Frontend → API-Schicht | versionierte JSON-REST-Anfragen unter `/api/v1/...` und strukturierte Antworten, beispielsweise für Profile, Suche, Favoriten, Besuche und Bewertungen; Fehler verwenden `errorCode` und `message` |
 | `IF-03` | API-Schicht → Anwendungsdienste | geprüfte Eingabedaten werden an den jeweils zuständigen Anwendungsdienst übergeben |
 | `IF-04` | Anwendungsdienste → OSM-Integration | interne Suchparameter hinein; normalisierte Standort- und Restaurantdaten zurück |
 | `IF-05` | Anwendungsdienste → Persistenz | Laden und Speichern fachlicher Objekte über klar abgegrenzte Datenzugriffe |
@@ -91,7 +91,7 @@ flowchart TD
 | Qualitätsbeitrag | mobile Bedienbarkeit ab 360 Pixel, verständliche Rückmeldungen sowie konsistente Lade-, Leer- und Fehlerzustände |
 | fachliche Zuordnung | `FB-01` Benutzerinteraktion und `FB-06` Ergebnisdarstellung aus P2 |
 | relevante Spezifikation | [B1 – Dialogspezifikation](../specs/B1-Dialogspezifikation.md) und [F2 – Anwendungsfälle](../specs/F2-Anwendungsfaelle.md) |
-| offene Punkte | Entscheidung über eine spätere Kartenansicht |
+| offene Punkte | keine für den MVP; eine Kartenansicht ist ausdrücklich für Version 2 außerhalb des MVP vorgesehen |
 
 ### A05.3.2 Blackbox API-Schicht
 
@@ -100,10 +100,10 @@ flowchart TD
 | Verantwortung | REST-Endpunkte bereitstellen, Anfragen prüfen, Anwendungsdienste aufrufen und einheitliche Antworten erzeugen |
 | bereitgestellte Schnittstelle | interne Food-Mood-REST-API für das Web-Frontend |
 | benötigte Schnittstelle | öffentliche Funktionen der Anwendungsdienste |
-| Ein- und Ausgaben | HTTP-Anfrage mit UserID und Fachdaten hinein; Erfolgsergebnis oder verständlich abbildbarer Fehler heraus |
+| Ein- und Ausgaben | HTTP-Anfrage mit UserIdHash und Fachdaten hinein; Erfolgsergebnis oder verständlich abbildbarer Fehler heraus |
 | Qualitätsbeitrag | einheitliche Validierung, begrenzte Eingabegrößen, keine technischen Stacktraces im Frontend |
 | fachliche Zuordnung | unterstützt alle Anwendungsfälle, besitzt aber selbst keine Fachlogik |
-| offene Punkte | konkrete URL-Pfade und Versionierungsregel der REST-API |
+| offene Punkte | keine; `pg` und versionierte SQL-Migrationen sind in ADR-06 festgelegt |
 | Verfeinerung | keine; eine weitere Zerlegung würde vor der Implementierung lediglich geplante Controller wiederholen |
 
 ### A05.3.3 Blackbox Anwendungsdienste
@@ -117,7 +117,7 @@ flowchart TD
 | Qualitätsbeitrag | nachvollziehbare Verantwortlichkeiten, testbare Fachlogik und Trennung von externen Datenformaten |
 | fachliche Zuordnung | `FB-02`, `FB-03`, `FB-05` und `FB-07`; außerdem `AF-01` und `AF-02` aus F3 |
 | relevante Spezifikation | [F2 – Anwendungsfälle](../specs/F2-Anwendungsfaelle.md) und [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
-| offene Punkte | genaue Gewichtung der Empfehlungsfaktoren |
+| offene Punkte | keine; die Gewichtung und Bewertungsregeln sind in F3 und ADR-05 festgelegt |
 
 ### A05.3.4 Blackbox OSM-Integration
 
@@ -130,7 +130,7 @@ flowchart TD
 | Qualitätsbeitrag | gekapselte externe Abhängigkeit, Zeitüberschreitung, begrenzte Anfragen, Caching und kontrollierte Fehlerbehandlung |
 | fachliche Zuordnung | `FB-04` Restaurantzugriff aus P2 |
 | relevante Spezifikation | [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) |
-| offene Punkte | konkrete Endpunkte, Cache-Dauer und technische Wiederholungsregel |
+| offene Punkte | keine; Standard-Endpunkte und die Konfiguration über Umgebungsvariablen sind in ADR-07 und S3 festgelegt |
 
 ### A05.3.5 Blackbox Persistenz
 
@@ -144,7 +144,7 @@ flowchart TD
 | Qualitätsbeitrag | dauerhafte persönliche Daten, eindeutige UserID-Zuordnung und referenzielle Integrität |
 | fachliche Zuordnung | `FB-07` Persönliche App-Daten aus P2 |
 | relevante Spezifikation | [D1 – Datenmodell](../specs/D1-Datenmodell.md) und [D2 – Datentypen](../specs/D2-Datentypen.md) |
-| offene Punkte | konkrete Datenzugriffsbibliothek und Migrationswerkzeug |
+| offene Punkte | keine; `pg` und versionierte SQL-Migrationen sind in ADR-06 festgelegt |
 | Verfeinerung | keine; die innere Datenstruktur ist im fachlichen Datenmodell dokumentiert |
 
 ## A05.4 Ebene 2 – Verfeinerte Bausteine
@@ -161,14 +161,14 @@ flowchart TD
     pages -->|verwendet| components
     pages -->|liest und ändert| context
     pages -->|startet Anfragen| client
-    context -->|aktive UserID| client
+    context -->|UserIdHash über HTTPS| client
 ```
 
 | ID | Baustein | Verantwortung |
 |---|---|---|
 | `BB-01.1` | Masken und Navigation | setzt die in B1 definierten Masken um und steuert die Übergänge zwischen Einstieg, Suche, Ergebnissen, Details und persönlichen Listen |
 | `BB-01.2` | UI-Komponenten | stellt wiederverwendbare Eingaben, Restaurantkarten, Filterelemente, Statusanzeigen und Fehlermeldungen bereit |
-| `BB-01.3` | Sitzung und Standort | hält die aktive UserID für die Sitzung und kapselt die Browser-Geolokalisierung; der Standort wird nicht dauerhaft gespeichert |
+| `BB-01.3` | Sitzung und Standort | hält die UserID lokal persistent, leitet daraus den UserIdHash für API-Aufrufe ab und kapselt die Browser-Geolokalisierung; der Standort wird nicht dauerhaft gespeichert |
 | `BB-01.4` | API-Client | bündelt alle REST-Aufrufe, überträgt strukturierte Daten und vereinheitlicht die Behandlung technischer Fehler im Frontend |
 
 Die Masken enthalten nur Darstellungs- und Interaktionslogik. Fachliche Prüfungen werden zusätzlich im Backend ausgeführt und können nicht durch direkte Browseranfragen umgangen werden.
@@ -262,36 +262,10 @@ Die folgende Struktur dient als Orientierung für die Implementierung. Verzeichn
 - Die UserID wird nur innerhalb von Food-Mood verwendet und nicht an OpenStreetMap übertragen.
 - Fachliche Regeln müssen in den Anwendungsdiensten und nicht ausschließlich im Frontend umgesetzt werden.
 
-## A05.8 Offene Punkte
+## A05.8 Status der Detailentscheidungen
 
-| ID | Offener Punkt | Weiterbehandlung |
+| ID | Entscheidung | Festlegung |
 |---|---|---|
-| `OB-01` | konkrete REST-Pfade und Fehlerformate | bei Einrichtung des Backends festlegen und in A08 dokumentieren |
-| `OB-02` | Bibliothek für PostgreSQL-Zugriffe und Migrationen | in A09 als Architekturentscheidung festhalten |
-| `OB-03` | genaue Empfehlungsgewichtung | mit F3 abstimmen und anschließend im Empfehlungsdienst umsetzen |
-| `OB-04` | genaue Cache-Dauer und Wiederholungsregel der OSM-Anbindung | in A08 oder A09 festlegen |
-| `OB-05` | mögliche Kartenansicht und Kartenbibliothek | nur bei Aufnahme in den MVP entscheiden |
-
-## A05.9 Weiterführende Dokumente
-
-| Thema | Dokument |
-|---|---|
-| Kontext und Systemgrenze | [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
-| grundlegende Lösungsentscheidungen | [A04 – Lösungsstrategie](A04-Loesungsstrategie.md) |
-| fachliche Bausteine | [P2 – Fachlicher Architekturüberblick](../specs/P2-architekturueberblick.md) |
-| Anwendungsfälle und Berechnungen | [F2 – Anwendungsfälle](../specs/F2-Anwendungsfaelle.md) und [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
-| Dialoge | [B1 – Dialogspezifikation](../specs/B1-Dialogspezifikation.md) |
-| Datenmodell | [D1 – Datenmodell](../specs/D1-Datenmodell.md) und [D2 – Datentypen](../specs/D2-Datentypen.md) |
-| Laufzeitverhalten | [A06 – Laufzeitsicht](A06-Laufzeitsicht.md) |
-| Verteilung und Deployment | [A07 – Verteilungssicht](A07-Verteilungssicht.md) |
-
-## A05.10 Akzeptanzkriterien
-
-- Food-Mood wird auf Ebene 1 als Whitebox mit eindeutig benannten technischen Bausteinen dargestellt.
-- Jeder Baustein besitzt eine klar abgegrenzte Verantwortung sowie bereitgestellte und benötigte Schnittstellen.
-- Die wichtigsten Bausteine werden auf Ebene 2 sinnvoll verfeinert.
-- Fachliche Bausteine aus P2 sind technischen Bausteinen zugeordnet.
-- Die Anwendungsfunktionen `AF-01` und `AF-02` sind einem Anwendungsdienst zugeordnet.
-- OpenStreetMap bleibt das einzige fachliche Nachbarsystem.
-- Frontend, Fachlogik, externe Integration und Datenhaltung sind klar voneinander getrennt.
-- Offene Implementierungsentscheidungen sind sichtbar dokumentiert.
+| `DB-01` | Datenzugriff und Schemaänderungen | `pg` und versionierte SQL-Migrationen gemäß ADR-06 |
+| `DEP-01` | Hosting und Sicherung | All-Inkl, `foodmood-thm.de`, tägliche Sicherung und sieben Tage Aufbewahrung gemäß ADR-07 |
+| `OSM-01` | OSM-Provider | Overpass und Nominatim über `.env` konfigurierbar, Standardwerte gemäß ADR-07 |
