@@ -3,7 +3,7 @@ import 'dotenv/config'
 import express from 'express'
 import crypto from 'node:crypto'
 import { Pool } from 'pg'
-import { findRestaurants, geocode } from './osm.js'
+import { getRestaurants, geocode } from './osm.js'
 
 const app = express()
 const port = Number(process.env.PORT || 3000)
@@ -17,21 +17,17 @@ const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '32kb' }))
 
-const demoRestaurants = [
-  { externalKey: { osmType: 'NODE', osmId: 1001 }, name: 'Lumière Kitchen', address: 'Ludwigstr. 18, Gießen', cuisines: ['italian'], openState: 'OPEN', averageRating: 4.8, ratingCount: 12, coordinates: { latitude: 50.584, longitude: 8.678 } },
-  { externalKey: { osmType: 'NODE', osmId: 1002 }, name: 'Momo & More', address: 'Goethestr. 7, Gießen', cuisines: ['asian'], openState: 'OPEN', averageRating: 4.6, ratingCount: 8, coordinates: { latitude: 50.588, longitude: 8.674 } },
-  { externalKey: { osmType: 'NODE', osmId: 1003 }, name: 'Café Kollektiv', address: 'Sonnenstr. 4, Gießen', cuisines: ['cafe'], openState: 'OPEN', averageRating: 4.4, ratingCount: 5, coordinates: { latitude: 50.591, longitude: 8.681 } },
-]
-
 function sendError(response, status, errorCode, message) { response.status(status).json({ errorCode, message }) }
 function requiredHash(request, response) { const value = request.body?.userIdHash; if (!value || typeof value !== 'string') { sendError(response, 400, 'USER_ID_REQUIRED', 'Ein aktives Profil ist erforderlich.'); return null } return value }
 function restaurantKey(restaurant) { return `${restaurant.externalKey.osmType}:${restaurant.externalKey.osmId}` }
 function hashUserId(userId) { return crypto.createHash('sha256').update(userId).digest('hex') }
 function normalizeRestaurantKey(value) { return String(value).includes(':') ? String(value) : `NODE:${value}` }
-function findRestaurant(value) { const key = normalizeRestaurantKey(value); return demoRestaurants.find((restaurant) => restaurantKey(restaurant) === key) || null }
-async function ensureRestaurantReference(value) { const restaurant = findRestaurant(value); if (!pool || !restaurant) return; await pool.query(`INSERT INTO restaurant_references (restaurant_key, osm_type, osm_id, name, address, cuisines) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (restaurant_key) DO UPDATE SET name = EXCLUDED.name, address = EXCLUDED.address, cuisines = EXCLUDED.cuisines, updated_at = NOW()`, [restaurantKey(restaurant), restaurant.externalKey.osmType, restaurant.externalKey.osmId, restaurant.name, restaurant.address, restaurant.cuisines]); return restaurantKey(restaurant) }
+async function ensureRestaurantReference(restaurant) {
+  if (!pool || !restaurant?.id) return
+  const [osmType, osmId] = restaurant.id.split(':')
+  await pool.query(`INSERT INTO restaurant_references (restaurant_key, osm_type, osm_id, name, address, cuisines) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (restaurant_key) DO UPDATE SET name = EXCLUDED.name, address = EXCLUDED.address, cuisines = EXCLUDED.cuisines, updated_at = NOW()`, [restaurant.id, osmType, Number(osmId), restaurant.name, restaurant.address, restaurant.cuisine ? [restaurant.cuisine] : []])
+}
 
-app.get('/health', (_request, response) => response.json({ status: 'ok', database: Boolean(pool) }))
 
 app.post('/api/v1/profiles', async (request, response) => {
   const { name, userId } = request.body || {}
@@ -52,6 +48,22 @@ app.post('/api/v1/profiles/load', async (request, response) => {
   response.json({ ...user, userIdHash })
 })
 
+app.get('/api/v1/restaurants', async (request, response) => {
+  const latitude = Number(request.query.latitude)
+  const longitude = Number(request.query.longitude)
+  const radius = Number(request.query.radius || 5000)
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return sendError(response, 400, 'LOCATION_REQUIRED', 'latitude und longitude sind erforderlich.')
+  if (!Number.isFinite(radius) || radius < 100 || radius > 10000) return sendError(response, 400, 'INVALID_RADIUS', 'Der Radius muss zwischen 100 und 10000 Metern liegen.')
+  try {
+    const restaurants = await getRestaurants(latitude, longitude, radius)
+    for (const restaurant of restaurants) await ensureRestaurantReference(restaurant)
+    response.json(restaurants)
+  } catch (error) {
+    console.error('Restaurant search failed:', error.message)
+    sendError(response, 502, 'OSM_UNAVAILABLE', 'Restaurantdaten konnten momentan nicht geladen werden.')
+  }
+})
+
 app.post('/api/v1/recommendations', async (request, response) => {
   const userIdHash = requiredHash(request, response); if (!userIdHash) return
   const { mood, occasion, location = {}, filters = {} } = request.body || {}
@@ -59,16 +71,15 @@ app.post('/api/v1/recommendations', async (request, response) => {
   if (!location.coordinates && !location.label) return sendError(response, 400, 'LOCATION_REQUIRED', 'Ein Standort ist erforderlich.')
   try {
     const coordinates = location.coordinates || await geocode(location.label)
-    let restaurants = await findRestaurants(coordinates, Number(filters.radius || 5000))
-    if (!restaurants.length) restaurants = demoRestaurants
-    let candidates = restaurants.map((restaurant, index) => ({ restaurant, score: 90 - index, distance: index * 300 + 250, reasons: [mood ? `passt zur Stimmung ${mood}` : `passt zum Anlass ${occasion}`] }))
-    if (filters.onlyOpen) candidates = candidates.filter(({ restaurant }) => restaurant.openState === 'OPEN')
-    if (Array.isArray(filters.cuisines) && filters.cuisines.length) candidates = candidates.filter(({ restaurant }) => filters.cuisines.some((cuisine) => restaurant.cuisines.includes(cuisine)))
-    response.json({ recommendations: candidates.sort((a, b) => b.score - a.score || a.distance - b.distance).slice(0, 50), userIdHash })
+    let restaurants = await getRestaurants(coordinates.latitude, coordinates.longitude, Number(filters.radius || 5000))
+    if (Array.isArray(filters.cuisines) && filters.cuisines.length) restaurants = restaurants.filter((restaurant) => filters.cuisines.some((cuisine) => restaurant.cuisine === cuisine || restaurant.name.toLowerCase().includes(cuisine)))
+    if (filters.onlyOpen) restaurants = restaurants.filter((restaurant) => restaurant.open === true)
+    for (const restaurant of restaurants) await ensureRestaurantReference(restaurant)
+    const recommendations = restaurants.map((restaurant, index) => ({ restaurant, score: Math.max(0, 100 - index), distance: restaurant.distance, reasons: [mood ? `passt zur Stimmung ${mood}` : `passt zum Anlass ${occasion}`] })).slice(0, 50)
+    response.json({ recommendations, userIdHash })
   } catch (error) {
     console.error('OSM recommendation failed:', error.message)
-    const candidates = demoRestaurants.map((restaurant, index) => ({ restaurant, score: 90 - index * 8, distance: 620 + index * 320, reasons: [mood ? `passt zur Stimmung ${mood}` : `passt zum Anlass ${occasion}`] }))
-    response.json({ recommendations: candidates, userIdHash, source: 'fallback' })
+    sendError(response, 502, 'OSM_UNAVAILABLE', 'Restaurantdaten konnten momentan nicht geladen werden.')
   }
 })
 

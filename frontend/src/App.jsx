@@ -81,7 +81,7 @@ function App() {
       const response = await fetch(`${API_BASE}/recommendations`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal })
       if (!response.ok) throw new Error('API unavailable')
       const data = await response.json()
-      if (Array.isArray(data.recommendations) && data.recommendations.length) setRestaurants(data.recommendations.map((item) => ({ ...item, id: item.restaurant?.externalKey?.osmId || item.id, distance: item.distance || 0, rating: item.restaurant?.averageRating || null, count: item.restaurant?.ratingCount || 0, cuisine: item.restaurant?.cuisines?.[0] || 'restaurant', address: item.restaurant?.address || 'Adresse unbekannt', open: item.restaurant?.openState === 'OPEN', reason: item.reasons?.[0] || 'passt zu deiner Suche', tone: 'coral' })))
+      if (Array.isArray(data.recommendations) && data.recommendations.length) setRestaurants(data.recommendations.map((item) => ({ ...item, id: item.restaurant?.externalKey?.osmId || item.restaurant?.id || item.id, distance: item.distance ?? item.restaurant?.distance ?? 0, rating: item.restaurant?.averageRating ?? item.restaurant?.rating ?? null, count: item.restaurant?.ratingCount ?? item.restaurant?.count ?? 0, cuisine: item.restaurant?.cuisine || item.restaurant?.cuisines?.[0] || 'restaurant', address: item.restaurant?.address || 'Adresse unbekannt', open: item.restaurant?.openState === 'OPEN' || item.restaurant?.open === true, reason: item.reasons?.[0] || 'passt zu deiner Suche', tone: 'coral' })))
     } catch { setRestaurants(demoRestaurants) }
     finally { window.clearTimeout(timeout); setLoading(false); setScreen('results') }
   }
