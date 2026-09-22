@@ -39,7 +39,7 @@ Die Lösung ist eine modular aufgebaute Drei-Schichten-Anwendung und keine Micro
 | `LS-04` | Persistenz | PostgreSQL | Das relationale Datenmodell aus D1 kann mit Schlüsseln, Beziehungen und Integritätsregeln umgesetzt werden. Der UserIdHash, Favoriten, Besuche und Bewertungen werden dauerhaft gespeichert; die UserID bleibt lokal im Browser. |
 | `LS-05` | Restaurant- und Geodaten | OpenStreetMap über einen eigenen Backend-Adapter | OpenStreetMap bleibt das einzige fachliche Nachbarsystem. Overpass kann für Restaurantabfragen und Nominatim für die Auflösung manueller Ortseingaben verwendet werden. Technische Details bleiben hinter einer internen Schnittstelle verborgen. |
 | `LS-06` | Entwicklung | Docker Compose | Frontend, Backend und PostgreSQL erhalten eine einheitliche lokale Umgebung, die von allen Teammitgliedern reproduzierbar gestartet werden kann. |
-| `LS-07` | Bereitstellung | All-Inkl mit Domain und HTTPS | Die Anwendung wird für die Projektlaufzeit unter `foodmood-thm.de` bereitgestellt. Die konkrete Serverstruktur wird in A07 beschrieben; der gewählte All-Inkl-Tarif muss den Betrieb des Node.js-/Express-Backends ermöglichen. |
+| `LS-07` | Bereitstellung | All-Inkl für Frontend, externer Node.js-Host für Backend und PostgreSQL | Die statischen Frontend-Dateien werden für die Projektlaufzeit unter `foodmood-thm.de` bei All-Inkl bereitgestellt. Backend und Datenbank laufen getrennt bei einem Node.js-/PostgreSQL-Anbieter. |
 | `LS-08` | Nutzeridentifikation | anonyme UserID statt klassischem Benutzerkonto | Es werden keine E-Mail-Adresse und kein Passwort benötigt. Favoriten, Besuche und Bewertungen werden der aktiven UserID zugeordnet. |
 | `LS-09` | Datenzugriff und Schemaänderungen | `pg` und versionierte SQL-Migrationen | Das Backend greift direkt über `pg` auf PostgreSQL zu. Änderungen am Datenbankschema werden als nachvollziehbare SQL-Migrationen versioniert; ein ORM wird nicht eingesetzt. |
 
@@ -101,7 +101,7 @@ Für die lokale Entwicklung werden mindestens drei Docker-Compose-Dienste vorges
 | `backend` | Node.js-Anwendung mit Express und der Food-Mood-Fachlogik |
 | `database` | PostgreSQL mit dauerhaftem Volume für Entwicklungsdaten |
 
-Im Produktivbetrieb wird das mit Vite erzeugte Frontend über HTTPS bereitgestellt. Das Backend ist über dieselbe Domain oder einen eindeutig festgelegten API-Pfad erreichbar. PostgreSQL ist nicht öffentlich aus dem Internet erreichbar. Konfigurationen und mögliche Zugangsdaten werden außerhalb des Quellcodes über Umgebungsvariablen bereitgestellt.
+Im Produktivbetrieb wird das mit Vite erzeugte Frontend als statischer Build bei All-Inkl über HTTPS bereitgestellt. Das Backend ist über eine separate öffentliche HTTPS-URL erreichbar und erlaubt CORS nur für `foodmood-thm.de`. PostgreSQL ist nicht öffentlich aus dem Browser erreichbar. Konfigurationen und mögliche Zugangsdaten werden außerhalb des Quellcodes über Umgebungsvariablen bereitgestellt.
 
 Die konkreten Serverports, Prozessverwaltung und Installationsschritte werden in [A07 – Verteilungssicht](A07-Verteilungssicht.md) und [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) beschrieben. Die Datenbank wird täglich gesichert; Sicherungen werden für sieben Tage aufbewahrt. Der Produktivbetrieb ist bis zur Projektabgabe vorgesehen.
 

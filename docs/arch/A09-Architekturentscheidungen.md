@@ -149,10 +149,10 @@ Diese Entscheidungen definieren den Kern der Food-Mood-Architektur. Sie sind bew
 
 **Kontext:** Die Web-App soll für die Projektlaufzeit öffentlich erreichbar sein. OpenStreetMap benötigt technische Endpunkte, die bei Ausfällen oder Anbieterwechseln ohne Änderung der Fachlogik austauschbar bleiben.
 
-**Entscheidung:** Food-Mood wird bis zur Projektabgabe bei All-Inkl unter `foodmood-thm.de` betrieben. Overpass und Nominatim werden ausschließlich über Umgebungsvariablen konfiguriert. Die Standardwerte sind `https://overpass-api.de/api/interpreter` für `OVERPASS_API_URL` und `https://nominatim.openstreetmap.org` für `NOMINATIM_API_URL`. Die Datenbank wird täglich gesichert; Sicherungen werden sieben Tage aufbewahrt.
+**Entscheidung:** Das statische Frontend wird bis zur Projektabgabe bei All-Inkl unter `foodmood-thm.de` betrieben. Das Backend läuft bei einem separaten Node.js-Anbieter und PostgreSQL bei einem Backend-/Datenbankanbieter. Overpass und Nominatim werden ausschließlich über Umgebungsvariablen konfiguriert. Die Standardwerte sind `https://overpass-api.de/api/interpreter` für `OVERPASS_API_URL` und `https://nominatim.openstreetmap.org` für `NOMINATIM_API_URL`. Die Datenbank wird täglich gesichert; Sicherungen werden sieben Tage aufbewahrt.
 
 **Konsequenzen:**
-- Der All-Inkl-Tarif muss den Betrieb des Node.js-/Express-Backends ermöglichen.
+- Die Backend- und Datenbankanbieter müssen Node.js/Express, PostgreSQL und HTTPS unterstützen.
 - PostgreSQL bleibt von außen nicht direkt erreichbar.
 - OSM-Endpunkte können ohne Änderung der Empfehlungslogik ausgetauscht werden.
 - Der Produktivbetrieb ist zeitlich auf die Projektlaufzeit begrenzt.
