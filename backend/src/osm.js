@@ -1,4 +1,4 @@
-const timeoutMs = 5000
+const timeoutMs = 30000
 const cache = new Map()
 
 function getConfig() {

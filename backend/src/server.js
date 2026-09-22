@@ -7,7 +7,15 @@ import { geocode, getRestaurants } from './osm.js'
 
 const app = express()
 const port = Number(process.env.PORT || 3000)
-const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === "false" ? false : { rejectUnauthorized: false } }) : null
+const pool = process.env.DATABASE_URL
+  ? new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_SSL === "false"
+        ? false
+        : { rejectUnauthorized: false },
+      family: 4
+    })
+  : null
 const memory = { users: new Map(), favorites: new Map(), visits: new Map(), reviews: new Map() }
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
