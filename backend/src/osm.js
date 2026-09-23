@@ -13,8 +13,15 @@ async function request(url, options = {}) {
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
     const response = await fetch(url, { ...options, signal: controller.signal, headers: { 'User-Agent': 'Food-Mood/1.0 (THM project)', ...(options.headers || {}) } })
-    if (!response.ok) throw new Error(`OSM request failed with ${response.status}`)
-    return response.json()
+    if (!response.ok) {
+    const errorText = await response.text()
+    console.error("OSM ERROR STATUS:", response.status)
+    console.error("OSM ERROR BODY:", errorText)
+
+  throw new Error(`OSM request failed with ${response.status}`)
+}
+
+return response.json()
   } finally {
     clearTimeout(timeout)
   }
@@ -96,6 +103,8 @@ export async function getRestaurants(latitude, longitude, radiusMeters = 5000) {
   const query = `[out:json][timeout:5];(nwr[amenity~"^(restaurant|fast_food|cafe)$"](around:${radiusMeters},${coordinates.latitude},${coordinates.longitude}););out center tags;`
  const url = new URL(overpassUrl)
  url.searchParams.set('data', query)
+console.log("Overpass URL:", overpassUrl)
+console.log("Overpass Query:", query)
 const data = await request(url.toString())
   const restaurants = data.elements.map((element) => normalizeElement(element, coordinates)).filter(Boolean)
   cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })

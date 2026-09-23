@@ -96,23 +96,19 @@ app.post('/api/v1/recommendations', async (request, response) => {
     )
   }
 })
-app.get("/health", async (req, res) => {
-  try {
-    await pool.query("SELECT 1");
-
-    res.json({
-      status: "ok",
-      database: true
-    });
-
-  } catch (error) {
-    
-    res.status(500).json({
-      status: "ok",
-      database: false
-    });
+app.get('/health', async (_request, response) => {
+  if (!pool) {
+    return response.status(503).json({ status: 'degraded', database: false, errorCode: 'DATABASE_NOT_CONFIGURED' })
   }
-});
+
+  try {
+    await pool.query('SELECT 1')
+    response.json({ status: 'ok', database: true })
+  } catch (error) {
+    console.error('Database healthcheck failed:', error.code || error.name)
+    response.status(503).json({ status: 'degraded', database: false, errorCode: 'DATABASE_UNAVAILABLE' })
+  }
+})
 app.post('/api/v1/favorites', async (request, response) => { const userIdHash = requiredHash(request, response); if (!userIdHash) return; const rawKey = request.body?.restaurantKey; if (!rawKey) return sendError(response, 400, 'RESTAURANT_REQUIRED', 'Ein Restaurant ist erforderlich.'); const key = await ensureRestaurantReference(rawKey) || normalizeRestaurantKey(rawKey); if (pool) { const existing = await pool.query('SELECT id FROM favorites WHERE user_id_hash = $1 AND restaurant_key = $2', [userIdHash, key]); if (existing.rowCount) { await pool.query('DELETE FROM favorites WHERE user_id_hash = $1 AND restaurant_key = $2', [userIdHash, key]); return response.json({ favorite: false, restaurantKey: key }) } await pool.query('INSERT INTO favorites (user_id_hash, restaurant_key) VALUES ($1, $2)', [userIdHash, key]); return response.json({ favorite: true, restaurantKey: key }) } const current = memory.favorites.get(userIdHash) || new Set(); current.has(key) ? current.delete(key) : current.add(key); memory.favorites.set(userIdHash, current); response.json({ favorite: current.has(key), restaurantKey: key }) })
 app.get('/api/v1/favorites', async (request, response) => { const userIdHash = request.query.userIdHash; if (pool) return response.json({ favorites: (await pool.query('SELECT restaurant_key AS "restaurantKey" FROM favorites WHERE user_id_hash = $1 ORDER BY created_at DESC', [userIdHash])).rows.map((row) => row.restaurantKey) }); response.json({ favorites: [...(memory.favorites.get(userIdHash) || [])] }) })
 app.post('/api/v1/visits', async (request, response) => { const userIdHash = requiredHash(request, response); if (!userIdHash) return; const rawKey = request.body?.restaurantKey; if (!rawKey) return sendError(response, 400, 'RESTAURANT_REQUIRED', 'Ein Restaurant ist erforderlich.'); const key = await ensureRestaurantReference(rawKey) || normalizeRestaurantKey(rawKey); const visitedAt = new Date().toISOString(); if (pool) { await pool.query('INSERT INTO visits (user_id_hash, restaurant_key, visited_at) VALUES ($1, $2, $3)', [userIdHash, key, visitedAt]); return response.status(201).json({ visited: true, restaurantKey: key, visitedAt }) } const current = memory.visits.get(userIdHash) || new Set(); current.add(key); memory.visits.set(userIdHash, current); response.status(201).json({ visited: true, restaurantKey: key, visitedAt }) })
