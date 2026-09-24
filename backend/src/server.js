@@ -17,10 +17,18 @@ const pool = process.env.DATABASE_URL
     })
   : null
 const memory = { users: new Map(), favorites: new Map(), visits: new Map(), reviews: new Map() }
-const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean)
+const allowedOrigins = [
+  ...new Set([
+    ...configuredOrigins,
+    'http://localhost:3000',
+    'http://localhost:4173',
+    'http://localhost:5173',
+  ]),
+]
 
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '32kb' }))
