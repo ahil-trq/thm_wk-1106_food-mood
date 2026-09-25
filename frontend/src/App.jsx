@@ -173,9 +173,16 @@ function App() {
               setError("")
               setScreen("mood")
             },
-            () => {
-              setError("Standort konnte nicht abgerufen werden.")
-            }
+            (locationError) => {
+              console.error('Geolocation failed:', locationError.name, locationError.message)
+              const messages = {
+                1: 'Standortzugriff wurde verweigert. Bitte erlaube den Standortzugriff in den Browsereinstellungen.',
+                2: 'Der aktuelle Standort ist momentan nicht verfügbar.',
+                3: 'Die Standortabfrage hat zu lange gedauert. Bitte versuche es erneut.',
+              }
+              setError(messages[locationError.code] || 'Standort konnte nicht abgerufen werden.')
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
           )
         }}
       >
