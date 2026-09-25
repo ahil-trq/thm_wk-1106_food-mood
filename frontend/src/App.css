@@ -90,7 +90,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--coral); box-shad
 .restaurant-card { position: relative; min-height: 210px; display: flex; overflow: hidden; border: 1px solid var(--line); background: white; animation: rise .55s both; animation-delay: var(--delay); }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .card-main { display: flex; flex: 1; padding: 14px; border: 0; background: none; color: var(--ink); text-align: left; }
-.restaurant-photo { display: grid; place-items: center; width: 145px; min-width: 145px; background: var(--coral); color: white; font-family: var(--serif); font-size: 60px; }
+.restaurant-photo { position: relative; overflow: hidden; display: grid; place-items: center; width: 145px; min-width: 145px; background: var(--coral); color: white; font-family: var(--serif); font-size: 60px; }
+.restaurant-photo-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .tone-ochre .restaurant-photo, .detail-hero.tone-ochre { background: var(--ochre); color: #674817; }
 .tone-sage .restaurant-photo, .detail-hero.tone-sage { background: var(--sage); color: #506047; }
 .tone-blue .restaurant-photo, .detail-hero.tone-blue { background: var(--blue); color: #446176; }

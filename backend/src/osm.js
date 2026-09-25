@@ -63,6 +63,127 @@ function openingState(openingHours) {
   return current >= parse(match[1]) && current <= parse(match[2])
 }
 
+function isValidImageUrl(value) {
+  if (typeof value !== 'string') return false
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+const imageCache = new Map()
+const IMAGE_CACHE_TTL = 24 * 60 * 60 * 1000
+const IMAGE_LOOKUP_TIMEOUT_MS = 2500
+const IMAGE_LOOKUP_CONCURRENCY = 5
+const MAX_IMAGE_LOOKUPS_PER_REQUEST = 12
+
+async function fetchWikimediaJson(url) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), IMAGE_LOOKUP_TIMEOUT_MS)
+  try {
+    const response = await fetch(url, { signal: controller.signal, headers: { 'User-Agent': 'Food-Mood/1.0 (THM project)' } })
+    if (!response.ok) return null
+    return await response.json()
+  } catch (error) {
+    console.error('Wikimedia request failed:', error.message)
+    return null
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+async function resolveCommonsFileUrl(fileTitle) {
+  const title = fileTitle.startsWith('File:') ? fileTitle : `File:${fileTitle}`
+  const url = new URL('https://commons.wikimedia.org/w/api.php')
+  url.searchParams.set('action', 'query')
+  url.searchParams.set('titles', title)
+  url.searchParams.set('prop', 'imageinfo')
+  url.searchParams.set('iiprop', 'url')
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('origin', '*')
+  const data = await fetchWikimediaJson(url)
+  const page = data?.query?.pages ? Object.values(data.query.pages)[0] : null
+  return page?.imageinfo?.[0]?.url || null
+}
+
+async function resolveCommonsCategoryImage(categoryTitle) {
+  const title = categoryTitle.startsWith('Category:') ? categoryTitle : `Category:${categoryTitle}`
+  const url = new URL('https://commons.wikimedia.org/w/api.php')
+  url.searchParams.set('action', 'query')
+  url.searchParams.set('list', 'categorymembers')
+  url.searchParams.set('cmtitle', title)
+  url.searchParams.set('cmtype', 'file')
+  url.searchParams.set('cmlimit', '1')
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('origin', '*')
+  const data = await fetchWikimediaJson(url)
+  const member = data?.query?.categorymembers?.[0]
+  return member?.title ? resolveCommonsFileUrl(member.title) : null
+}
+
+async function resolveWikidataImage(wikidataId) {
+  const url = new URL('https://www.wikidata.org/w/api.php')
+  url.searchParams.set('action', 'wbgetclaims')
+  url.searchParams.set('entity', wikidataId)
+  url.searchParams.set('property', 'P18')
+  url.searchParams.set('format', 'json')
+  url.searchParams.set('origin', '*')
+  const data = await fetchWikimediaJson(url)
+  const filename = data?.claims?.P18?.[0]?.mainsnak?.datavalue?.value
+  return filename ? resolveCommonsFileUrl(filename) : null
+}
+
+// Bild-Herkunft (Category vs. File vs. Wikidata-Entity) bestimmt den Lookup-Pfad; Ergebnis wird 24h gecacht.
+async function resolveRestaurantImage(restaurant) {
+  const cacheKey = restaurant.wikimediaCommons
+    ? `commons:${restaurant.wikimediaCommons}`
+    : restaurant.wikidata
+      ? `wikidata:${restaurant.wikidata}`
+      : null
+  if (!cacheKey) return null
+  const cached = imageCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) return cached.value
+  let imageUrl = null
+  try {
+    if (restaurant.wikimediaCommons?.startsWith('Category:')) {
+      imageUrl = await resolveCommonsCategoryImage(restaurant.wikimediaCommons)
+    } else if (restaurant.wikimediaCommons) {
+      imageUrl = await resolveCommonsFileUrl(restaurant.wikimediaCommons)
+    } else if (restaurant.wikidata) {
+      imageUrl = await resolveWikidataImage(restaurant.wikidata)
+    }
+  } catch (error) {
+    console.error('Wikimedia image lookup failed:', error.message)
+    imageUrl = null
+  }
+  imageCache.set(cacheKey, { value: imageUrl, expiresAt: Date.now() + IMAGE_CACHE_TTL })
+  return imageUrl
+}
+
+async function mapWithConcurrency(items, limit, mapper) {
+  let index = 0
+  async function worker() {
+    while (index < items.length) {
+      const current = index++
+      await mapper(items[current])
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker))
+}
+
+// Nur ein begrenztes Kontingent pro Suche anreichern, damit die Antwortzeit (NFA-01) nicht durch viele langsame Wikimedia-Aufrufe leidet.
+async function resolveMissingImages(restaurants) {
+  const candidates = restaurants
+    .filter((restaurant) => !restaurant.image && (restaurant.wikimediaCommons || restaurant.wikidata))
+    .slice(0, MAX_IMAGE_LOOKUPS_PER_REQUEST)
+  if (!candidates.length) return
+  await mapWithConcurrency(candidates, IMAGE_LOOKUP_CONCURRENCY, async (restaurant) => {
+    restaurant.image = await resolveRestaurantImage(restaurant)
+  })
+}
+
 function normalizeElement(element, origin) {
   const tags = element.tags || {}
   const latitude = element.lat ?? element.center?.lat
@@ -84,6 +205,9 @@ function normalizeElement(element, origin) {
     takeaway: tags.takeaway === 'yes' ? 'YES' : 'UNKNOWN',
     delivery: tags.delivery === 'yes' ? 'YES' : 'UNKNOWN',
     outdoorSeating: tags.outdoor_seating === 'yes' ? 'YES' : 'UNKNOWN',
+    image: isValidImageUrl(tags.image) ? tags.image : null,
+    wikimediaCommons: tags.wikimedia_commons || null,
+    wikidata: tags.wikidata || null,
     website: tags.website || null,
     phone: tags.phone || null,
     latitude,
@@ -107,6 +231,7 @@ console.log("Overpass URL:", overpassUrl)
 console.log("Overpass Query:", query)
 const data = await request(url.toString())
   const restaurants = data.elements.map((element) => normalizeElement(element, coordinates)).filter(Boolean)
+  await resolveMissingImages(restaurants)
   cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })
   return restaurants
 }
