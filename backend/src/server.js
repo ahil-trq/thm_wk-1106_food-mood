@@ -25,6 +25,7 @@ const allowedOrigins = [
   ...new Set([
     ...configuredOrigins,
     'https://foodmood-thm.de',
+    'https://www.foodmood-thm.de',
     'http://localhost:3000',
     'http://localhost:4173',
     'http://localhost:5173',
