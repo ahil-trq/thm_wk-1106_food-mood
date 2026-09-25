@@ -24,6 +24,7 @@ const configuredOrigins = (process.env.CORS_ORIGIN || '')
 const allowedOrigins = [
   ...new Set([
     ...configuredOrigins,
+    'https://foodmood-thm.de',
     'http://localhost:3000',
     'http://localhost:4173',
     'http://localhost:5173',
