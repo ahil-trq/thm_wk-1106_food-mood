@@ -22,7 +22,7 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 Die Konfiguration erfolgt über Umgebungsvariablen in einer lokalen env-Datei, die nicht Teil des Repositorys ist (in .gitignore eingetragen). Voraussichtlich benötigt:
 
-- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`.
+- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`. Bei anhaltenden Verbindungsfehlern (z. B. `ECONNREFUSED`/„fetch failed“ auf gehosteten Umgebungen mit geteilter IP) kann testweise ein alternativer, öffentlicher Overpass-Mirror mit voller Datenabdeckung eingetragen werden, z. B. `https://lz4.overpass-api.de/api/interpreter`. Regionale Mirrors wie `overpass.osm.ch` liefern nur eingeschränkte, regionale Daten und sind für Deutschland nicht geeignet.
 - `NOMINATIM_API_URL` Basis-URL des Nominatim-Servers, Standardwert `https://nominatim.openstreetmap.org`.
 - `DATABASE_URL` Verbindungsangabe zur Datenbank (siehe Datenbankkonfiguration).
 - `PORT` Port, unter dem die Anwendung lokal erreichbar ist (optional, mit Standardwert).

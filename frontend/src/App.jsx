@@ -134,10 +134,14 @@ function App() {
 }
 
   function resetProfile() { localStorage.removeItem('foodmood-screen'); setScreen('profile'); setError('') }
+  const [idCopied, setIdCopied] = useState(false)
+  async function copyUserId() {
+    try { await navigator.clipboard.writeText(userId); setIdCopied(true); setTimeout(() => setIdCopied(false), 1500) } catch { /* Zwischenablage evtl. nicht verfügbar */ }
+  }
   const progress = { start: 1, location: 2, mood: 3, filters: 4, results: 5, details: 5, library: 1 }[screen] || 1
 
   return <div className="app-shell">
-    <header className="topbar"><button className="brand" onClick={() => profileReady && setScreen('start')} aria-label="Zur Startseite">food<span>·</span>mood</button>{profileReady && <nav className="topnav"><button onClick={() => setScreen('library')}>Meine Orte</button><button onClick={resetProfile}>Profil wechseln</button></nav>}</header>
+    <header className="topbar"><button className="brand" onClick={() => profileReady && setScreen('start')} aria-label="Zur Startseite">food<span>·</span>mood</button>{profileReady && <div className="topbar-right"><span className="user-id-badge" title="Deine UserID – notiere sie dir, um dein Profil später erneut zu laden">ID <strong>{userId}</strong><button type="button" onClick={copyUserId} aria-label="UserID kopieren">{idCopied ? '✓' : '⧉'}</button></span><nav className="topnav"><button onClick={() => setScreen('library')}>Meine Orte</button><button onClick={resetProfile}>Profil wechseln</button></nav></div>}</header>
     {screen !== 'profile' && <div className="progress"><span style={{ width: `${progress * 20}%` }} /></div>}
     <main className="main-content">
       {screen === 'profile' && <section className="welcome-screen split-screen"><div className="welcome-copy"><p className="eyebrow">DEIN MOOD, DEIN BISS</p><h1>Finde den Ort,<br /><em>der heute passt.</em></h1><p className="lede">Food-Mood hilft dir, aus deinem Moment eine gute Mahlzeit zu machen. Ohne Konto. Ohne endloses Suchen.</p><div className="profile-actions"><label>Name<input value={name} onChange={(event) => setName(event.target.value)} placeholder="Wie dürfen wir dich nennen?" /></label><button className="primary-button" onClick={createProfile}>Neues Profil starten <span>↗</span></button><div className="existing-profile"><input value={profileInput} onChange={(event) => setProfileInput(event.target.value.toUpperCase())} placeholder="12-stellige UserID" maxLength={12} /><button className="text-button" onClick={loadProfile}>Vorhandenes Profil laden</button></div></div>{error && <p className="error-message">{error}</p>}</div><div className="welcome-art"><div className="art-circle art-circle-one" /><div className="art-circle art-circle-two" /><div className="plate"><span>✦</span></div><div className="art-label">good food<br /><strong>good mood</strong></div></div></section>}
