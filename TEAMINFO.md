@@ -37,5 +37,5 @@ Das ist Food Mood.
 
 ## Eingesetzte KI-Werkzeuge (vorläufige Planung)
 
-- GitHub Copilot für Code-Vervollständigung
+- GitHub Copilot 
 - ChatGPT
