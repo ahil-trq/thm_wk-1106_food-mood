@@ -44,6 +44,39 @@ async function request(url, options = {}) {
   }
 }
 
+// Overpass ist gelegentlich überlastet/rate-limited; bei diesen Fehlern lohnt sich ein anderer Endpunkt statt eines erneuten Versuchs auf demselben.
+const FALLBACK_OVERPASS_URLS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://lz4.overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+]
+
+function getOverpassUrls() {
+  const primary = getConfig().overpassUrl
+  return [...new Set([primary, ...FALLBACK_OVERPASS_URLS])].slice(0, 3)
+}
+
+function isFailoverEligible(error) {
+  if (error?.name === 'AbortError') return true
+  if (typeof error?.status === 'number') return [429, 502, 503].includes(error.status)
+  return true
+}
+
+async function requestOverpass(buildUrl) {
+  const urls = getOverpassUrls()
+  let lastError
+  for (const baseUrl of urls) {
+    try {
+      return await performRequest(buildUrl(baseUrl))
+    } catch (error) {
+      lastError = error
+      if (!isFailoverEligible(error)) throw error
+      console.error(`Overpass-Endpunkt fehlgeschlagen (${baseUrl}), versuche nächsten Endpunkt:`, error.message)
+    }
+  }
+  throw lastError
+}
+
 export async function geocode(label) {
   const { nominatimUrl } = getConfig()
   const key = `geocode:${label.trim().toLowerCase()}`
@@ -237,16 +270,16 @@ function normalizeElement(element, origin) {
 
 export async function getRestaurants(latitude, longitude, radiusMeters = 5000) {
   const coordinates = { latitude, longitude }
-  const { overpassUrl } = getConfig()
   const cacheKey = `restaurants:${coordinates.latitude}:${coordinates.longitude}:${radiusMeters}`
   const cached = cache.get(cacheKey)
   if (cached && cached.expiresAt > Date.now()) return cached.value
   const query = `[out:json][timeout:5];(nwr[amenity~"^(restaurant|fast_food|cafe)$"](around:${radiusMeters},${coordinates.latitude},${coordinates.longitude}););out center tags;`
- const url = new URL(overpassUrl)
- url.searchParams.set('data', query)
-console.log("Overpass URL:", overpassUrl)
 console.log("Overpass Query:", query)
-const data = await request(url.toString())
+const data = await requestOverpass((baseUrl) => {
+  const url = new URL(baseUrl)
+  url.searchParams.set('data', query)
+  return url.toString()
+})
   const restaurants = data.elements.map((element) => normalizeElement(element, coordinates)).filter(Boolean)
   await resolveMissingImages(restaurants)
   cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })
