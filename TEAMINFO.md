@@ -15,8 +15,8 @@ Das ist Food Mood.
 
 | Name | Studiengang | Rolle | Git-Handle (optional) |
 |---|---|---|---|
-| Mustafa Jasim Mahmood| WI B.Sc. | Projektleiter:in | GitHub: `Feng002` |
-| Danish Ahil Tariq | WI B.Sc. | Implementation Lead | GitHub: `ahil-trq` |
+| Mustafa Jasim Mahmood| WI B.Sc. | Implementation Lead | GitHub: `Feng002` |
+| Danish Ahil Tariq | WI B.Sc. | Projektleiter:in | GitHub: `ahil-trq` |
 | Abrar Ahmad | WI B.Sc. | Spec/Requirements Lead | GitHub: `sniperwolf-spec` |
 | Ali Mahmood | WI B.Sc. | Software Architect | `Armh34432` |
 

@@ -93,7 +93,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--coral); box-shad
 .restaurant-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 17px; }
 .restaurant-card { position: relative; min-height: 210px; display: flex; overflow: hidden; border: 1px solid var(--line); background: white; animation: rise .55s both; animation-delay: var(--delay); }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-.card-main { display: flex; flex: 1; padding: 14px; border: 0; background: none; color: var(--ink); text-align: left; }
+.card-main { display: flex; flex: 1; padding: 14px; border: 0; background: none; color: var(--ink); text-align: left; touch-action: manipulation; }
 .restaurant-photo { position: relative; overflow: hidden; display: grid; place-items: center; width: 145px; min-width: 145px; background: var(--coral); color: white; font-family: var(--serif); font-size: 60px; }
 .restaurant-photo-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .tone-ochre .restaurant-photo, .detail-hero.tone-ochre { background: var(--ochre); color: #674817; }
@@ -105,7 +105,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--coral); box-shad
 .restaurant-info p { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .card-bottom { display: flex; gap: 12px; align-items: center; margin-top: 24px; font-size: 12px; }
 .rating { color: #bd7a20; }.rating small { color: var(--muted); }.open { color: #628d57; }.closed { color: #a76b64; }
-.favorite-button { position: absolute; top: 14px; right: 14px; border: 0; background: #fff9; color: var(--ink); font-size: 24px; line-height: 1; }.favorite-button.active { color: var(--coral); }
+.favorite-button { position: absolute; top: 14px; right: 14px; z-index: 2; border: 0; background: #fff9; color: var(--ink); font-size: 24px; line-height: 1; padding: 8px; touch-action: manipulation; }.favorite-button.active { color: var(--coral); }
 .reason { position: absolute; right: 14px; bottom: 14px; color: var(--muted); font-size: 10px; font-style: italic; }
 .loading-state, .empty-state { min-height: 300px; display: grid; place-items: center; align-content: center; gap: 13px; color: var(--muted); text-align: center; }
 .loader { width: 34px; height: 34px; border: 3px solid #e8785e33; border-top-color: var(--coral); border-radius: 50%; animation: spin .8s linear infinite; }.empty-state > span { color: var(--coral); font-size: 30px; }
