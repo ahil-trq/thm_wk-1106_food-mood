@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS restaurant_references (
   restaurant_key TEXT PRIMARY KEY,
   osm_type VARCHAR(16) NOT NULL,
-  osm_id BIGINT NOT NULL,
+  osm_id BIGINT,
+  external_id TEXT,
   name VARCHAR(200) NOT NULL,
   address VARCHAR(300),
   cuisines TEXT[] NOT NULL DEFAULT '{}',

@@ -40,8 +40,16 @@ function hashUserId(userId) { return crypto.createHash('sha256').update(userId).
 function normalizeRestaurantKey(value) { return String(value).includes(':') ? String(value) : `NODE:${value}` }
 async function ensureRestaurantReference(restaurant) {
   if (!pool || !restaurant?.id) return
-  const [osmType, osmId] = restaurant.id.split(':')
-  await pool.query(`INSERT INTO restaurant_references (restaurant_key, osm_type, osm_id, name, address, cuisines) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (restaurant_key) DO UPDATE SET name = EXCLUDED.name, address = EXCLUDED.address, cuisines = EXCLUDED.cuisines, updated_at = NOW()`, [restaurant.id, osmType, Number(osmId), restaurant.name, restaurant.address, restaurant.cuisine ? [restaurant.cuisine] : []])
+  const separator = restaurant.id.indexOf(':')
+  const osmType = separator >= 0 ? restaurant.id.slice(0, separator) : 'OSM'
+  const sourceId = separator >= 0 ? restaurant.id.slice(separator + 1) : restaurant.id
+  const isGeoapify = osmType === 'GEOAPIFY'
+  const numericOsmId = isGeoapify ? null : Number(sourceId)
+  if (!isGeoapify && !Number.isSafeInteger(numericOsmId)) {
+    console.error('[Restaurants] Ungültiges DB-Feld: osm_id würde NaN erzeugen')
+    throw new Error('Invalid numeric restaurant source ID')
+  }
+  await pool.query(`INSERT INTO restaurant_references (restaurant_key, osm_type, osm_id, external_id, name, address, cuisines) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (restaurant_key) DO UPDATE SET name = EXCLUDED.name, address = EXCLUDED.address, cuisines = EXCLUDED.cuisines, updated_at = NOW()`, [restaurant.id, osmType, numericOsmId, isGeoapify ? sourceId : null, restaurant.name, restaurant.address, restaurant.cuisine ? [restaurant.cuisine] : []])
 }
 
 
