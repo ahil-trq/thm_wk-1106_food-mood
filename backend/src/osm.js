@@ -1,4 +1,4 @@
-const timeoutMs = 30000
+const timeoutMs = 6000
 const cache = new Map()
 
 function getConfig() {
@@ -8,22 +8,39 @@ function getConfig() {
   }
 }
 
-async function request(url, options = {}) {
+async function performRequest(url, options) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
     const response = await fetch(url, { ...options, signal: controller.signal, headers: { 'User-Agent': 'Food-Mood/1.0 (THM project)', ...(options.headers || {}) } })
     if (!response.ok) {
-    const errorText = await response.text()
-    console.error("OSM ERROR STATUS:", response.status)
-    console.error("OSM ERROR BODY:", errorText)
-
-  throw new Error(`OSM request failed with ${response.status}`)
-}
-
-return response.json()
+      const errorText = await response.text()
+      console.error("OSM ERROR STATUS:", response.status)
+      console.error("OSM ERROR BODY:", errorText)
+      const error = new Error(`OSM request failed with ${response.status}`)
+      error.status = response.status
+      throw error
+    }
+    return await response.json()
   } finally {
     clearTimeout(timeout)
+  }
+}
+
+// Retry nur bei Timeouts/5xx (transiente Fehler); Rate-Limits und übrige 4xx werden gemäß S1/A08 nicht wiederholt.
+function isTransientError(error) {
+  if (error?.name === 'AbortError') return true
+  if (typeof error?.status === 'number') return error.status >= 500
+  return true
+}
+
+async function request(url, options = {}) {
+  try {
+    return await performRequest(url, options)
+  } catch (error) {
+    if (!isTransientError(error)) throw error
+    console.error('OSM request failed, retrying once:', error.message)
+    return await performRequest(url, options)
   }
 }
 
