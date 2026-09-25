@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1'
-const moods = [['GEMUETLICH', 'Gemütlich', 'Langsam, warm, entspannt'], ['ROMANTISCH', 'Romantisch', 'Ein besonderer Abend'], ['SCHNELL', 'Schnell', 'Wenig Zeit, viel Geschmack'], ['GESELLIG', 'Gesellig', 'Zusammen ist besser'], ['NEU', 'Etwas Neues', 'Lust auf Entdeckung']]
+const moods = [['GEMUETLICH', 'Gemütlich', 'Langsam, warm, entspannt', 'einen gemütlichen Moment'], ['ROMANTISCH', 'Romantisch', 'Ein besonderer Abend', 'einen romantischen Abend'], ['SCHNELL', 'Schnell', 'Wenig Zeit, viel Geschmack', 'eine schnelle Mahlzeit'], ['GESELLIG', 'Gesellig', 'Zusammen ist besser', 'einen geselligen Abend'], ['NEU', 'Etwas Neues', 'Lust auf Entdeckung', 'etwas Neues']]
 const occasions = ['Date', 'Familie', 'Freunde', 'Mittagspause', 'Uni']
+const occasionPhrases = { Date: 'dein Date', Familie: 'deine Familie', Freunde: 'deine Freunde', Mittagspause: 'deine Mittagspause', Uni: 'deine Uni' }
 const cuisines = ['italian', 'asian', 'indian', 'burger', 'cafe']
 
 function App() {
@@ -81,33 +82,43 @@ function App() {
   setError('')
 
   try {
-    const response = await fetch(
-    `${API_BASE}/restaurants?latitude=${coordinates.latitude}&longitude=${coordinates.longitude}&radius=${Number(radius) * 1000}`
-    )
+    const response = await fetch(`${API_BASE}/recommendations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userIdHash: userIdHash || userId,
+        mood: mood || undefined,
+        occasion: occasion || undefined,
+        location: { coordinates },
+        filters: {
+          radius: Number(radius) * 1000,
+          cuisines: selectedCuisine,
+          onlyOpen
+        }
+      })
+    })
 
     if (!response.ok) {
-      throw new Error("Restaurant API unavailable")
+      throw new Error("Recommendation API unavailable")
     }
 
     const data = await response.json()
-    const loadedRestaurants = Array.isArray(data) ? data : data.restaurants || []
-    console.debug('Restaurant API response:', data)
-    console.debug('Restaurants before filters:', loadedRestaurants.length)
+    const reason = mood
+      ? `passt zu ${moods.find(([value]) => value === mood)?.[1].toLowerCase() || 'deinem Mood'}`
+      : `passt zu ${occasion}`
 
-    const mappedRestaurants = loadedRestaurants.map((item) => ({
-        ...item,
-        id: item.id,
-        distance: item.distance ?? 0,
-        rating: item.rating ?? null,
-        count: item.count ?? 0,
-        image: item.image ?? null,
-        cuisine: item.cuisine || "restaurant",
-        address: item.address || "Adresse unbekannt",
-        open: item.open === true,
-        reason: "passt zu deinem Mood",
+    const mappedRestaurants = (data.recommendations || []).map((entry) => ({
+        ...entry.restaurant,
+        distance: entry.distance ?? entry.restaurant.distance ?? 0,
+        rating: entry.restaurant.rating ?? null,
+        count: entry.restaurant.count ?? 0,
+        image: entry.restaurant.image ?? null,
+        cuisine: entry.restaurant.cuisine || "restaurant",
+        address: entry.restaurant.address || "Adresse unbekannt",
+        open: entry.restaurant.open === true,
+        reason,
         tone: "coral"
       }))
-    console.debug('Restaurants after filters:', mappedRestaurants.filter((item) => !onlyOpen || item.open).length)
     setRestaurants(mappedRestaurants)
 
   } catch (error) {
@@ -180,7 +191,7 @@ function App() {
 )}
   {screen === 'mood' && <section className="form-screen"><StepHeading step="02" title="Was ist dein Mood?" copy="Wähle eine Stimmung. Der Anlass ist optional." /><div className="choice-grid">{moods.map(([value, label, copy]) => <button className={`choice-card ${mood === value ? 'selected' : ''}`} key={value} onClick={() => setMood(value)}><span className="choice-mark">{mood === value ? '✓' : '○'}</span><strong>{label}</strong><small>{copy}</small></button>)}</div><label className="select-label">Anlass <select value={occasion} onChange={(event) => setOccasion(event.target.value)}><option value="">Kein bestimmter Anlass</option>{occasions.map((item) => <option key={item}>{item}</option>)}</select></label><button className="primary-button" disabled={!mood && !occasion} onClick={() => setScreen('filters')}>Weiter <span>↗</span></button></section>}
       {screen === 'filters' && <section className="form-screen narrow"><StepHeading step="03" title="Noch ein paar Vorlieben?" copy="Alles optional. Du entscheidest, wie genau wir suchen." /><div className="filter-block"><label>Maximale Entfernung <select value={radius} onChange={(event) => setRadius(event.target.value)}><option value="1">1 km</option><option value="3">3 km</option><option value="5">5 km</option><option value="10">10 km</option></select></label></div><div className="filter-block"><p className="field-title">Küche</p><div className="chip-row">{cuisines.map((item) => <button className={`chip ${selectedCuisine.includes(item) ? 'selected' : ''}`} key={item} onClick={() => setSelectedCuisine((current) => current.includes(item) ? current.filter((value) => value !== item) : [...current, item])}>{item}</button>)}</div></div><label className="toggle-row"><span><strong>Nur geöffnete Restaurants</strong><small>Zeige nur sicher geöffnete Orte</small></span><input type="checkbox" checked={onlyOpen} onChange={(event) => setOnlyOpen(event.target.checked)} /><span className="toggle" /></label><button className="primary-button" onClick={getRecommendations}>Empfehlungen anzeigen <span>↗</span></button></section>}
-  {screen === 'results' && <section className="results-screen"><div className="section-heading"><div><p className="eyebrow">DEIN ERGEBNIS</p><h2>Orte für deinen<br /><em>{mood ? moods.find(([value]) => value === mood)?.[1].toLowerCase() : occasion.toLowerCase() || 'moment'}</em></h2></div><button className="filter-link" onClick={() => setScreen('filters')}>Filter ändern ↗</button></div>{error && <p className="error-message">{error}</p>}{loading ? <LoadingState /> : <div className="restaurant-list">{visibleRestaurants.map((restaurant, index) => <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} favorite={favorites.includes(restaurant.id)} onFavorite={() => toggleFavorite(restaurant.id)} onOpen={() => { setSelectedRestaurant(restaurant); setScreen('details') }} />)}</div>}{!loading && !visibleRestaurants.length && <EmptyState text="Keine Orte gefunden. Versuche einen größeren Radius oder ändere deine Filter." actionLabel="Filter ändern" action={() => setScreen('filters')} />}</section>}
+  {screen === 'results' && <section className="results-screen"><div className="section-heading"><div><p className="eyebrow">DEIN ERGEBNIS</p><h2>Orte für<br /><em>{mood ? moods.find(([value]) => value === mood)?.[3] : (occasion ? occasionPhrases[occasion] : 'deinen Moment')}</em></h2></div><button className="filter-link" onClick={() => setScreen('filters')}>Filter ändern ↗</button></div>{error && <p className="error-message">{error}</p>}{loading ? <LoadingState /> : <div className="restaurant-list">{visibleRestaurants.map((restaurant, index) => <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} favorite={favorites.includes(restaurant.id)} onFavorite={() => toggleFavorite(restaurant.id)} onOpen={() => { setSelectedRestaurant(restaurant); setScreen('details') }} />)}</div>}{!loading && !visibleRestaurants.length && <EmptyState text="Keine Orte gefunden. Versuche einen größeren Radius oder ändere deine Filter." actionLabel="Filter ändern" action={() => setScreen('filters')} />}</section>}
       {screen === 'details' && selectedRestaurant && <DetailScreen restaurant={selectedRestaurant} favorite={favorites.includes(selectedRestaurant.id)} visited={visited.includes(selectedRestaurant.id)} review={reviews[selectedRestaurant.id]} onBack={() => setScreen('results')} onFavorite={() => toggleFavorite(selectedRestaurant.id)} onVisited={() => markVisited(selectedRestaurant.id)} onReview={(review) => saveReview(selectedRestaurant.id, review)} />}
       {screen === 'library' && <section className="results-screen"><div className="section-heading"><div><p className="eyebrow">DEINE SAMMLUNG</p><h2>Orte, die<br /><em>bleiben.</em></h2></div><button className="filter-link" onClick={() => setScreen('start')}>Neue Suche ↗</button></div><div className="tabs"><button className={activeTab === 'favorites' ? 'active' : ''} onClick={() => setActiveTab('favorites')}>Favoriten <span>{favorites.length}</span></button><button className={activeTab === 'visited' ? 'active' : ''} onClick={() => setActiveTab('visited')}>Besucht <span>{visited.length}</span></button></div><div className="restaurant-list">{personalRestaurants.map((restaurant, index) => <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} favorite={favorites.includes(restaurant.id)} onFavorite={() => toggleFavorite(restaurant.id)} onOpen={() => { setSelectedRestaurant(restaurant); setScreen('details') }} />)}</div>{!personalRestaurants.length && <EmptyState text={activeTab === 'favorites' ? 'Noch keine Favoriten gespeichert.' : 'Noch keine Besuche markiert.'} action={() => setScreen('start')} />}</section>}
     </main>

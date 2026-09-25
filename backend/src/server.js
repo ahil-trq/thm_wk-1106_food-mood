@@ -88,7 +88,7 @@ app.post('/api/v1/recommendations', async (request, response) => {
   try {
     const coordinates = location.coordinates || await geocode(location.label)
     let restaurants = await getRestaurants(coordinates.latitude, coordinates.longitude, Number(filters.radius || 5000))
-    if (Array.isArray(filters.cuisines) && filters.cuisines.length) restaurants = restaurants.filter((restaurant) => filters.cuisines.some((cuisine) => restaurant.cuisine === cuisine || restaurant.name.toLowerCase().includes(cuisine)))
+    if (Array.isArray(filters.cuisines) && filters.cuisines.length) restaurants = restaurants.filter((restaurant) => filters.cuisines.some((cuisine) => restaurant.cuisine === cuisine || (restaurant.cuisines || []).includes(cuisine) || restaurant.name.toLowerCase().includes(cuisine) || (cuisine === 'cafe' && restaurant.amenity === 'CAFE') || (cuisine === 'burger' && restaurant.amenity === 'FAST_FOOD')))
     if (filters.onlyOpen) restaurants = restaurants.filter((restaurant) => restaurant.open === true)
     for (const restaurant of restaurants) await ensureRestaurantReference(restaurant)
     const recommendations = restaurants.map((restaurant, index) => ({ restaurant, score: Math.max(0, 100 - index), distance: restaurant.distance, reasons: [mood ? `passt zur Stimmung ${mood}` : `passt zum Anlass ${occasion}`] })).slice(0, 50)
