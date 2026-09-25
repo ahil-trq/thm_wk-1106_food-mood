@@ -88,6 +88,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--coral); box-shad
 .toggle-row input:checked + .toggle:after { left: 23px; }
 .results-screen { padding: 70px 0 100px; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 44px; }
+.library-actions { display: flex; align-items: center; gap: 18px; }
 .section-heading h2 { margin-bottom: 0; }
 .filter-link { color: var(--coral); }
 .restaurant-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 17px; }
