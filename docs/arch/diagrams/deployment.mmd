@@ -6,10 +6,12 @@ flowchart LR
     DB[(Externe PostgreSQL-Datenbank<br/>nicht öffentlich)]
     ADAPTER[Places- und Geointegration]
     PLACES[Geoapify Places API]
-    OSM[Overpass Fallback / Nominatim]
+    OSM[OpenStreetMap/Overpass Fallback]
+    NOMINATIM[Nominatim Geocoding]
 
     BROWSER --> DOMAIN --> FRONT
     FRONT -.HTTPS API-Aufruf.-> API
     API --> DB
     API --> ADAPTER --> PLACES
-    ADAPTER -.Fallback / Geocoding.-> OSM
+    ADAPTER -.Fallback.-> OSM
+    ADAPTER -.Manuelle Ortsauflösung.-> NOMINATIM

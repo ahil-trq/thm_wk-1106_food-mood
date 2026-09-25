@@ -2,8 +2,8 @@ sequenceDiagram
     actor Nutzer
     participant Frontend
     participant Backend
-    participant Places as Geoapify Places
-    participant OSM as Overpass Fallback
+    participant Places as Geoapify Places API
+    participant OSM as OpenStreetMap/Overpass Fallback
     participant DB as Datenbank
 
     Nutzer->>Frontend: Sucheanfrage (Standort, Stimmung, Anlass, Filter)
@@ -12,7 +12,7 @@ sequenceDiagram
     Places-->>Backend: Restaurantliste (GeoJSON)
     opt Geoapify nicht verfügbar
         Backend->>OSM: Fallback-Abfrage über Overpass
-        OSM-->>Backend: Restaurantliste (OSM-Rohdaten)
+        OSM-->>Backend: Restaurantliste (OpenStreetMap-Rohdaten)
     end
     Backend->>Backend: Filter anwenden und positionsbasierten Score vergeben
     Backend->>DB: Favoriten/Bewertungen zur UserIdHash laden
