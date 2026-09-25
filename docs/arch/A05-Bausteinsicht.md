@@ -10,18 +10,18 @@ Die Darstellung wird schrittweise verfeinert:
 - **Ebene 1** öffnet Food-Mood als Whitebox und zeigt die wichtigsten technischen Bausteine.
 - **Ebene 2** verfeinert die Bausteine, deren innere Struktur für die Umsetzung wichtig ist.
 
-Die fachlichen Verantwortlichkeiten sind in [P2 – Fachlicher Architekturüberblick](../specs/P2-architekturueberblick.md) festgelegt. Dieses Kapitel ordnet sie technischen Bausteinen zu. Da die Implementierung noch aufgebaut wird, beschreibt A05 eine **Soll-Architektur**. Abweichungen im späteren Quellcode müssen entweder korrigiert oder in dieser Dokumentation begründet werden.
+Die fachlichen Verantwortlichkeiten sind in [P2 – Fachlicher Architekturüberblick](../specs/P2-architekturueberblick.md) festgelegt. Dieses Kapitel ordnet sie technischen Bausteinen zu und beschreibt den aktuellen Stand der **Ist-Architektur**. Geplante, aber noch nicht implementierte Erweiterungen werden ausdrücklich als solche gekennzeichnet.
 
 ## A05.2 Ebene 0 – Blackbox Food-Mood
 
-Auf Ebene 0 wird Food-Mood als ein zusammenhängendes System betrachtet. Der anonyme Benutzer greift über einen Webbrowser auf die Anwendung zu. OpenStreetMap stellt als einziges fachliches Nachbarsystem Restaurant- und Geodaten bereit.
+Auf Ebene 0 wird Food-Mood als ein zusammenhängendes System betrachtet. Der anonyme Benutzer greift über einen Webbrowser auf die Anwendung zu. Geoapify Places stellt primär Restaurant- und Geodaten bereit; OpenStreetMap/Overpass bleibt als Fallback erhalten.
 
 | Merkmal | Beschreibung |
 |---|---|
 | Blackbox | Food-Mood |
 | Zweck | passende Restaurants anhand von Standort, Stimmung, Anlass, Filtern und persönlichen App-Daten empfehlen |
 | bereitgestellte Schnittstelle | responsive Weboberfläche für den anonymen Benutzer |
-| benötigte Schnittstelle | OpenStreetMap für Restaurant- und Geodaten |
+| benötigte Schnittstelle | Geoapify Places für Restaurantdaten sowie Nominatim und Overpass als ergänzende technische Zugänge |
 | dauerhaft verwaltete Daten | Nutzerprofile mit UserID, Favoriten, Besuche und eigene Bewertungen |
 | Kontext | [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
 
@@ -35,7 +35,7 @@ flowchart TD
         frontend["BB-01 Web-Frontend"]
         api["BB-02 API-Schicht"]
         services["BB-03 Anwendungsdienste"]
-        osmAdapter["BB-04 OSM-Integration"]
+        osmAdapter["BB-04 Places- und Geointegration"]
         persistence["BB-05 Persistenz"]
 
         frontend -->|IF-02 REST-Anfragen| api
@@ -44,10 +44,12 @@ flowchart TD
         services -->|IF-05 Datenzugriff| persistence
     end
 
-    osm["OpenStreetMap"]
+    geoapify["Geoapify Places API"]
+    osm["OpenStreetMap/Overpass"]
 
     browser <-->|IF-01 HTTPS| frontend
-    osmAdapter <-->|IF-06 HTTPS| osm
+    osmAdapter <-->|IF-06 primär| geoapify
+    osmAdapter -.->|Fallback| osm
 ```
 
 ### Enthaltene Bausteine
@@ -57,7 +59,7 @@ flowchart TD
 | `BB-01` | Web-Frontend | React und Vite | Masken, Navigation, Eingaben und Ergebnisdarstellung im Browser | [A05.4.1](#a0541-whitebox-web-frontend) |
 | `BB-02` | API-Schicht | Node.js und Express | HTTP-Anfragen annehmen, validieren und an die Anwendungsdienste weiterleiten | keine weitere Verfeinerung erforderlich |
 | `BB-03` | Anwendungsdienste | JavaScript-Module im Backend | fachliche Abläufe, Suchprofil, Empfehlung, Nutzerprofil und persönliche Daten verarbeiten | [A05.4.2](#a0542-whitebox-anwendungsdienste) |
-| `BB-04` | OSM-Integration | Backend-Adapter über HTTPS | technische OpenStreetMap-Zugriffe kapseln und externe Daten normalisieren | [A05.4.3](#a0543-whitebox-osm-integration) |
+| `BB-04` | Places- und Geointegration | Backend-Adapter über HTTPS | Geoapify, Overpass und Nominatim kapseln und externe Daten normalisieren | [A05.4.3](#a0543-whitebox-osm-integration) |
 | `BB-05` | Persistenz | PostgreSQL und Datenzugriffsschicht | Nutzerprofile, Favoriten, Besuche und Bewertungen dauerhaft speichern | keine weitere Verfeinerung; Datenstruktur siehe D1 und D2 |
 
 ### Lokale Beziehungen und Schnittstellen
@@ -67,13 +69,13 @@ flowchart TD
 | `IF-01` | Webbrowser ↔ Web-Frontend | Oberfläche und statische Dateien werden über HTTPS bereitgestellt; Benutzereingaben werden im Browser verarbeitet. |
 | `IF-02` | Web-Frontend → API-Schicht | versionierte JSON-REST-Anfragen unter `/api/v1/...` und strukturierte Antworten, beispielsweise für Profile, Suche, Favoriten, Besuche und Bewertungen; Fehler verwenden `errorCode` und `message` |
 | `IF-03` | API-Schicht → Anwendungsdienste | geprüfte Eingabedaten werden an den jeweils zuständigen Anwendungsdienst übergeben |
-| `IF-04` | Anwendungsdienste → OSM-Integration | interne Suchparameter hinein; normalisierte Standort- und Restaurantdaten zurück |
+| `IF-04` | Anwendungsdienste → Places- und Geointegration | interne Suchparameter hinein; normalisierte Standort- und Restaurantdaten zurück |
 | `IF-05` | Anwendungsdienste → Persistenz | Laden und Speichern fachlicher Objekte über klar abgegrenzte Datenzugriffe |
-| `IF-06` | OSM-Integration ↔ OpenStreetMap | HTTPS-Abfragen über Overpass beziehungsweise Nominatim und Verarbeitung der externen Antworten |
+| `IF-06` | Places- und Geointegration ↔ externe Dienste | Geoapify als primäre Places-Abfrage, Overpass als Fallback und Nominatim für Geocoding; Verarbeitung der externen Antworten |
 
 ### Zentrale Entwurfsentscheidungen
 
-- Das Frontend greift weder direkt auf PostgreSQL noch direkt auf Overpass oder Nominatim zu.
+- Das Frontend greift weder direkt auf PostgreSQL noch direkt auf Geoapify, Overpass oder Nominatim zu.
 - Die API-Schicht enthält keine Empfehlungs- oder Bewertungsberechnung.
 - Die Anwendungsdienste arbeiten mit den internen Datentypen aus D2 und kennen keine konkrete OSM-Antwortstruktur.
 - Nur die OSM-Integration kennt externe Endpunkte, Abfrageformate und OSM-Merkmale.
@@ -119,13 +121,13 @@ flowchart TD
 | relevante Spezifikation | [F2 – Anwendungsfälle](../specs/F2-Anwendungsfaelle.md) und [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
 | offene Punkte | keine; die Gewichtung und Bewertungsregeln sind in F3 und ADR-05 festgelegt |
 
-### A05.3.4 Blackbox OSM-Integration
+### A05.3.4 Blackbox Places- und Geointegration
 
 | Merkmal | Beschreibung |
 |---|---|
 | Verantwortung | manuelle Ortseingaben auflösen, Restaurants im Suchgebiet abfragen, externe Antworten prüfen und normalisieren |
 | bereitgestellte Schnittstelle | anbietersunabhängige Standort- und Restaurantsuche für die Anwendungsdienste |
-| benötigte Schnittstelle | OpenStreetMap über Overpass und gegebenenfalls Nominatim |
+| benötigte Schnittstelle | Geoapify Places, Overpass als Fallback und Nominatim für Geocoding |
 | Ein- und Ausgaben | interne Suchparameter hinein; interne Standort- und Restaurantobjekte zurück |
 | Qualitätsbeitrag | gekapselte externe Abhängigkeit, Zeitüberschreitung, begrenzte Anfragen, Caching und kontrollierte Fehlerbehandlung |
 | fachliche Zuordnung | `FB-04` Restaurantzugriff aus P2 |
@@ -222,11 +224,11 @@ flowchart TD
 |---|---|---|
 | `BB-04.1` | OSM-Fassade | stellt den Anwendungsdiensten eine einheitliche interne Schnittstelle für Ortssuche und Restaurantabfrage bereit |
 | `BB-04.2` | Ortsauflösung | löst eine manuelle Ortseingabe über Nominatim in einen temporären Suchstandort auf |
-| `BB-04.3` | Restaurantabfrage | fragt über Overpass passende gastronomische Objekte im definierten Suchgebiet ab |
-| `BB-04.4` | Prüfung und Normalisierung | verwirft unbrauchbare Objekte und überführt gültige OSM-Daten in die internen Datentypen aus D2 |
+| `BB-04.3` | Restaurantabfrage | fragt primär über Geoapify passende gastronomische Objekte im definierten Suchgebiet ab und verwendet Overpass als Fallback |
+| `BB-04.4` | Prüfung und Normalisierung | verwirft unbrauchbare Objekte und überführt Geoapify- oder OSM-Daten in das interne Restaurantformat |
 | `BB-04.5` | Anfragekontrolle | setzt Zeitüberschreitungen, Anfragelimits, Caching und einen kontrollierten Wiederholungsversuch um |
 
-Overpass und Nominatim sind technische Zugänge innerhalb von `BB-04`. Sie werden nicht als zusätzliche fachliche Nachbarsysteme behandelt.
+Geoapify, Overpass und Nominatim sind technische externe Zugänge innerhalb von `BB-04`; ihre anbieterspezifischen Formate bleiben außerhalb der übrigen Bausteine.
 
 ## A05.5 Zuordnung fachlicher und technischer Bausteine
 
@@ -235,27 +237,27 @@ Overpass und Nominatim sind technische Zugänge innerhalb von `BB-04`. Sie werde
 | `FB-01` Benutzerinteraktion | `BB-01` Web-Frontend und `BB-02` API-Schicht |
 | `FB-02` Standortbestimmung | `BB-01.3` Sitzung und Standort, `BB-03.2` Suchprofildienst und `BB-04.2` Ortsauflösung |
 | `FB-03` Suchprofil | `BB-03.2` Suchprofildienst |
-| `FB-04` Restaurantzugriff | `BB-04` OSM-Integration |
+| `FB-04` Restaurantzugriff | `BB-04` Places- und Geointegration |
 | `FB-05` Empfehlungslogik | `BB-03.3` Empfehlungsdienst |
 | `FB-06` Ergebnisdarstellung | `BB-01.1` Masken und Navigation sowie `BB-01.2` UI-Komponenten |
 | `FB-07` Persönliche App-Daten | `BB-03.1`, `BB-03.4`, `BB-03.5` und `BB-05` Persistenz |
 
-## A05.6 Geplante Zuordnung zum Quellcode
+## A05.6 Zuordnung zum Quellcode
 
-Die folgende Struktur dient als Orientierung für die Implementierung. Verzeichnisnamen können während der Einrichtung angepasst werden, die Trennung der Verantwortlichkeiten soll jedoch erhalten bleiben.
+Die folgende Zuordnung beschreibt die aktuelle Implementierung.
 
 | Architekturbaustein | Geplanter Bereich im Repository |
 |---|---|
-| `BB-01` Web-Frontend | `frontend/src/` mit Unterbereichen für Masken, Komponenten, Sitzung und API-Client |
-| `BB-02` API-Schicht | `backend/src/api/` beziehungsweise getrennte Routen und Controller |
-| `BB-03` Anwendungsdienste | `backend/src/services/` |
-| `BB-04` OSM-Integration | `backend/src/integrations/osm/` |
-| `BB-05` Persistenz | `backend/src/repositories/` und `backend/src/database/` |
+| `BB-01` Web-Frontend | `frontend/src/App.jsx` und `frontend/src/App.css` |
+| `BB-02` API-Schicht | Routen in `backend/src/server.js` |
+| `BB-03` Anwendungsdienste | Ablauflogik in `backend/src/server.js` |
+| `BB-04` Places- und Geointegration | `backend/src/osm.js` |
+| `BB-05` Persistenz | PostgreSQL-Zugriffe in `backend/src/server.js`, Migrationen in `database/migrations/` |
 
 ## A05.7 Abhängigkeitsregeln
 
 - Abhängigkeiten verlaufen vom Frontend über API und Anwendungsdienste zu Integration beziehungsweise Persistenz.
-- Es bestehen keine direkten Abhängigkeiten vom Frontend zu OpenStreetMap oder PostgreSQL.
+- Es bestehen keine direkten Abhängigkeiten vom Frontend zu Geoapify, OpenStreetMap oder PostgreSQL.
 - Die OSM-Integration darf keine Favoriten, Besuche oder Bewertungen verändern.
 - Die Persistenz kennt keine React-Komponenten, HTTP-Antworten oder OSM-Abfrageformate.
 - Anwendungsdienste dürfen sich nicht zyklisch voneinander abhängig machen.
@@ -268,4 +270,4 @@ Die folgende Struktur dient als Orientierung für die Implementierung. Verzeichn
 |---|---|---|
 | `DB-01` | Datenzugriff und Schemaänderungen | `pg` und versionierte SQL-Migrationen gemäß ADR-06 |
 | `DEP-01` | Hosting und Sicherung | All-Inkl, `foodmood-thm.de`, tägliche Sicherung und sieben Tage Aufbewahrung gemäß ADR-07 |
-| `OSM-01` | OSM-Provider | Overpass und Nominatim über `.env` konfigurierbar, Standardwerte gemäß ADR-07 |
+| `OSM-01` | Places-Provider | Geoapify über `GEOAPIFY_API_KEY`, Overpass über `OVERPASS_API_URL` und Nominatim über `NOMINATIM_API_URL` konfigurierbar |

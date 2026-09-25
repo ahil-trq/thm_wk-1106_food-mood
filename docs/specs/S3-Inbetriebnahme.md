@@ -6,7 +6,7 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 - Node.js (aktuelle LTS-Version) sowie ein Paketmanager (z.B. npm) müssen installiert sein.
 - Eine lokale PostgreSQL-Instanz (z.B. über Docker) für die Speicherung von Favoriten und Besuchen/Bewertungen.
-- Eine bestehende Internetverbindung, da Restaurantdaten über die externe OpenStreetMap/Overpass-API abgerufen werden.
+- Eine bestehende Internetverbindung, da Restaurantdaten über die Geoapify Places API abgerufen werden. Für die manuelle Ortsauflösung kann optional Nominatim genutzt werden.
 - Ein moderner Webbrowser. Für den Test der automatischen Standortermittlung sollten die Standortdienste des Browsers/Geräts aktiviert sein.
 
 ## 2. Repository beziehen
@@ -22,7 +22,8 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 Die Konfiguration erfolgt über Umgebungsvariablen in einer lokalen env-Datei, die nicht Teil des Repositorys ist (in .gitignore eingetragen). Voraussichtlich benötigt:
 
-- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`.
+- `GEOAPIFY_API_KEY` API-Schlüssel für Geoapify Places. Damit ersetzt das Backend die bisherige Overpass-Suche als primäre Restaurantquelle.
+- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`. Diese Variable bleibt als Fallback erhalten, falls ein externer Anbieter nicht erreichbar ist oder bei einem Übergang lokal noch getestet wird.
 - `NOMINATIM_API_URL` Basis-URL des Nominatim-Servers, Standardwert `https://nominatim.openstreetmap.org`.
 - `DATABASE_URL` Verbindungsangabe zur Datenbank (siehe Datenbankkonfiguration).
 - `PORT` Port, unter dem die Anwendung lokal erreichbar ist (optional, mit Standardwert).
@@ -37,9 +38,8 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 
 ## 6. OpenStreetMap-Anbindung konfigurieren
 
-- Food-Mood nutzt OpenStreetMap/Overpass als Datenquelle für Restaurants sowie Nominatim zur Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten.
-- Beide Dienste sind öffentlich und kostenlos nutzbar. Die Basis-URLs werden über `OVERPASS_API_URL` und `NOMINATIM_API_URL` konfiguriert, damit sie bei Bedarf ausgetauscht werden können, ohne den Code zu ändern.
-- Für die aktuell vorgesehene Datenquelle werden keine geheimen API-Schlüssel benötigt. Sollte im weiteren Verlauf dennoch ein Dienst mit Schlüsselpflicht eingesetzt werden, gilt als Grundsatz: Schlüssel werden nicht im Quellcode oder Repository hinterlegt, sondern ausschließlich über die lokale, nicht versionierte env-Datei bereitgestellt.
+- Food-Mood nutzt Geoapify Places als primäre Datenquelle für Restaurants. Für die Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten kann weiterhin Nominatim genutzt werden.
+- Geoapify benötigt einen API-Schlüssel, der nicht im Quellcode oder Repository hinterlegt wird. Die Konfiguration erfolgt ausschließlich über die lokale, nicht versionierte env-Datei.
 
 ## 7. Anwendung lokal starten
 
@@ -51,22 +51,22 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 1. `npm run build` erstellt eine optimierte, produktionsreife Version der Anwendung (statische Dateien).
 2. Im Produktivbetrieb werden andere Umgebungsvariablen verwendet als in der lokalen Entwicklung, z.B. eine produktive statt einer lokalen Datenbank-URL.
 
-## 9. Webserver vorbereiten
+## 9. Frontend und Backend getrennt bereitstellen
 
-- Für den Produktivbetrieb wird ein Webserver benötigt, der die gebauten Frontend-Dateien ausliefert und das Backend erreichbar macht.
-- Der Server benötigt Node.js in der aktuellen LTS-Version zur Ausführung des Backends sowie Netzwerkzugriff auf die PostgreSQL-Datenbank und die externen OpenStreetMap-Dienste.
-- Ein Reverse Proxy (z.B. Nginx oder Caddy, soweit im All-Inkl-Tarif verfügbar) nimmt Anfragen auf Port 80/443 entgegen, liefert das Frontend aus und leitet `/api/v1` an das Backend weiter.
-- Das Backend läuft als verwalteter Prozess (z.B. über systemd oder PM2) und wird nach einem Neustart des Servers automatisch gestartet.
-- Die Datenbank ist nicht direkt aus dem Internet erreichbar. Firewall-Regeln erlauben ausschließlich die notwendigen Verbindungen zu Webserver, Backend und Datenbank.
+- All-Inkl liefert ausschließlich den statischen React/Vite-Build aus. Der Inhalt von `frontend/dist/` wird in das Webverzeichnis von `foodmood-thm.de` hochgeladen.
+- Das Node.js-/Express-Backend läuft bei einem separaten Anbieter mit Node.js-Unterstützung und ist über eine öffentliche HTTPS-URL erreichbar.
+- PostgreSQL läuft beim Backend-/Datenbankanbieter und ist nicht direkt aus dem Browser erreichbar.
+- Das Backend erlaubt CORS ausschließlich für `https://foodmood-thm.de` und lokale Entwicklung.
+- Die Frontend-Variable `VITE_API_BASE_URL` wird vor dem Produktions-Build auf die externe Backend-URL gesetzt.
 
 ## 10. Deployment durchführen
 
-1. Der aktuelle Stand wird auf dem Webserver bereitgestellt und die Abhängigkeiten werden mit `npm ci` installiert.
-2. Die Anwendung wird mit `npm run build` gebaut; die erzeugten Frontend-Dateien werden im konfigurierten Webserver-Verzeichnis abgelegt.
-3. Die produktiven Umgebungsvariablen (siehe Punkt 4) werden sicher auf dem Server hinterlegt, nicht im Repository.
-4. Die PostgreSQL-Datenbank wird eingerichtet und das Datenbankschema wird über die vorgesehenen Migrations- oder Initialisierungsskripte angelegt.
-5. Das Backend wird als verwalteter Prozess gestartet bzw. neu geladen.
-6. Der Reverse Proxy wird so konfiguriert, dass `foodmood-thm.de` das Frontend ausliefert und API-Anfragen an das Backend weiterleitet.
+1. Die produktive Backend-URL in `frontend/.env.production` eintragen.
+2. Im Repository-Root `npm run build` ausführen.
+3. Den Inhalt von `frontend/dist/` per FTP zu All-Inkl hochladen.
+4. Die produktiven Backend-Umgebungsvariablen sicher beim externen Anbieter hinterlegen, nicht im Repository.
+5. PostgreSQL einrichten und `npm run migrate` im Backend ausführen.
+6. Das Backend starten und den Healthcheck prüfen.
 7. Nach jedem Deployment werden die Erreichbarkeit und die Kernfunktionen gemäß Punkt 12 geprüft.
 
 Die Bereitstellung erfolgt für die Projektlaufzeit; nach der Abgabe kann die Domain abgeschaltet werden. Backups der PostgreSQL-Datenbank werden täglich erstellt und sieben Tage aufbewahrt.

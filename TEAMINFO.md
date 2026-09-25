@@ -27,7 +27,7 @@ Das ist Food Mood.
 - **Frameworks:** z.B. React, Node.js 
 - **Persistenz:** z.B. PostgreSQL
 - **Build/Tooling:** z.B. Wahrscheinlich Vite
-- **Sonstiges:** OpenStreetMap/Overpass 
+- **Sonstiges:** Geoapify Places API, OpenStreetMap/Overpass-Fallback und Nominatim
 
 
 ## Repository
