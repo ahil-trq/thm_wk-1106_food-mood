@@ -1,6 +1,6 @@
 # A06 – Laufzeitsicht
 
-Diese Datei zeigt architektonisch wichtige Abläufe von Food-Mood zur Laufzeit – also wie die Bausteine aus [A05 – Bausteinsicht](A05-Bausteinsicht.md) (Frontend, Backend, externe Restaurantquelle OpenStreetMap/Overpass, Datenbank) bei zentralen Vorgängen zusammenspielen. Es werden bewusst keine einzelnen UI-Klicks/Use-Cases im Detail gezeigt, sondern die Kommunikation zwischen den Architektur-Komponenten.
+Diese Datei zeigt architektonisch wichtige Abläufe von Food-Mood zur Laufzeit – also wie die Bausteine aus [A05 – Bausteinsicht](A05-Bausteinsicht.md) (Frontend, Backend, Geoapify Places mit Overpass-Fallback, Datenbank) bei zentralen Vorgängen zusammenspielen. Es werden bewusst keine einzelnen UI-Klicks/Use-Cases im Detail gezeigt, sondern die Kommunikation zwischen den Architektur-Komponenten.
 
 ## A06.0 Überblick
 
@@ -18,7 +18,7 @@ Diese Datei zeigt architektonisch wichtige Abläufe von Food-Mood zur Laufzeit �
 
 Quelldatei: [diagrams/runtime-recommendation.mmd](diagrams/runtime-recommendation.mmd)
 
-Das Frontend sendet die aktuelle Suchanfrage (Standort, Stimmung, Anlass, Filter) über die versionierte API an das Backend. Das Backend ruft über den OSM-Adapter passende Restaurants im Suchradius ab, berechnet anschließend für jedes Restaurant den in [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) und [ADR-05](A09-Architekturentscheidungen.md) definierten Matching-Score und reichert die Liste mit nutzerbezogenen Daten aus der Datenbank an. Das Ergebnis ist eine sortierte Empfehlungsliste, die an das Frontend zurückgegeben und dem Nutzer angezeigt wird.
+Das Frontend sendet die aktuelle Suchanfrage (Standort, Stimmung, Anlass, Filter) über die versionierte API an das Backend. Das Backend ruft über den Places-Adapter passende Restaurants primär bei Geoapify ab, filtert die Antwort und verwendet bei Bedarf Overpass als Fallback. Die aktuelle Implementierung vergibt anschließend einen einfachen positionsbasierten Score (`100 - Ergebnisindex`) und gibt die Liste mit kurzen Gründen an das Frontend zurück.
 
 <a id="62-favorit-speichern-uc-09"></a>
 ## § 6.2 Favorit speichern (UC-09)
@@ -41,5 +41,5 @@ Vor dem Speichern einer Bewertung prüft das Backend in der Datenbank, ob für d
 <a id="64-verwendete-komponenten-aus-a05"></a>
 ## § 6.4 Verwendete Komponenten (aus A05)
 
-Alle drei Szenarien verwenden dieselben Architektur-Bausteine: **Frontend** (Benutzeroberfläche), **Backend** (Geschäftslogik, Matching, Validierung), **OpenStreetMap/Overpass** (externe Restaurantquelle, nur für Empfehlungen relevant) und **Datenbank** (persistente Speicherung von Favoriten, Besuchen und Bewertungen). Die Szenarien zeigen damit unterschiedliche, aber konsistente Kommunikationswege durch dieselbe Architektur. Die technische Einordnung ist in [A05 – Bausteinsicht](A05-Bausteinsicht.md) und der fachliche Rand in [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) beschrieben.
+Alle drei Szenarien verwenden dieselben Architektur-Bausteine: **Frontend** (Benutzeroberfläche), **Backend** (Geschäftslogik, Matching, Validierung), **Geoapify Places mit Overpass-Fallback** (externe Restaurantquelle, nur für Empfehlungen relevant) und **Datenbank** (persistente Speicherung von Favoriten, Besuchen und Bewertungen). Die Szenarien zeigen damit unterschiedliche, aber konsistente Kommunikationswege durch dieselbe Architektur. Die technische Einordnung ist in [A05 – Bausteinsicht](A05-Bausteinsicht.md) und der fachliche Rand in [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) beschrieben.
 

@@ -6,7 +6,7 @@ Dieses Kapitel fasst die grundlegenden Lösungsentscheidungen für Food-Mood zus
 
 ## A04.2 Architekturüberblick
 
-Food-Mood wird als responsive Webanwendung mit einer klaren Trennung von Benutzeroberfläche, serverseitiger Anwendungslogik und Datenhaltung umgesetzt. Die Anwendung besteht aus einem React-Frontend, einem Node.js-/Express-Backend und einer PostgreSQL-Datenbank. Der Zugriff auf Restaurant- und Geodaten erfolgt ausschließlich über eine gekapselte OpenStreetMap-Anbindung im Backend.
+Food-Mood wird als responsive Webanwendung mit einer klaren Trennung von Benutzeroberfläche, serverseitiger Anwendungslogik und Datenhaltung umgesetzt. Die Anwendung besteht aus einem React-Frontend, einem Node.js-/Express-Backend und einer PostgreSQL-Datenbank. Der Zugriff auf Restaurant- und Geodaten erfolgt ausschließlich über einen gekapselten Backend-Adapter für Geoapify, OpenStreetMap/Overpass und Nominatim.
 
 ```mermaid
 flowchart TD
@@ -21,10 +21,12 @@ flowchart TD
         backend -->|Lesen und Schreiben| database
     end
 
-    osm["OpenStreetMap"]
+    places["Geoapify Places API"]
+    osm["OpenStreetMap/Overpass"]
 
     browser <-->|HTTPS| frontend
-    backend <-->|HTTPS über OSM-Adapter| osm
+    backend <-->|HTTPS über Places-Adapter| places
+    backend -.->|Fallback| osm
 ```
 
 Die Lösung ist eine modular aufgebaute Drei-Schichten-Anwendung und keine Microservice-Architektur. Frontend, Backend und Datenbank sind getrennte technische Bausteine, bleiben aber Bestandteil einer gemeinsamen Food-Mood-Anwendung.
@@ -37,8 +39,8 @@ Die Lösung ist eine modular aufgebaute Drei-Schichten-Anwendung und keine Micro
 | `LS-02` | Frontend | React mit Vite | React ermöglicht eine komponentenbasierte Umsetzung der in B1 beschriebenen Masken. Vite stellt den Entwicklungsserver und den Produktions-Build bereit. |
 | `LS-03` | Backend | Node.js mit Express | Express stellt eine schlanke HTTP- und REST-Schnittstelle bereit. Fachlogik, Validierung, Datenzugriff und externe Zugriffe werden in getrennten Modulen organisiert. |
 | `LS-04` | Persistenz | PostgreSQL | Das relationale Datenmodell aus D1 kann mit Schlüsseln, Beziehungen und Integritätsregeln umgesetzt werden. Der UserIdHash, Favoriten, Besuche und Bewertungen werden dauerhaft gespeichert; die UserID bleibt lokal im Browser. |
-| `LS-05` | Restaurant- und Geodaten | OpenStreetMap über einen eigenen Backend-Adapter | OpenStreetMap bleibt das einzige fachliche Nachbarsystem. Overpass kann für Restaurantabfragen und Nominatim für die Auflösung manueller Ortseingaben verwendet werden. Technische Details bleiben hinter einer internen Schnittstelle verborgen. |
-| `LS-06` | Entwicklung | Docker Compose | Frontend, Backend und PostgreSQL erhalten eine einheitliche lokale Umgebung, die von allen Teammitgliedern reproduzierbar gestartet werden kann. |
+| `LS-05` | Restaurant- und Geodaten | Geoapify Places über einen eigenen Backend-Adapter | Geoapify ist die primäre Restaurantquelle. Overpass bleibt als Fallback und Nominatim für die Auflösung manueller Ortseingaben erhalten. Technische Details bleiben hinter einer internen Schnittstelle verborgen. |
+| `LS-06` | Entwicklung | lokale npm-Skripte und PostgreSQL | Frontend und Backend werden über die vorhandenen npm-Skripte gestartet; PostgreSQL wird separat bereitgestellt. Eine Docker-Compose-Konfiguration ist im aktuellen Repository nicht vorhanden. |
 | `LS-07` | Bereitstellung | All-Inkl für Frontend, externer Node.js-Host für Backend und PostgreSQL | Die statischen Frontend-Dateien werden für die Projektlaufzeit unter `foodmood-thm.de` bei All-Inkl bereitgestellt. Backend und Datenbank laufen getrennt bei einem Node.js-/PostgreSQL-Anbieter. |
 | `LS-08` | Nutzeridentifikation | anonyme UserID statt klassischem Benutzerkonto | Es werden keine E-Mail-Adresse und kein Passwort benötigt. Favoriten, Besuche und Bewertungen werden der aktiven UserID zugeordnet. |
 | `LS-09` | Datenzugriff und Schemaänderungen | `pg` und versionierte SQL-Migrationen | Das Backend greift direkt über `pg` auf PostgreSQL zu. Änderungen am Datenbankschema werden als nachvollziehbare SQL-Migrationen versioniert; ein ORM wird nicht eingesetzt. |
@@ -74,13 +76,14 @@ Die Benutzeroberfläche greift nicht direkt auf PostgreSQL zu. Ebenso werden Res
 | [NFA-09](../specs/N1-Nichtfunktionale-Anforderungen.md) – Bewertung erst nach Besuch | Die Fachlogik prüft vor dem Speichern einer Bewertung, ob für dieselbe UserID und dasselbe Restaurant ein Besuch vorhanden ist. |
 | [NFA-10](../specs/N1-Nichtfunktionale-Anforderungen.md) – dauerhafte persönliche Daten | PostgreSQL speichert den UserIdHash sowie Favoriten, Besuche und Bewertungen dauerhaft und stellt ihre Beziehungen durch Schlüssel sicher. |
 
-## A04.6 Integrationsstrategie für OpenStreetMap
+## A04.6 Integrationsstrategie für externe Restaurant- und Geodienste
 
-Der Zugriff auf OpenStreetMap wird in einem eigenen Integrationsbaustein gekapselt. Die Empfehlungslogik arbeitet nur mit den internen Datentypen aus [D2 – Datentypen](../specs/D2-Datentypen.md) und kennt keine anbieterspezifische Antwortstruktur.
+Der Zugriff auf externe Restaurant- und Geodienste wird in einem eigenen Integrationsbaustein gekapselt. Die Empfehlungslogik arbeitet nur mit den internen Restaurantdaten und kennt keine anbieterspezifische Antwortstruktur.
 
 Für die Anbindung gelten folgende Regeln:
 
-- Overpass wird für räumliche Restaurantabfragen verwendet.
+- Geoapify Places wird primär für räumliche Restaurantabfragen verwendet.
+- Overpass wird bei fehlendem Geoapify-Schlüssel oder einem Geoapify-Fehler als Fallback verwendet.
 - Nominatim kann eine manuelle Ortseingabe in Koordinaten auflösen.
 - Externe Antworten werden validiert und normalisiert.
 - Fehlende optionale Merkmale bleiben unbekannt.

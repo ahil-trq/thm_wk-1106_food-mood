@@ -4,10 +4,12 @@ flowchart LR
     FRONT[All-Inkl: statische Frontend-Dateien<br/>HTTPS]
     API[Externer Node.js-Host<br/>Backend API /api/v1]
     DB[(Externe PostgreSQL-Datenbank<br/>nicht öffentlich)]
-    ADAPTER[OSM-Adapter]
-    OSM[Overpass / Nominatim]
+    ADAPTER[Places- und Geointegration]
+    PLACES[Geoapify Places API]
+    OSM[Overpass Fallback / Nominatim]
 
     BROWSER --> DOMAIN --> FRONT
     FRONT -.HTTPS API-Aufruf.-> API
     API --> DB
-    API --> ADAPTER --> OSM
+    API --> ADAPTER --> PLACES
+    ADAPTER -.Fallback / Geocoding.-> OSM

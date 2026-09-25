@@ -42,7 +42,7 @@ Die Hauptakteure sind:
 
 - Der Nutzer, der eine Empfehlung für ein Restaurant benötigt,
 - das System Food-Mood, das Daten verarbeitet und Empfehlungen berechnet,
-- externe Datenquellen, insbesondere OpenStreetMap, die Restaurant- und Geodaten bereitstellen.
+- externe Datenquellen, insbesondere Geoapify Places für Restaurantdaten sowie Nominatim und OpenStreetMap/Overpass für ergänzende bzw. ausfallsichere Zugriffe.
 
 ## 1.5 Qualitätsziele
 
@@ -72,13 +72,13 @@ Die wichtigsten Qualitätsziele für Food-Mood sind in der folgenden Tabelle sys
 ```mermaid
 flowchart LR
     U[Benutzer] --> A[Food-Mood Web-App]
-    A --> O[OpenStreetMap]
+    A --> O[Geoapify Places API]
     A --> D[Persönliche Daten \n Favoriten, Besuche, Bewertungen]
     A --> R[Restaurantempfehlungen]
     R --> U
 ```
 
-Die Web-App stellt die zentrale Schnittstelle für den Nutzer dar. Der Nutzer gibt Standort, Stimmung, Anlass und Filter ein. Food-Mood verarbeitet diese Informationen, fragt relevante Restaurantdaten bei OpenStreetMap ab und liefert darauf basierend personalisierte Empfehlungen zurück.
+Die Web-App stellt die zentrale Schnittstelle für den Nutzer dar. Der Nutzer gibt Standort, Stimmung, Anlass und Filter ein. Food-Mood verarbeitet diese Informationen, fragt relevante Restaurantdaten primär bei Geoapify Places ab und liefert darauf basierend Empfehlungen zurück. Bei fehlendem Geoapify-Schlüssel oder einem externen Fehler kann der Backend-Adapter auf Overpass zurückgreifen.
 
 ## 1.7 Zusammenfassung
 

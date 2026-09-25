@@ -7,7 +7,7 @@
 | [§ 8.1](#81-userid-konzept-statt-login) | UserID statt klassischem Login | [D1 – Datenmodell](../specs/D1-Datenmodell.md), [D2 – Datentypen](../specs/D2-Datentypen.md), [A02 – Randbedingungen](A02-Randbedingungen.md) |
 | [§ 8.2](#82-datenschutz-und-minimale-datenerhebung) | Schutz persönlicher und temporärer Daten | [N1 – Nichtfunktionale Anforderungen](../specs/N1-Nichtfunktionale-Anforderungen.md), [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
 | [§ 8.3](#83-validierung-fachlicher-regeln) | fachliche Validierung und Integrität | [F2 – Anwendungsfälle](../specs/F2-Anwendungsfaelle.md), [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
-| [§ 8.4](#84-fehlerbehandlung-bei-externen-daten) | Reaktionsmuster bei OSM/Overpass-Ausfällen | [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md), [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
+| [§ 8.4](#84-fehlerbehandlung-bei-externen-daten) | Reaktionsmuster bei Geoapify-/Overpass-Ausfällen | [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md), [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) |
 | [§ 8.5](#85-session-und-profilzustand) | aktive UserID, Sitzungszustand und Profilwechsel | [A05 – Bausteinsicht](A05-Bausteinsicht.md), [P2 – Fachlicher Architekturüberblick](../specs/P2-architekturueberblick.md) |
 
 Die Querschnittskonzepte beschreiben Regeln, die mehrere Bausteine von Food-Mood gemeinsam betreffen. Sie ergänzen die fachliche Beschreibung aus [D1 – Datenmodell](../specs/D1-Datenmodell.md) und [D2 – Datentypen](../specs/D2-Datentypen.md), ohne die konkrete technische Umsetzung zu überzeichnen. Die wichtigsten Querschnittsfragen in Food-Mood sind: Wie erkennt das System einen Nutzer ohne Login? Welche Daten dürfen dauerhaft gespeichert werden? Welche Regeln müssen bei Standort, Bewertung und OSM-Daten immer gelten?
@@ -58,7 +58,7 @@ Diese Regeln stellen sicher, dass Daten nur in fachlich sinnvollen Zuständen en
 <a id="84-fehlerbehandlung-bei-externen-daten"></a>
 ## § 8.4 Fehlerbehandlung bei externen Daten
 
-Food-Mood arbeitet mit externen Restaurant- und Geodaten aus OpenStreetMap/Overpass. Diese Daten sind grundsätzlich nützlich, aber nicht immer vollständig, konsistent oder zeitlich aktuell. Deshalb muss die Anwendung Fehler und unvollständige Antworten an der Systemgrenze kontrolliert behandeln.
+Food-Mood arbeitet mit externen Restaurant- und Geodaten aus Geoapify Places und dem Overpass-Fallback. Diese Daten sind grundsätzlich nützlich, aber nicht immer vollständig, konsistent oder zeitlich aktuell. Deshalb muss die Anwendung Fehler und unvollständige Antworten an der Systemgrenze kontrolliert behandeln.
 
 Die fachlichen Regeln aus [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) und [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) legen fest:
 

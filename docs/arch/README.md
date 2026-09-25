@@ -35,7 +35,7 @@ Die Architektur-Dokumentation dient als Einstiegspunkt für alle relevanten Entw
 
 - Web-App Architektur
 - UserID statt Login
-- OpenStreetMap als Nachbarsystem
+- Geoapify Places als primäres Nachbarsystem mit OpenStreetMap/Overpass als Fallback
 - Hosting über Webserver und Domain
 - Trennung von Frontend, Backend und Datenhaltung
 
@@ -51,7 +51,7 @@ Die Architektur von Food-Mood fokussiert sich auf eine leicht verständliche, mo
 
 - Nutzeroberfläche und Interaktion,
 - fachlicher Logik und Empfehlungsvorgängen,
-- externen Datenquellen wie OpenStreetMap,
+- externen Datenquellen wie Geoapify Places, OpenStreetMap/Overpass und Nominatim,
 - persönlicher Datenspeicherung für Favoriten, Besuche und Bewertungen.
 
 Die Dokumentation ist bewusst so aufgebaut, dass sie als Einstiegspunkt für Entwickler, Reviewer und Projektbeteiligte dient und den Gesamtkontext der Anwendung schnell verständlich macht.

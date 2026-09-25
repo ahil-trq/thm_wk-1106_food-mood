@@ -30,8 +30,8 @@ Die technischen Randbedingungen beschreiben die grundlegenden Architekturentsche
 | TEC-02 | Webserver als Bereitstellungsrolle | Die Anwendung wird über einen Webserver mit öffentlich erreichbarer Domain bereitgestellt. Der Betrieb erfolgt in einer einfachen Hosting-Umgebung ohne komplexe Container- oder Microservice-Architektur. |
 | TEC-03 | Domain und öffentliche Verfügbarkeit | Die App wird über eine Domain erreichbar sein. Das Deployment muss deshalb mit einer stabilen, im Internet nutzbaren URL funktionieren. Weitere Details folgen in [A07 – Verteilungssicht](A07-Verteilungssicht.md). |
 | TEC-04 | Datenbank im Backend | Für die persistenten Nutzerdaten werden Favoriten, Besuche und Bewertungen in einer Datenbank gespeichert. Die Speicherung muss zuverlässig und leicht wartbar erfolgen. Siehe auch [D1 – Datenmodell](../specs/D1-Datenmodell.md). |
-| TEC-05 | OpenStreetMap als Datenquelle | Restaurant- und Geodaten werden aus OpenStreetMap bezogen. Dabei werden nur relevante gastronomische Einträge verarbeitet und in interne Datenstrukturen überführt. Detaillierte fachliche Grenzen sind in [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) beschrieben. |
-| TEC-06 | Externe Daten müssen validiert werden | Die Daten aus OpenStreetMap sind nicht immer vollständig oder konsistent. Die App muss fehlerhafte, unvollständige oder unzuverlässige Einträge tolerieren und verarbeitbar machen. |
+| TEC-05 | Geoapify als primäre Restaurantquelle | Restaurantdaten werden primär über die Geoapify Places API abgerufen und in interne Datenstrukturen überführt. Overpass bleibt als Backend-Fallback erhalten; die technischen Details sind in [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) beschrieben. |
+| TEC-06 | Externe Daten müssen validiert werden | Daten aus Geoapify und dem Overpass-Fallback sind nicht immer vollständig oder konsistent. Die App muss fehlerhafte, unvollständige oder unzuverlässige Einträge tolerieren und verarbeitbar machen. |
 | TEC-07 | Browser-Standortzugriff | Die Standortbestimmung kann über den Browser erfolgen. Falls der Zugriff verweigert wird, muss ein manueller Standorteintrag als Fallback möglich sein. |
 | TEC-08 | Trennung von Frontend, Backend und Datenspeicherung | Die Architektur soll eine klare Trennung zwischen Benutzeroberfläche, fachlicher Logik und persistenter Datenhaltung unterstützen. Siehe auch [A05 – Bausteinsicht](A05-Bausteinsicht.md). |
 | TEC-09 | einfache, skalierbare Betriebsumgebung | Die App soll ohne aufwendige Infrastruktur oder komplexe Betriebskonfiguration realisierbar sein. Eine kleine, verständliche Infrastruktur ist bevorzugt. |
@@ -53,13 +53,13 @@ Die Projektkonventionen werden hier als verbindliche Regeln im Architekturkontex
 | --- | --- | --- |
 | CONV-01 | Keine klassischen Benutzerkonten | Die App verwendet keine E-Mail-, Passwort- oder Rollenverwaltung. Die Nutzeridentifikation erfolgt über eine UserID. Siehe auch [A08 – Querschnittskonzepte](A08-Querschnittskonzepte.md). |
 | CONV-02 | Kein vollständiger Geschäftsbetrieb | Food-Mood ist kein Restaurantmanagementsystem, kein Booking-Service und keine Zahlungslösung. Das ist ebenfalls durch die fachlichen Ziele in [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md) begrenzt. |
-| CONV-03 | Nutzung eines öffentlichen Datenproviders | OpenStreetMap ist die zentrale externe Informationsquelle für Restaurantdaten. Der Systemaufbau muss diese Abhängigkeit berücksichtigen. Die fachlichen Grenzen dazu sind in [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md) beschrieben. |
+| CONV-03 | Nutzung externer Datenprovider | Geoapify Places ist die zentrale externe Informationsquelle für Restaurantdaten. OpenStreetMap/Overpass bleibt als technischer Fallback erhalten. Der Systemaufbau muss diese Abhängigkeiten berücksichtigen. |
 | CONV-04 | Fokus auf Empfehlung statt on-demand Transactions | Die App soll Empfehlungen in kurzer Zeit liefern, nicht für längere Checkout- oder Bestellprozesse eingesetzt werden. |
 | CONV-05 | Verzicht auf überflüssige Komplexität | Die Architektur soll möglichst schlank bleiben und nur diejenigen Komponenten enthalten, die für die Empfehlung und das Nutzerprofil erforderlich sind. |
 
 ## 2.6 Zusammenfassung
 
-Food-Mood ist durch mehrere wichtige Randbedingungen gekennzeichnet: Es ist eine Web-App ohne klassisches Login, arbeitet mit einer UserID statt mit Accounts und basiert auf klaren fachlichen Grenzen. Technisch ist die Anwendung an einen Webserver, eine öffentliche Domain, eine Datenbank und OpenStreetMap als externe Datenquelle gebunden. Diese Grenzen definieren den Entwurfsraum der Architektur und sollen in den folgenden Kapiteln weiter konkretisiert werden.
+Food-Mood ist durch mehrere wichtige Randbedingungen gekennzeichnet: Es ist eine Web-App ohne klassisches Login, arbeitet mit einer UserID statt mit Accounts und basiert auf klaren fachlichen Grenzen. Technisch ist die Anwendung an einen Webserver, eine öffentliche Domain, eine Datenbank und externe Restaurant- und Geodienste gebunden. Geoapify Places ist die primäre Restaurantquelle; OpenStreetMap/Overpass und Nominatim werden ergänzend beziehungsweise als Fallback eingesetzt.
 
 ---
 
