@@ -35,4 +35,6 @@
 | Nominatim | Technischer Zugang zu OpenStreetMap zur Auflösung einer manuellen Ortseingabe in Koordinaten; siehe [S1 – Nachbarsysteme und externe APIs](../specs/S1-Nachbarsysteme-und-APIs.md). |
 | Matching-Score | Transparenter, deterministischer Wert zur Sortierung von Restaurantempfehlungen anhand definierter Faktoren; siehe [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) und [A09 – Architekturentscheidungen](A09-Architekturentscheidungen.md). |
 | Datenfluss | Der Weg, den Informationen im System nehmen, zum Beispiel von der Benutzereingabe über die Logik zur Empfehlung; siehe [A06 – Laufzeitsicht](A06-Laufzeitsicht.md) und [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md). |
+| Wikimedia Commons/Wikidata | Optionales, zweites Nachbarsystem, das anhand aus OSM-Tags übernommener Verweise (`image`, `wikimedia_commons`, `wikidata`) ein öffentlich lizenziertes Restaurantbild liefert; siehe [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md) und [A09 – Architekturentscheidungen](A09-Architekturentscheidungen.md). |
+| Bildanreicherung | Nachträgliches, gecachtes und fehlertolerantes Anreichern von Restaurantdaten um eine Bild-URL, wenn OSM kein direktes `image`-Tag liefert; siehe [A09 – Architekturentscheidungen](A09-Architekturentscheidungen.md). |
 

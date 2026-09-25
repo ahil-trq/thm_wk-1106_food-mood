@@ -11,6 +11,7 @@
 | [ADR-05](#adr-05-versionierte-rest-api-und-score-regeln) | versionierte REST-API und feste Score-Regeln | [A05 – Bausteinsicht](A05-Bausteinsicht.md), [F3 – Anwendungsfunktionen](../specs/F3-Anwendungsfunktionen.md) |
 | [ADR-06](#adr-06-pg-und-sql-migrationen) | `pg` und versionierte SQL-Migrationen | [A04 – Lösungsstrategie](A04-Loesungsstrategie.md), [A05 – Bausteinsicht](A05-Bausteinsicht.md) |
 | [ADR-07](#adr-07-all-inkl-und-konfigurierbare-osm-endpunkte) | All-Inkl, Domain und konfigurierbare OSM-Endpunkte | [A07 – Verteilungssicht](A07-Verteilungssicht.md), [S3 – Inbetriebnahme](../specs/S3-Inbetriebnahme.md) |
+| [ADR-08](#adr-08-optionale-bildanreicherung-ueber-wikimedia) | optionale Bildanreicherung über Wikimedia Commons/Wikidata | [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md), [A05 – Bausteinsicht](A05-Bausteinsicht.md) |
 
 Diese Entscheidungen definieren den Kern der Food-Mood-Architektur. Sie sind bewusst auf den MVP-Fokus aus [P1 – Ziele und Rahmenbedingungen](../specs/P1-Ziele-und-Rahmenbedingungen.md) zugeschnitten und legen feste Grundsätze fest, ohne die spätere Erweiterung auszuschließen.
 
@@ -156,6 +157,31 @@ Diese Entscheidungen definieren den Kern der Food-Mood-Architektur. Sie sind bew
 - PostgreSQL bleibt von außen nicht direkt erreichbar.
 - OSM-Endpunkte können ohne Änderung der Empfehlungslogik ausgetauscht werden.
 - Der Produktivbetrieb ist zeitlich auf die Projektlaufzeit begrenzt.
+
+<a id="adr-08-optionale-bildanreicherung-ueber-wikimedia"></a>
+## ADR-08: Optionale Bildanreicherung über Wikimedia Commons/Wikidata
+
+**Status:** Entschieden
+
+**Kontext:** Restaurantkarten zeigten bisher nur einen Buchstaben-Platzhalter. OSM-Objekte enthalten vereinzelt Bildverweise (`image`, `wikimedia_commons`, `wikidata`), aus denen sich ein echtes Foto ableiten lässt. Ein zusätzlicher externer Dienst darf jedoch weder die Antwortzeit der Empfehlungslogik (vgl. [N1 – Nichtfunktionale Anforderungen](../specs/N1-Nichtfunktionale-Anforderungen.md)) noch die Zuverlässigkeit der Restaurantsuche gefährden.
+
+**Alternativen:**
+
+| Option | Beschreibung | Vorteile | Nachteile |
+|---|---|---|---|
+| A – nur direktes `image`-Tag | Bild ausschließlich übernehmen, wenn OSM eine gültige HTTP(S)-URL liefert | keine zusätzliche Abhängigkeit | `image`-Tag ist auf Restaurants selten gepflegt, kaum Nutzen |
+| B – zusätzlicher Wikimedia-Commons/Wikidata-Lookup | bei fehlendem `image` wird `wikimedia_commons` bzw. `wikidata` gegen die Wikimedia-APIs aufgelöst | mehr Restaurants mit echtem Bild | zusätzliches Nachbarsystem, zusätzliche Latenz und Fehlerquelle |
+| C – fest hinterlegte Demo-/Stockbilder | generische Bilder pro Kategorie anzeigen | immer ein Bild vorhanden | keine echten, restaurantspezifischen Informationen, irreführend |
+
+**Entscheidung:** Option B – ein optionaler, serverseitiger Lookup gegen Wikimedia Commons/Wikidata, ausschließlich als Ergänzung zu Option A und niemals als erfundener Ersatz (Option C wird ausgeschlossen).
+
+**Begründung:** Der Lookup liefert echte, restaurantbezogene Bilder, wo OSM entsprechende Verweise pflegt, ohne die bestehende Restaurantsuche zu verändern. Robustheit hat Vorrang vor Vollständigkeit: Anfragen laufen mit kurzem Timeout (2,5 s), begrenzter Parallelität (5) und einem Limit von 12 Lookups pro Anfrage, damit die Gesamtantwortzeit nicht signifikant steigt. Ergebnisse werden 24 Stunden gecacht, getrennt vom 10-Minuten-Cache der Restaurantsuche. Fehler, Timeouts oder fehlende Treffer führen ausschließlich zu `image: null` und nie zu einem Fehlschlag der Suche.
+
+**Konsequenzen:**
+- Wikimedia Commons/Wikidata wird ein zweites, aber rein optionales Nachbarsystem (`NB-02` in [A03 – Kontextabgrenzung](A03-Kontextabgrenzung.md)).
+- Die Bildanreicherung ist unidirektional und lesend; es werden keine Nutzerdaten an Wikimedia übertragen.
+- Restaurants ohne passenden Bildverweis oder mit nicht auswertbarem Verweis zeigen weiterhin den bestehenden Buchstaben-Platzhalter.
+- Bei vielen Kandidaten pro Suche werden nicht alle, sondern nur die ersten 12 angereichert; das ist ein bewusster Kompromiss zwischen Bildabdeckung und Antwortzeit.
 
 ## Ergebnis in einem Satz
 
