@@ -27,6 +27,7 @@ Die Datei `frontend/.env.production` wird nicht hochgeladen. Die Backend-URL ist
    PORT=3000
    DATABASE_URL=postgres://...
    DATABASE_SSL=true
+   GEOAPIFY_API_KEY=dein_geoapify_key
    OVERPASS_API_URL=https://overpass-api.de/api/interpreter
    NOMINATIM_API_URL=https://nominatim.openstreetmap.org
    CORS_ORIGIN=https://foodmood-thm.de

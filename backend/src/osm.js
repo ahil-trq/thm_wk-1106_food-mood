@@ -5,6 +5,8 @@ function getConfig() {
   return {
     overpassUrl: process.env.OVERPASS_API_URL || 'https://overpass-api.de/api/interpreter',
     nominatimUrl: process.env.NOMINATIM_API_URL || 'https://nominatim.openstreetmap.org',
+    geoapifyApiKey: process.env.GEOAPIFY_API_KEY || '',
+    geoapifyUrl: process.env.GEOAPIFY_API_URL || 'https://api.geoapify.com/v2/places',
   }
 }
 
@@ -100,6 +102,105 @@ function distanceMeters(origin, latitude, longitude) {
   const dLon = toRadians(longitude - origin.longitude)
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(origin.latitude)) * Math.cos(toRadians(latitude)) * Math.sin(dLon / 2) ** 2
   return Math.round(2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))
+}
+
+function normalizeCuisines(value) {
+  if (!value) return []
+  return String(value)
+    .split(/[;,]/)
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean)
+    .filter((entry, index, list) => list.indexOf(entry) === index)
+}
+
+function getGeoapifyAmenity(feature) {
+  const categories = Array.isArray(feature?.properties?.categories)
+    ? feature.properties.categories
+    : typeof feature?.properties?.categories === 'string'
+      ? [feature.properties.categories]
+      : []
+
+  const category = categories.find((entry) => typeof entry === 'string' && entry.includes('cafe'))
+    || categories.find((entry) => typeof entry === 'string' && entry.includes('fast_food'))
+    || categories.find((entry) => typeof entry === 'string' && entry.includes('restaurant'))
+    || 'catering.restaurant'
+
+  if (category.includes('cafe')) return 'CAFE'
+  if (category.includes('fast_food')) return 'FAST_FOOD'
+  return 'RESTAURANT'
+}
+
+function normalizeGeoapifyFeature(feature, origin) {
+  const properties = feature?.properties || {}
+  const coordinates = feature?.geometry?.coordinates || []
+  const latitude = properties.lat ?? coordinates[1]
+  const longitude = properties.lon ?? coordinates[0]
+  if (!properties.name || latitude == null || longitude == null) return null
+
+  const categories = Array.isArray(properties.categories)
+    ? properties.categories
+    : typeof properties.categories === 'string'
+      ? [properties.categories]
+      : []
+
+  const cuisineCandidates = [
+    properties.cuisine,
+    properties.shop,
+    ...categories,
+  ]
+
+  const cuisines = cuisineCandidates
+    .flatMap((value) => normalizeCuisines(value))
+    .filter((value) => !value.includes('catering'))
+
+  const amenity = getGeoapifyAmenity(feature)
+  const address = [properties.street, properties.housenumber, properties.city].filter(Boolean).join(' ') || properties.formatted || null
+
+  return {
+    id: `GEOAPIFY:${properties.place_id || properties.datasource?.sourcename || feature?.id || `${latitude}:${longitude}`}`,
+    name: properties.name,
+    address,
+    cuisine: cuisines[0] || null,
+    cuisines,
+    amenity,
+    open: null,
+    openingHours: properties.opening_hours || null,
+    vegetarian: typeof properties.vegetarian === 'boolean' && properties.vegetarian ? 'YES' : 'UNKNOWN',
+    vegan: typeof properties.vegan === 'boolean' && properties.vegan ? 'YES' : 'UNKNOWN',
+    takeaway: typeof properties.takeaway === 'boolean' && properties.takeaway ? 'YES' : 'UNKNOWN',
+    delivery: typeof properties.delivery === 'boolean' && properties.delivery ? 'YES' : 'UNKNOWN',
+    outdoorSeating: typeof properties.outdoor_seating === 'boolean' && properties.outdoor_seating ? 'YES' : 'UNKNOWN',
+    image: isValidImageUrl(properties.image) ? properties.image : null,
+    wikimediaCommons: properties.wikimedia_commons || null,
+    wikidata: properties.wikidata || null,
+    website: properties.website || null,
+    phone: properties.phone || null,
+    latitude,
+    longitude,
+    distance: distanceMeters(origin, latitude, longitude),
+    rating: null,
+    count: 0,
+  }
+}
+
+async function requestGeoapify(latitude, longitude, radiusMeters) {
+  const { geoapifyApiKey, geoapifyUrl } = getConfig()
+  if (!geoapifyApiKey) {
+    throw new Error('GEOAPIFY_API_KEY is not configured')
+  }
+
+  const url = new URL(geoapifyUrl)
+  url.searchParams.set('categories', 'catering.restaurant,catering.cafe,catering.fast_food')
+  url.searchParams.set('filter', `circle:${longitude},${latitude},${radiusMeters}`)
+  url.searchParams.set('limit', '20')
+  url.searchParams.set('apiKey', geoapifyApiKey)
+  url.searchParams.set('format', 'json')
+
+  const data = await request(url.toString(), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+  })
+  return data
 }
 
 function openingState(openingHours) {
@@ -273,13 +374,30 @@ export async function getRestaurants(latitude, longitude, radiusMeters = 5000) {
   const cacheKey = `restaurants:${coordinates.latitude}:${coordinates.longitude}:${radiusMeters}`
   const cached = cache.get(cacheKey)
   if (cached && cached.expiresAt > Date.now()) return cached.value
+
+  const { geoapifyApiKey } = getConfig()
+  if (geoapifyApiKey) {
+    try {
+      const data = await requestGeoapify(latitude, longitude, radiusMeters)
+      const restaurants = (data?.features || [])
+        .map((feature) => normalizeGeoapifyFeature(feature, coordinates))
+        .filter(Boolean)
+
+      await resolveMissingImages(restaurants)
+      cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })
+      return restaurants
+    } catch (error) {
+      console.error('Geoapify request failed, falling back to Overpass:', error.message)
+    }
+  }
+
   const query = `[out:json][timeout:5];(nwr[amenity~"^(restaurant|fast_food|cafe)$"](around:${radiusMeters},${coordinates.latitude},${coordinates.longitude}););out center tags;`
-console.log("Overpass Query:", query)
-const data = await requestOverpass((baseUrl) => {
-  const url = new URL(baseUrl)
-  url.searchParams.set('data', query)
-  return url.toString()
-})
+  console.log("Overpass Query:", query)
+  const data = await requestOverpass((baseUrl) => {
+    const url = new URL(baseUrl)
+    url.searchParams.set('data', query)
+    return url.toString()
+  })
   const restaurants = data.elements.map((element) => normalizeElement(element, coordinates)).filter(Boolean)
   await resolveMissingImages(restaurants)
   cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })

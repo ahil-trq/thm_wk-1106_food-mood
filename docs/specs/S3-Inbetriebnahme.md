@@ -6,7 +6,7 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 - Node.js (aktuelle LTS-Version) sowie ein Paketmanager (z.B. npm) müssen installiert sein.
 - Eine lokale PostgreSQL-Instanz (z.B. über Docker) für die Speicherung von Favoriten und Besuchen/Bewertungen.
-- Eine bestehende Internetverbindung, da Restaurantdaten über die externe OpenStreetMap/Overpass-API abgerufen werden.
+- Eine bestehende Internetverbindung, da Restaurantdaten über die Geoapify Places API abgerufen werden. Für die manuelle Ortsauflösung kann optional Nominatim genutzt werden.
 - Ein moderner Webbrowser. Für den Test der automatischen Standortermittlung sollten die Standortdienste des Browsers/Geräts aktiviert sein.
 
 ## 2. Repository beziehen
@@ -22,7 +22,8 @@ Diese Datei beschreibt fachlich, was nötig ist, um Food-Mood lokal zu starten u
 
 Die Konfiguration erfolgt über Umgebungsvariablen in einer lokalen env-Datei, die nicht Teil des Repositorys ist (in .gitignore eingetragen). Voraussichtlich benötigt:
 
-- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`. Bei anhaltenden Verbindungsfehlern (z. B. `ECONNREFUSED`/„fetch failed“ auf gehosteten Umgebungen mit geteilter IP) kann testweise ein alternativer, öffentlicher Overpass-Mirror mit voller Datenabdeckung eingetragen werden, z. B. `https://lz4.overpass-api.de/api/interpreter`. Regionale Mirrors wie `overpass.osm.ch` liefern nur eingeschränkte, regionale Daten und sind für Deutschland nicht geeignet.
+- `GEOAPIFY_API_KEY` API-Schlüssel für Geoapify Places. Damit ersetzt das Backend die bisherige Overpass-Suche als primäre Restaurantquelle.
+- `OVERPASS_API_URL` Basis-URL des Overpass-Servers, Standardwert `https://overpass-api.de/api/interpreter`. Diese Variable bleibt als Fallback erhalten, falls ein externer Anbieter nicht erreichbar ist oder bei einem Übergang lokal noch getestet wird.
 - `NOMINATIM_API_URL` Basis-URL des Nominatim-Servers, Standardwert `https://nominatim.openstreetmap.org`.
 - `DATABASE_URL` Verbindungsangabe zur Datenbank (siehe Datenbankkonfiguration).
 - `PORT` Port, unter dem die Anwendung lokal erreichbar ist (optional, mit Standardwert).
@@ -37,9 +38,8 @@ Eine Beispieldatei `env.example` mit Platzhalterwerten liegt im Repository, dami
 
 ## 6. OpenStreetMap-Anbindung konfigurieren
 
-- Food-Mood nutzt OpenStreetMap/Overpass als Datenquelle für Restaurants sowie Nominatim zur Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten.
-- Beide Dienste sind öffentlich und kostenlos nutzbar. Die Basis-URLs werden über `OVERPASS_API_URL` und `NOMINATIM_API_URL` konfiguriert, damit sie bei Bedarf ausgetauscht werden können, ohne den Code zu ändern.
-- Für die aktuell vorgesehene Datenquelle werden keine geheimen API-Schlüssel benötigt. Sollte im weiteren Verlauf dennoch ein Dienst mit Schlüsselpflicht eingesetzt werden, gilt als Grundsatz: Schlüssel werden nicht im Quellcode oder Repository hinterlegt, sondern ausschließlich über die lokale, nicht versionierte env-Datei bereitgestellt.
+- Food-Mood nutzt Geoapify Places als primäre Datenquelle für Restaurants. Für die Umwandlung einer manuell eingegebenen Ortsangabe in Koordinaten kann weiterhin Nominatim genutzt werden.
+- Geoapify benötigt einen API-Schlüssel, der nicht im Quellcode oder Repository hinterlegt wird. Die Konfiguration erfolgt ausschließlich über die lokale, nicht versionierte env-Datei.
 
 ## 7. Anwendung lokal starten
 
