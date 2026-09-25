@@ -15,6 +15,7 @@ async function performRequest(url, options) {
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
   try {
     const response = await fetch(url, { ...options, signal: controller.signal, headers: { 'User-Agent': 'Food-Mood/1.0 (THM project)', ...(options.headers || {}) } })
+    if (url.includes('geoapify.com')) console.log('[Geoapify] HTTP Status:', response.status)
     if (!response.ok) {
       const errorText = await response.text()
       console.error("OSM ERROR STATUS:", response.status)
@@ -196,10 +197,12 @@ async function requestGeoapify(latitude, longitude, radiusMeters) {
   url.searchParams.set('apiKey', geoapifyApiKey)
   url.searchParams.set('format', 'json')
 
+  console.log('[Geoapify] Request gestartet')
   const data = await request(url.toString(), {
     method: 'GET',
     headers: { Accept: 'application/json' },
   })
+  console.log('[Geoapify] Response erhalten')
   return data
 }
 
@@ -387,6 +390,7 @@ export async function getRestaurants(latitude, longitude, radiusMeters = 5000) {
       cache.set(cacheKey, { value: restaurants, expiresAt: Date.now() + 10 * 60 * 1000 })
       return restaurants
     } catch (error) {
+      console.error('[Geoapify] Fehler:', error.name, error.message)
       console.error('Geoapify request failed, falling back to Overpass:', error.message)
     }
   }

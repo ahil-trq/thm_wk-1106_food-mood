@@ -65,6 +65,7 @@ app.post('/api/v1/profiles/load', async (request, response) => {
 })
 
 app.get('/api/v1/restaurants', async (request, response) => {
+  console.log('[Restaurants] Route gestartet')
   const latitude = Number(request.query.latitude)
   const longitude = Number(request.query.longitude)
   const radius = Number(request.query.radius || 5000)
@@ -72,9 +73,12 @@ app.get('/api/v1/restaurants', async (request, response) => {
   if (!Number.isFinite(radius) || radius < 100 || radius > 10000) return sendError(response, 400, 'INVALID_RADIUS', 'Der Radius muss zwischen 100 und 10000 Metern liegen.')
   try {
     const restaurants = await getRestaurants(latitude, longitude, radius)
+    console.log('[Restaurants] Datenbankverarbeitung gestartet')
     for (const restaurant of restaurants) await ensureRestaurantReference(restaurant)
+    console.log('[Restaurants] Direkt vor res.json()')
     response.json(restaurants)
   } catch (error) {
+    console.error('[Restaurants] Fehler:', error.name, error.message)
     console.error('Restaurant search failed:', error.message)
     sendError(response, 502, 'OSM_UNAVAILABLE', 'Restaurantdaten konnten momentan nicht geladen werden.')
   }
